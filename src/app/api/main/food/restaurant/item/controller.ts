@@ -1,0 +1,53 @@
+import prisma from "@/lib/prisma/prismaClient";
+import { AddRestaurantMenuItemData, RestaurantMenuItemResult } from "./types";
+import {
+  NotFoundError,
+  UnauthorizedError,
+} from "@/lib/error_handler/customerErrors";
+import { UserRole } from "@prisma/client";
+import { throwAppropriateError } from "@/lib/error_handler/throwError";
+
+export async function addRestaurantMenuItem(
+  data: AddRestaurantMenuItemData
+): Promise<RestaurantMenuItemResult> {
+  try {
+    return await prisma.$transaction(async (prisma) => {
+      // Check if the Restaurant menu exists
+      const existingRestaurantMenu = await prisma.restaurantMenu.findUnique({
+        where: { id: data.restaurantMenuId },
+      });
+
+      if (!existingRestaurantMenu) {
+        throw new NotFoundError(`Restaurant non trouvée.`);
+      }
+
+      // Create the cafeteria menu item
+      const restaurantMenuItem = await prisma.restaurantMenuItem.create({
+        data: {
+          name: data.name,
+          description: data.description,
+          mealType: data.mealType,
+          category: data.category,
+          restaurantMenu: {
+            connect: { id: data.restaurantMenuId },
+          },
+        },
+      });
+
+      return { restaurantMenuItem };
+    });
+  } catch (error) {
+    throw throwAppropriateError(error);
+  }
+}
+
+export function checkRestaurantManagerChefRole(roles: UserRole[]) {
+  if (
+    !roles.includes(UserRole.restaurent_Manager) &&
+    !roles.includes(UserRole.chef)
+  ) {
+    throw new UnauthorizedError(
+      "Sauf chef , restaurent manager peut faire cette action"
+    );
+  }
+}
