@@ -27,6 +27,14 @@ export async function addCalendar(
       // Create the attendee
       const createdCalendar = await prisma.calendar.create({
         data: { ...data, hotelId },
+        select:{
+          id : true,
+          end: true,
+          description:true,
+          start:true,
+          title : true,
+          createdAt : true
+        }
       });
 
       return { Calendar: createdCalendar };
@@ -56,6 +64,14 @@ export async function getCalendars(
         where: {
           hotelId,
         },
+        select:{
+          id : true,
+          end: true,
+          description:true,
+          start:true,
+          title : true,
+          createdAt : true
+        }
       });
 
       return {

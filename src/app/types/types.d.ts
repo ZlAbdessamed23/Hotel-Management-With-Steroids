@@ -215,7 +215,7 @@ interface Room {
 
 interface ReservedRoom extends Room {
     reservation: {
-        id : string;
+        id: string;
         startDate: Date | string;
         endDate: Date | string;
         client: {
@@ -248,34 +248,34 @@ interface SportHallClient {
     identityCardNumber: string;
     phoneNumber?: string;
     name?: string;
-    gender ?: UserGender; 
+    gender?: UserGender;
 };
 
 interface Stock {
-    id? : string;
-    name : string;
-    description : string;
-    location : string;
-    stockEmployee : string | {employeeId : string , firstName : string , lastName : string , role : UserRole}[];
-    createdAt? : Date | string;
+    id?: string;
+    name: string;
+    description: string;
+    location: string;
+    stockEmployee: string | { employeeId: string, firstName: string, lastName: string, role: UserRole }[];
+    createdAt?: Date | string;
 };
 
-interface Restaurant{
-    id? : string;
-    name : string;
-    description : string;
-    location : string;
-    restaurantEmployee : string | {employeeId : string , firstName : string , lastName : string , role : UserRole}[];
-    createdAt? : Date | string;
+interface Restaurant {
+    id?: string;
+    name: string;
+    description: string;
+    location: string;
+    restaurantEmployee: string | { employeeId: string, firstName: string, lastName: string, role: UserRole }[];
+    createdAt?: Date | string;
 };
 
-interface Cafeteria{
-    id? : string;
-    name : string;
-    description : string;
-    location : string;
-    cafeteriaEmployee : string | {employeeId : string , firstName : string , lastName : string , role : UserRole}[];
-    createdAt? : Date | string;
+interface Cafeteria {
+    id?: string;
+    name: string;
+    description: string;
+    location: string;
+    cafeteriaEmployee: string | { employeeId: string, firstName: string, lastName: string, role: UserRole }[];
+    createdAt?: Date | string;
 };
 
 interface StockCategory {
@@ -312,8 +312,8 @@ interface StockItem extends SuppliersDataType {
     minimumQuantity: number;
     stockId: string;
     unitPrice: number;
-    isNeeded? : boolean;
-    categoryId? : string;
+    isNeeded?: boolean;
+    categoryId?: string;
 };
 
 interface ReportType extends ReportCollection {
@@ -347,13 +347,13 @@ interface RestauMenu extends Menu {
     lunchEndTime: string;
     dinnerStartTime: string;
     dinnerEndTime: string;
-    restaurantId : string;
+    restaurantId: string;
 };
 
 interface CafeteriaMenu extends Menu {
     startTime: string;
     endTime: string;
-    cafeteriaId : string;
+    cafeteriaId: string;
 };
 
 type FoodType = "restau" | "cafeteria"
@@ -367,8 +367,8 @@ interface Restau_CafeteriaItem {
     category: Restau_CafeteriaItemCategories;
     cafeteriaMenuId: string;
     restauMenuId: string;
-    cafeteriaId : string;
-    restaurantId : string;
+    cafeteriaId: string;
+    restaurantId: string;
     type: FoodType;
     mealType?: MealType
 };
@@ -406,6 +406,12 @@ interface BudgetModalProps {
     material: number;
 };
 
+interface StockBudget {
+    stockId: string;
+    id: string;
+    amount: number;
+    stockName : string;
+};
 
 interface UserInfos {
     id: string;
@@ -540,15 +546,19 @@ interface StockDashboardData {
         supplierPhone: string;
         supplierEmail: string;
         quantity: number;
-        stockType: StockType;
+        stockId: string;
         name: string;
         isNeeded: boolean;
         category: { name: string };
     }[];
     transactions:
-    { type: StockTransactionType; transactionAmount: number; stockType: StockType, createdAt: Date | string }[];
+    { type: StockTransactionType; transactionAmount: number; stockId: string, createdAt: Date | string }[];
     budgets:
-    { amount: number; stockType: StockType; id: string }[];
+    { amount: number; stockId: string; id: string }[];
+    stocks: {
+        id: string;
+        name: string;
+    }[]
 };
 
 interface StockDashboardResult {
@@ -556,15 +566,15 @@ interface StockDashboardResult {
 };
 
 interface ClientHistory {
-    id : string;
-    firstName : string;
-    lastName : string;
+    id: string;
+    firstName: string;
+    lastName: string;
     identityCardNumber: string;
-    phoneNumber : string;
-    nationality : string;
-    gender : UserGender;
-    createdAt : Date | string;
-    updatedAt : Date | string;
+    phoneNumber: string;
+    nationality: string;
+    gender: UserGender;
+    createdAt: Date | string;
+    updatedAt: Date | string;
 };
 
 interface BillTableType {
@@ -572,6 +582,27 @@ interface BillTableType {
     description: string,
     unitPrice: number
 };
+
+
+interface PendingClients {
+    id?: string;
+    eventId?: string;
+    reservations?: Array<{ id: string, startDate: string | Date, endDate: string | Date }>;
+    fullName: string;
+    dateOfBirth: Date | string;
+    phoneNumber: string;
+    email?: string;
+    identityCardNumber: string;
+    address: string;
+    nationality: string;
+    membersNumber: number;
+    kidsNumber: number;
+    gender: UserGender | string;
+    clientOrigin: ClientOrigin;
+    pendingReservation: Reservation[]
+};
+
+interface Pending extends Client, Reservation { reservationId: string };
 
 
 
@@ -629,7 +660,7 @@ export type FifthCardItemType = {
     currentValue: number;
     subject: string;
     pourcentage: number,
-    speciality : string,
+    speciality: string,
 };
 
 export type SixthCardItemType = {

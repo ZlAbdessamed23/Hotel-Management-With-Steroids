@@ -46,6 +46,23 @@ export async function addClient(
           hotelId,
           employeeId,
         },
+        select : {
+          fullName : true,
+          address : true,
+          email : true,
+          phoneNumber : true,
+          id : true,
+          identityCardNumber : true,
+          gender : true,
+          dateOfBirth : true ,
+          clientOrigin : true,
+          kidsNumber : true,
+          nationality : true,
+          membersNumber : true,
+          hotelId : true,
+          createdAt : true,
+          
+        }
       });
 
       return { client: newClient };
@@ -60,6 +77,23 @@ export async function getAllClients(hotelId: string): Promise<ClientsResult> {
   try {
     const clients = await prisma.client.findMany({
       where: { hotelId: hotelId },
+      select : {
+        fullName : true,
+        address : true,
+        email : true,
+        phoneNumber : true,
+        id : true,
+        identityCardNumber : true,
+        gender : true,
+        dateOfBirth : true ,
+        clientOrigin : true,
+        kidsNumber : true,
+        nationality : true,
+        membersNumber : true,
+        hotelId : true,
+        createdAt : true,
+        
+      }
     });
 
     return { clients };

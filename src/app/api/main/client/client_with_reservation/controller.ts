@@ -8,7 +8,7 @@ import {
   ClientReservationData,
   ClientReservationResult,
   ClientsWithReservations,
-} from "./types";
+} from "@/app/api/main/client/client_with_reservation/types";
 import {
   ValidationError,
   LimitExceededError,
@@ -16,6 +16,7 @@ import {
 } from "@/lib/error_handler/customerErrors";
 import { throwAppropriateError } from "@/lib/error_handler/throwError";
 import { updateClientCheckInStatistics } from "@/app/api/main/statistics/statistics";
+
 
 const prisma = new PrismaClient();
 
@@ -74,45 +75,92 @@ export async function addClientWithReservation(
       const totalPrice = data.totalDays * room.price.toNumber();
 
       // Create the client and reservation in a single query
-      const result = await prisma.client.create({
-        data: {
-          fullName: data.fullName,
-          dateOfBirth: data.dateOfBirth,
-          phoneNumber: data.phoneNumber,
-          email: data.email,
-          membersNumber: data.membersNumber,
-          kidsNumber: data.kidsNumber,
-          identityCardNumber: data.identityCardNumber,
-          address: data.address,
-          nationality: data.nationality,
-          clientOrigin: data.clientOrigin,
-          gender: data.gender,
+      let result: ClientReservationResult;
 
+if (data.state === ReservationState.en_attente) {
+  const createdClient = await prisma.client.create({
+    data: {
+      fullName: data.fullName,
+      dateOfBirth: data.dateOfBirth,
+      phoneNumber: data.phoneNumber,
+      email: data.email,
+      membersNumber: data.membersNumber,
+      kidsNumber: data.kidsNumber,
+      identityCardNumber: data.identityCardNumber,
+      address: data.address,
+      nationality: data.nationality,
+      clientOrigin: data.clientOrigin,
+      gender: data.gender,
+      hotelId,
+      employeeId,
+      pendingReservation: {
+        create: {
+          roomNumber: data.roomNumber,
+          roomType: data.roomType,
+          startDate: data.startDate,
+          endDate: data.endDate,
+          totalDays: data.totalDays,
+          totalPrice,
+          unitPrice: room.price.toNumber(),
+          state: data.state,
+          discoveryChannel: data.discoveryChannel,
+          source: data.source,
           hotelId,
           employeeId,
-          reservations: {
-            create: {
-              roomNumber: data.roomNumber,
-              roomType: data.roomType,
-              startDate: data.startDate,
-              endDate: data.endDate,
-              totalDays: data.totalDays,
-              totalPrice,
-              unitPrice: room.price.toNumber(),
-              state: data.state,
-              discoveryChannel: data.discoveryChannel,
-              source: data.source,
+          roomId: room.id,
+        },
+      },
+    },
+    include: {
+      reservations: true,
+      pendingReservation: true,
+    },
+  });
 
-              hotelId,
-              employeeId,
-              roomId: room.id,
-            },
-          },
+  result = { client: createdClient };
+} else {
+  const createdClient = await prisma.client.create({
+    data: {
+      fullName: data.fullName,
+      dateOfBirth: data.dateOfBirth,
+      phoneNumber: data.phoneNumber,
+      email: data.email,
+      membersNumber: data.membersNumber,
+      kidsNumber: data.kidsNumber,
+      identityCardNumber: data.identityCardNumber,
+      address: data.address,
+      nationality: data.nationality,
+      clientOrigin: data.clientOrigin,
+      gender: data.gender,
+      hotelId,
+      employeeId,
+      reservations: {
+        create: {
+          roomNumber: data.roomNumber,
+          roomType: data.roomType,
+          startDate: data.startDate,
+          endDate: data.endDate,
+          totalDays: data.totalDays,
+          totalPrice,
+          unitPrice: room.price.toNumber(),
+          state: data.state,
+          discoveryChannel: data.discoveryChannel,
+          source: data.source,
+          hotelId,
+          employeeId,
+          roomId: room.id,
         },
-        include: {
-          reservations: true,
-        },
-      });
+      },
+    },
+    include: {
+      reservations: true,
+      pendingReservation: true,
+    },
+  });
+
+  result = { client: createdClient };
+}
+      
 
       // Update room status to reservee
       await prisma.room.update({
@@ -123,16 +171,16 @@ export async function addClientWithReservation(
         await updateClientCheckInStatistics(
           hotelId,
           null,
-          result.gender,
-          result.dateOfBirth,
+          data.gender,
+          data.dateOfBirth,
           null,
-          result.clientOrigin,
+          data.clientOrigin,
           totalPrice,
           prisma,
           true
         );
       }
-      return { client: result };
+      return result;
     });
   } catch (error) {
     throwAppropriateError(error);
@@ -145,9 +193,40 @@ export async function getClientsWithReservations(
   try {
     const clients = await prisma.client.findMany({
       where: { hotelId: hotelId },
-      include: {
-        reservations: true,
-      },
+      select : {
+        fullName : true,
+        address : true,
+        email : true,
+        phoneNumber : true,
+        id : true,
+        identityCardNumber : true,
+        gender : true,
+        dateOfBirth : true ,
+        clientOrigin : true,
+        kidsNumber : true,
+        nationality : true,
+        membersNumber : true,
+        hotelId : true,
+        createdAt : true,
+        reservations : {
+          select : {
+            id:true,
+            roomNumber : true,
+            roomType : true,
+            createdAt : true,
+            totalDays : true,
+            totalPrice : true , 
+            currentOccupancy : true,
+            discoveryChannel : true,
+             source : true,
+             state : true,
+             startDate : true,
+             endDate : true,
+             unitPrice : true
+          }
+        }
+        
+      }
     });
     return { clients };
   } catch (error) {

@@ -142,13 +142,13 @@ export async function getDashboardData(
     return { data: dashboardData };
   } catch (error) {
     throwAppropriateError(error);
-  }
-}
+  };
+};
 
 export function checkAdminRole(roles: UserRole[]) {
   if (!roles.includes(UserRole.admin)) {
     throw new UnauthorizedError(
       "Seul l'administrateur peut voir le tableau de bord"
     );
-  }
-}
+  };
+};

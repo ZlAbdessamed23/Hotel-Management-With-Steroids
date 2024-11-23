@@ -26,6 +26,22 @@ export async function addAttendue(
       // Create the attendee
       const createdAttendee = await prisma.attendue.create({
         data: { ...data, hotelId },
+        select : {
+          address : true,
+          email : true,
+          phoneNumber : true,
+          id : true,
+          identityCardNumber : true,
+          type : true,
+          dateOfBirth : true,
+          gender : true,
+          fullName : true,
+          eventId : true,
+          reservationId : true,
+          reservationSource : true,
+          nationality : true,
+          
+        }
       });
 
       return { Attendue: createdAttendee };

@@ -17,6 +17,18 @@ export async function getMemberById(
         id: memberId,
         hotelId: hotelId,
       },
+      select : {
+        address : true,
+        id : true , 
+        email : true,
+        phoneNumber : true,
+        dateOfBirth : true,
+        fullName : true,
+        identityCardNumber : true,
+        nationality : true,
+        gender : true,
+      
+      }
     });
 
     if (!member) {
@@ -61,6 +73,18 @@ export async function deleteMemberById(
           id: memberId,
           hotelId: hotelId,
         },
+        select : {
+          address : true,
+          id : true , 
+          email : true,
+          phoneNumber : true,
+          dateOfBirth : true,
+          fullName : true,
+          identityCardNumber : true,
+          nationality : true,
+          gender : true,
+        
+        }
       });
       return { member: deletedMember };
     });
@@ -76,15 +100,7 @@ export async function updateMember(
 ): Promise<MemberResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      const existingMember = await prisma.member.findFirst({
-        where: { id: memberId, hotelId: hotelId },
-      });
-
-      if (!existingMember) {
-        throw new NotFoundError(
-          `Client non trouvé`
-        );
-      }
+      
 
       const updateData: Prisma.MemberUpdateInput = {
         fullName: data.fullName,
@@ -110,6 +126,18 @@ export async function updateMember(
       const updatedMember = await prisma.member.update({
         where: { id: memberId },
         data: updateData,
+        select : {
+          address : true,
+          id : true , 
+          email : true,
+          phoneNumber : true,
+          dateOfBirth : true,
+          fullName : true,
+          identityCardNumber : true,
+          nationality : true,
+          gender : true,
+        
+        }
       });
 
       return { member: updatedMember };

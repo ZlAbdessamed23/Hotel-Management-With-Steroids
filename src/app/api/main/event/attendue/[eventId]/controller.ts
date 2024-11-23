@@ -14,19 +14,7 @@ export async function getEventAttendees(
 ): Promise<EventAttendeeResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      // First, check if the event exists
-      const eventExists = await prisma.event.findUnique({
-        where: {
-          id: eventId,
-          hotelId: hotelId,
-        },
-      });
-
-      if (!eventExists) {
-        throw new NotFoundError(
-          "évenement non touvée"
-        );
-      }
+     
 
       // If the event exists, find all attendees
       const Attendues = await prisma.attendue.findMany({
@@ -34,6 +22,22 @@ export async function getEventAttendees(
           eventId: eventId,
           hotelId: hotelId,
         },
+        select : {
+          address : true,
+          email : true,
+          phoneNumber : true,
+          id : true,
+          identityCardNumber : true,
+          type : true,
+          dateOfBirth : true,
+          gender : true,
+          fullName : true,
+          eventId : true,
+          reservationId : true,
+          reservationSource : true,
+          nationality : true,
+      
+        }
       });
 
       return {

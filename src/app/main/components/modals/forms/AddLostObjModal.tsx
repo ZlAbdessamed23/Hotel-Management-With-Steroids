@@ -1,8 +1,8 @@
 "use client";
 
 import { OperationMode } from '@/app/types/constants';
-import { LostObj, ModalModeProps, Stock } from '@/app/types/types';
-import { addLostObj, addStock, updateLostObj, updateStock } from '@/app/utils/funcs';
+import { LostObj, ModalModeProps } from '@/app/types/types';
+import { addLostObj, updateLostObj} from '@/app/utils/funcs';
 import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Textarea } from '@nextui-org/react';
 import React, { useEffect } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';

@@ -15,12 +15,12 @@ import {
 
 interface TableProps<T> {
     columns: { name: string; uid: string }[];
-    data: T[];
+    data: T[] | undefined; // Allow `data` to be undefined
 };
 
 export default function HistoryTable<T extends { id: string }>({
     columns,
-    data
+    data = [], // Default to an empty array
 }: TableProps<T>) {
     // State for search and sorting
     const [filterValue, setFilterValue] = useState("");
@@ -31,7 +31,7 @@ export default function HistoryTable<T extends { id: string }>({
 
     // Filtered and sorted data
     const filteredItems = useMemo(() => {
-        let result = [...data];
+        let result = [...data]; // Safely use the fallback empty array
 
         // Search functionality - using only the first column
         const firstColumnKey = columns[0].uid;

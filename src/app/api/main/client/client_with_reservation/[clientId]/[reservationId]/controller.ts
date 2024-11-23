@@ -139,8 +139,42 @@ export async function updateClientAndReservation(
               data: reservationUpdateData,
             },
           },
+          
         },
-        include: { reservations: true },
+        select : {
+          fullName : true,
+          address : true,
+          email : true,
+          phoneNumber : true,
+          id : true,
+          identityCardNumber : true,
+          gender : true,
+          dateOfBirth : true ,
+          clientOrigin : true,
+          kidsNumber : true,
+          nationality : true,
+          membersNumber : true,
+          hotelId : true,
+          createdAt : true,
+          reservations : {
+            select : {
+              id:true,
+              roomNumber : true,
+              roomType : true,
+              createdAt : true,
+              totalDays : true,
+              totalPrice : true , 
+              currentOccupancy : true,
+              discoveryChannel : true,
+               source : true,
+               state : true,
+               startDate : true,
+               endDate : true,
+               unitPrice : true
+            }
+          }
+          
+        }
       });
        if (isStatusChangingToValid) {
          await updateClientCheckInStatistics(
@@ -173,14 +207,54 @@ export async function getClientWithReservations(
         id: clientId,
         hotelId: hotelId,
       },
-      include: {
-        reservations: {
-          where: { id: reservationId },
-          include: {
-            member: true,
-          },
-        },
-      },
+      select : {
+        fullName : true,
+        address : true,
+        email : true,
+        phoneNumber : true,
+        id : true,
+        identityCardNumber : true,
+        gender : true,
+        dateOfBirth : true ,
+        clientOrigin : true,
+        kidsNumber : true,
+        nationality : true,
+        membersNumber : true,
+        hotelId : true,
+        createdAt : true,
+        reservations : {
+          select : {
+            id:true,
+            roomNumber : true,
+            roomType : true,
+            createdAt : true,
+            totalDays : true,
+            totalPrice : true , 
+            currentOccupancy : true,
+            discoveryChannel : true,
+             source : true,
+             state : true,
+             startDate : true,
+             endDate : true,
+             unitPrice : true,
+             member : {
+              select : {
+                address : true,
+                id : true , 
+                email : true,
+                phoneNumber : true,
+                dateOfBirth : true,
+                fullName : true,
+                identityCardNumber : true,
+                nationality : true,
+                gender : true,
+              
+              }
+             }
+          }
+        }
+        
+      }
     });
 
     if (!client) {

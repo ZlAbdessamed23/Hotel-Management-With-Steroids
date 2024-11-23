@@ -11,6 +11,7 @@ import {
   UserGender,
   Prisma,
   ClientOrigin,
+  RoomStatus,
 } from "@prisma/client";
 import {
   UpdateClientData,
@@ -28,6 +29,23 @@ export async function getClientById(
         id: clientId,
         hotelId: hotelId,
       },
+      select : {
+        fullName : true,
+        address : true,
+        email : true,
+        phoneNumber : true,
+        id : true,
+        identityCardNumber : true,
+        gender : true,
+        dateOfBirth : true ,
+        clientOrigin : true,
+        kidsNumber : true,
+        nationality : true,
+        membersNumber : true,
+        hotelId : true,
+        createdAt : true,
+        
+      }
     });
 
     if (!client) {
@@ -73,7 +91,7 @@ export async function deleteClientById(
               id: reservation.room.id,
             },
             data: {
-              status: "disponible",
+              status: RoomStatus.disponible,
             },
           });
         }
@@ -84,6 +102,23 @@ export async function deleteClientById(
           id: clientId,
           hotelId: hotelId,
         },
+        select : {
+          fullName : true,
+          address : true,
+          email : true,
+          phoneNumber : true,
+          id : true,
+          identityCardNumber : true,
+          gender : true,
+          dateOfBirth : true ,
+          clientOrigin : true,
+          kidsNumber : true,
+          nationality : true,
+          membersNumber : true,
+          hotelId : true,
+          createdAt : true,
+          
+        }
       });
 
       return { client: deletedClient };
@@ -148,6 +183,23 @@ export async function updateClient(
       const updatedClient = await prisma.client.update({
         where: { id: clientId },
         data: updateData,
+        select : {
+          fullName : true,
+          address : true,
+          email : true,
+          phoneNumber : true,
+          id : true,
+          identityCardNumber : true,
+          gender : true,
+          dateOfBirth : true ,
+          clientOrigin : true,
+          kidsNumber : true,
+          nationality : true,
+          membersNumber : true,
+          hotelId : true,
+          createdAt : true,
+          
+        }
       });
 
       // Check if we need to update statistics (if there are valid reservations and gender changed)

@@ -99,7 +99,8 @@ enum RoomType {
 
 enum RoomStatus {
   disponible      
-  reservee        
+  reservee   
+  en_attente     
   hors_service
   en_panne  
 }
@@ -196,6 +197,7 @@ enum AttendueType{
   organizatrice
   serveur
 }
+
 //////////////////////// Admin section ///////////////////////////////
 model Admin {
   id                              String                       @id @default(cuid())
@@ -237,6 +239,7 @@ model Hotel {
   room                             Room[]
   client                           Client[]
   reservation                      Reservation[]
+  pendingReservation               PendingReservation[]      @relation("PendingReservation")
   member                           Member[]
   note                             Note[]
   sportsFacility                   SportsFacility[]
@@ -310,6 +313,7 @@ model Employee {
   resetCodeExpiresAt        DateTime?
   client                    Client[]
   reservation               Reservation[]
+  pendingReservation        PendingReservation[]             @relation("PendingReservation")
   member                    Member[]
   note                      Note[]
   createdDocument           Document[]               @relation("EmployeeCreatedDocuments") 
@@ -339,7 +343,8 @@ model Room {
   outOfServiceDescription   String?
   hotel                     Hotel                    @relation(fields: [hotelId], references: [id])
   hotelId                   String
-  reservation               Reservation?             
+  reservation               Reservation?
+  pendingReservation        PendingReservation[]          @relation("PendingReservation")             
   createdAt                 DateTime                 @default(now())
   updatedAt                 DateTime                 @updatedAt
   
@@ -364,6 +369,7 @@ model Client {
   hotel                           Hotel                          @relation(fields: [hotelId], references: [id])
   hotelId                         String
   reservations                    Reservation[]
+  pendingReservation              PendingReservation[]                     @relation("PendingReservation")
   sportFacilityMember             SportsFacilityMember[]
   
   createdAt                       DateTime                       @default(now())
@@ -394,6 +400,33 @@ model Reservation {
   roomId                            String                              @unique                            
   member                            Member[]
   attendues                         Attendue[]                          @relation("attendue_reservation")
+  createdAt                         DateTime                            @default(now())
+  updatedAt                         DateTime                            @updatedAt
+  
+}
+model PendingReservation {
+  id                                String                              @id @default(cuid())
+  roomNumber                        String
+  roomType                          RoomType
+  startDate                         DateTime
+  endDate                           DateTime
+  totalDays                         Int
+  totalPrice                        Int
+  unitPrice                         Int
+  state                             ReservationState                   @default(en_attente)
+  source                            ReservationSource?                   @default(seul)
+  currentOccupancy                  Int                                 @default(1)
+  discoveryChannel                  DiscoveryChannel?
+
+  hotel                             Hotel                               @relation("PendingReservation",fields: [hotelId], references: [id])
+  hotelId                           String
+  employee                          Employee                            @relation("PendingReservation",fields: [employeeId], references: [id])
+  employeeId                        String
+  client                            Client?                              @relation("PendingReservation",fields: [clientId], references: [id], onDelete: Cascade)
+  clientId                          String?
+  room                              Room                                @relation("PendingReservation",fields: [roomId], references: [id],onDelete: Cascade)
+  roomId                            String                                                         
+  
   createdAt                         DateTime                            @default(now())
   updatedAt                         DateTime                            @updatedAt
   
@@ -648,13 +681,14 @@ model Stock {
   name                                        String
   description                                 String?
   location                                    String?
-  budget                                      Budget[]
+ 
   stockEmployee                               StockEmployee[]          @relation("stock")
   hotel                                       Hotel                    @relation(fields: [hotelId], references: [id])
   hotelId                                     String 
   stockCategory                               Category[]               @relation("Category")
   stockItem                                   Item[]                   @relation("Item")
   stockTransaction                            Transaction[]            @relation("Transaction")
+  budget                                      Budget?                   @relation("budget")
   createdAt                                   DateTime                 @default(now())
   updatedAt                                   DateTime                 @updatedAt
 
@@ -834,8 +868,10 @@ model Budget{
   id                                   String                                     @id @default(cuid())
   
   amount                               Float
-  stock                                Stock                                      @relation(fields: [stockId], references: [id])
-  stockId                              String
+  stock                                Stock                                      @relation("budget",fields: [stockId],references: [id],onDelete: Cascade)
+  stockId                              String                                     @unique
+                              
+  
   hotelId                              String
   hotel                                Hotel                                      @relation("Budget",fields: [hotelId], references: [id])
   createdAt                            DateTime                                   @default(now())
@@ -877,6 +913,7 @@ model LostObject{
   location                        String
   hotelId                         String
   hotel                           Hotel                                      @relation("LostObject",fields: [hotelId], references: [id])
+  
   
  
   createdAt                       DateTime                       @default(now())

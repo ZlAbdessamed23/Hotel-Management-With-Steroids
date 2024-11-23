@@ -7,20 +7,23 @@ export type StockDashboardData = {
   items: Prisma.ItemGetPayload<{
     select: {
       quantity: true;
-      stockType: true;
       name: true;
       isNeeded: true;
       supplierAddress:true,
       supplierName:true,
       supplierPhone:true,
+      stockId:true,
       category: { select: { name: true } };
     };
   }>[];
   transactions: Prisma.TransactionGetPayload<{
-    select: { type: true; transactionAmount: true; stockType: true , createdAt : true };
+    select: { type: true; transactionAmount: true , createdAt : true,stockId:true, };
   }>[];
   budgets: Prisma.BudgetGetPayload<{
-    select: { amount: true; stockType: true; id: true };
+    select: { amount: true, id: true,stockId:true };
+  }>[];
+  stocks : Prisma.StockGetPayload<{
+    select: { name: true, id: true, };
   }>[];
 };
 

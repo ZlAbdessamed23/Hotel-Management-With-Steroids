@@ -5,7 +5,7 @@ export type AddHouseKeepingPlanificationData = {
   description?: string;
   start: string;
   end: string;
-  
+
 };
 
 export const requiredHouseKeepingPlanificationFields: (keyof AddHouseKeepingPlanificationData)[] = [
@@ -13,12 +13,12 @@ export const requiredHouseKeepingPlanificationFields: (keyof AddHouseKeepingPlan
   "start",
   "end",
 
-  
+
 ];
 
 export type HouseKeepingPlanificationResult = {
   HouseKeepingPlanification: Prisma.HouseKeepingPlanificationGetPayload<{}>;
 };
 export type HouseKeepingPlanificationsResult = {
-    HouseKeepingPlanifications: Prisma.HouseKeepingPlanificationGetPayload<{}>[];
-  };
+  HouseKeepingPlanifications: Prisma.HouseKeepingPlanificationGetPayload<{}>[];
+};

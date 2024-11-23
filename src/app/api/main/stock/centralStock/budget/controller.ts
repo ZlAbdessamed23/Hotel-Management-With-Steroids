@@ -23,7 +23,7 @@ export async function addOrUpdateBudgets(
         const existingBudget = await prisma.budget.findFirst({
           where: {
             hotelId,
-            stockType: budgetItem.stockType,
+            stockId: budgetItem.stockId,
           },
         });
 
@@ -42,8 +42,9 @@ export async function addOrUpdateBudgets(
           // Create new budget
           budget = await prisma.budget.create({
             data: {
-              stockType: budgetItem.stockType,
+           stockId:budgetItem.stockId,
               amount: budgetItem.amount,
+              
 
               hotelId,
             },

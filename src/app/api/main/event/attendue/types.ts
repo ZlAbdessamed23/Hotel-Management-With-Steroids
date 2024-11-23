@@ -34,9 +34,21 @@ export const requiredAttendueFields: (keyof AddAttendueData)[] = [
 ];
 
 export type AttendueResult = {
-  Attendue: Prisma.AttendueGetPayload<{}>;
+  Attendue: Prisma.AttendueGetPayload<{select : {
+    address : true,
+    email : true,
+    phoneNumber : true,
+    id : true,
+    identityCardNumber : true,
+    type : true,
+    dateOfBirth : true,
+    gender : true,
+    fullName : true,
+    eventId : true,
+    reservationId : true,
+    reservationSource : true,
+    nationality : true,
+
+  }}>;
 };
 
-export type AttenduesResult = {
-  Attendues: Prisma.AttendueGetPayload<{}>[];
-};

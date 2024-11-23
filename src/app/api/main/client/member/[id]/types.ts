@@ -11,5 +11,16 @@ export type UpdateMemberData = {
   gender?: UserGender;
 };
 export type MemberResult = {
-  member: Prisma.MemberGetPayload<{}>;
+  member: Prisma.MemberGetPayload<{ select : {
+    address : true,
+    id : true , 
+    email : true,
+    phoneNumber : true,
+    dateOfBirth : true,
+    fullName : true,
+    identityCardNumber : true,
+    nationality : true,
+    gender : true,
+  
+  }}>;
 };

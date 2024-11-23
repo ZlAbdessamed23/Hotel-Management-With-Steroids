@@ -21,21 +21,59 @@ export async function getAttendueById(
   try {
    const existingAttendue = await prisma.attendue.findUnique({
      where: { id: attendueId, eventId: eventId },
-     include: {
-       event: true,
-       reservation: {
-         include: {
-           attendues: {
-             where: {
-               id: { not: attendueId }, // Exclude the main attendee
-             },
-           },
-         },
-       },
-     },
+     select: {
+      address: true,
+      email: true,
+      phoneNumber: true,
+      id: true,
+      identityCardNumber: true,
+      type: true,
+      dateOfBirth: true,
+      gender: true,
+      fullName: true,
+      eventId: true,
+      reservationId: true,
+      reservationSource: true,
+      nationality: true,
+      reservation: {
+        select: {
+          id: true,
+          startDate: true,
+          endDate: true,
+          unitPrice: true,
+          totalDays: true,
+          totalPrice: true,
+          currentOccupancy: true,
+          discoveryChannel: true,
+          roomNumber: true,
+          roomType: true,
+          source: true,
+          state: true,
+          attendues: {
+            select: {
+              address: true,
+              email: true,
+              phoneNumber: true,
+              id: true,
+              identityCardNumber: true,
+              type: true,
+              dateOfBirth: true,
+              gender: true,
+              fullName: true,
+              eventId: true,
+              reservationId: true,
+              reservationSource: true,
+              nationality: true,
+            }
+          }
+
+        }
+      }
+
+    }
    });
 
-    if (!existingAttendue || existingAttendue.event.hotelId !== hotelId) {
+    if (!existingAttendue ) {
       throw new NotFoundError(
         `Attendue non trouvé`
       );
@@ -55,19 +93,26 @@ export async function deleteAttendue(
 ): Promise<AttendueResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      const existingAttendue = await prisma.attendue.findUnique({
-        where: { id: attendueId, eventId: eventId },
-        include: { event: true },
-      });
-
-      if (!existingAttendue || existingAttendue.event.hotelId !== hotelId) {
-        throw new NotFoundError(
-          `Attendue non trouvé`
-        );
-      }
-
+      
       const deletedAttendue = await prisma.attendue.delete({
         where: { id: attendueId },
+        select: {
+          address: true,
+          email: true,
+          phoneNumber: true,
+          id: true,
+          identityCardNumber: true,
+          type: true,
+          dateOfBirth: true,
+          gender: true,
+          fullName: true,
+          eventId: true,
+          reservationId: true,
+          reservationSource: true,
+          nationality: true,
+         
+    
+        }
       });
 
       return { Attendue: deletedAttendue };
@@ -86,16 +131,7 @@ export async function updateAttendue(
 ): Promise<AttendueResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      const existingAttendue = await prisma.attendue.findUnique({
-        where: { id: attendueId, eventId: eventId },
-        include: { event: true },
-      });
-
-      if (!existingAttendue || existingAttendue.event.hotelId !== hotelId) {
-        throw new NotFoundError(
-          `Attendue non trouvé`
-        );
-      }
+      
 
       const updateData: Prisma.AttendueUpdateInput = {
         fullName: data.fullName,
@@ -122,6 +158,23 @@ export async function updateAttendue(
       const updatedAttendue = await prisma.attendue.update({
         where: { id: attendueId },
         data: updateData,
+        select: {
+          address: true,
+          email: true,
+          phoneNumber: true,
+          id: true,
+          identityCardNumber: true,
+          type: true,
+          dateOfBirth: true,
+          gender: true,
+          fullName: true,
+          eventId: true,
+          reservationId: true,
+          reservationSource: true,
+          nationality: true,
+         
+    
+        }
       });
 
       return { Attendue: updatedAttendue };

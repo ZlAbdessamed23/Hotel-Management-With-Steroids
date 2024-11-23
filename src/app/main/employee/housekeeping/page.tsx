@@ -2,14 +2,13 @@
 
 import React, { useEffect, useState } from 'react'
 import CardStyle5 from '../../components/cards/CardStyle5'
-import { FifthCardItemType, LostObj } from '@/app/types/types';
+import { FifthCardItemType, LostObj, RegisteredEmployee } from '@/app/types/types';
 import EmployeeImage from "/public/EmployeeImage.svg";
 import EmployeeImage2 from "/public/EmployeeImage2.svg";
-import { Tabs, Tab, DateValue } from '@nextui-org/react';
+import { Tabs, Tab, Button } from '@nextui-org/react';
 import GenericDisplayTable from '../../components/other/GenericDisplayTable';
 import { ScheduleXCalendar, useNextCalendarApp } from '@schedule-x/react';
 import { parseZonedDateTime } from "@internationalized/date";
-import { parseDate } from "@internationalized/date";
 import { createEventModalPlugin } from '@schedule-x/event-modal';
 import {
     viewDay,
@@ -20,10 +19,11 @@ import {
 import GenericDataGrid from '../../components/other/GenericDataGrid';
 import AddLostObjModal from '../../components/modals/forms/AddLostObjModal';
 import '@schedule-x/theme-default/dist/index.css'
-import { getHouseKeepingPlanifications, getLostObjs } from '@/app/utils/funcs';
+import { getHouseKeepingEmployees, getHouseKeepingPlanifications, getLostObjs } from '@/app/utils/funcs';
 
 
 export default function HouseKeeping() {
+    const [employees, setEmployees] = useState<RegisteredEmployee[]>([]);
     const [events, setEvents] = useState<{
         title: string;
         id: string;
@@ -32,7 +32,7 @@ export default function HouseKeeping() {
         description: string;
     }[]>([]);
 
-    const [objs , setObjs] = useState<LostObj[]>([])
+    const [objs, setObjs] = useState<LostObj[]>([])
 
     const item: FifthCardItemType = {
         speciality: "male",
@@ -55,13 +55,16 @@ export default function HouseKeeping() {
     };
 
 
-    const columns = [
-        { name: "Nom Complet", uid: "clientName" },
-        { name: "PHONE NUMBER", uid: "phoneNumber" },
-        { name: "Email", uid: "email" },
-        { name: "Numéro de la Carte Nationale", uid: "identittyCardNumber" },
-        { name: "ACTIONS", uid: "actions" },
-    ];
+    const employeeColumns = [
+        {name: "Email", uid: "email"},
+        {name: "Nom", uid: "firstName"},
+        {name: "Prénom", uid: "lastName"},
+        {name: "PHONE NUMBER", uid: "phoneNumber"},
+        {name: "GENDER", uid: "gender"},
+        {name: "Departement", uid: "departement"},
+        {name: "Role", uid:"role"},
+        {name: "STATE", uid: "state"},
+      ];
 
 
     const lostObjColumns = [
@@ -96,6 +99,11 @@ export default function HouseKeeping() {
         setEvents(finalData);
     };
 
+    async function getEmployees() {
+        const data = await getHouseKeepingEmployees();
+        setEmployees(data.Employees);
+    };
+
     async function getObjs() {
         const data = await getLostObjs();
         setObjs(data.LostObjects);
@@ -127,15 +135,31 @@ export default function HouseKeeping() {
     useEffect(() => {
         getPlans();
         getObjs();
-    },[]);
+        getEmployees();
+    }, []);
 
-
+    useEffect(() => {
+        if (events && events.length > 0) {
+            const existingEvents = calendarApp?.events.getAll();
+            const newEvents = events.filter((event) => {
+                return !existingEvents?.some((existingEvent) => existingEvent.id === event.id);
+            });
+            newEvents.forEach((event) => calendarApp?.events.add(event));
+        }
+    }, [events, calendarApp]);
 
     return (
         <div className='w-full overflow-x-hidden'>
             <section className='flex flex-col gap-4  xl:gap-0 xl:flex-row xl:items-center xl:justify-between mb-12 px-2'>
-                <CardStyle5 infos={item} />
-                <CardStyle5 infos={item2} />
+                <div className='w-[98%] p-4 rounded-md shadow-md bg-white dark:bg-slate-700'>
+                    <section className='flex items-center justify-between'>
+                        <h2 className='text-3xl font-semibold'>Les Taches Generales</h2>
+                        <Button color='secondary'>Editer</Button>
+                    </section>
+                    <section>
+
+                    </section>
+                </div>
             </section>
             <section>
                 <div>
@@ -146,7 +170,7 @@ export default function HouseKeeping() {
                     }}>
                         <Tab key="Employees" title="Employées">
                             <div>
-                                <GenericDisplayTable columns={columns} data={[]} />
+                                <GenericDisplayTable columns={employeeColumns} data={employees} />
                             </div>
                         </Tab>
                         <Tab key="Plan" title="Planification">

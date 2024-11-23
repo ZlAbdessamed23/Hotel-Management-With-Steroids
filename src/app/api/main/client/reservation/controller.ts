@@ -26,7 +26,7 @@ export async function addReservation(
             hotelId: hotelId,
             number: data.roomNumber,
             type: data.roomType,
-            status:RoomStatus.disponible
+            status: RoomStatus.disponible,
           },
         }),
         prisma.client.findUnique({
@@ -35,7 +35,7 @@ export async function addReservation(
       ]);
 
       if (!room) {
-        throw new NotFoundError("Chambre non trouvée ou déja réservée ou elle est en panne ou hors service");
+        throw new NotFoundError("Chambre non trouvée ou déjà réservée ou elle est en panne ou hors service");
       }
 
       if (!client) {
@@ -43,22 +43,54 @@ export async function addReservation(
       }
 
       const totalPrice = data.totalDays * room.price.toNumber();
+      let newReservation: ReservationResult;
 
-      const newReservation = await prisma.reservation.create({
-        data: {
-          ...data,
-          totalPrice,
-          unitPrice: room.price.toNumber(),
-          hotelId,
-          employeeId,
-          roomId: room.id,
-          clientId: client.id,
-        },
-      });
+      if (data.state === ReservationState.en_attente) {
+        const createdReservation = await prisma.reservation.create({
+          data: {
+            ...data,
+            totalPrice,
+            unitPrice: room.price.toNumber(),
+            hotelId,
+            employeeId,
+            roomId: room.id,
+            clientId: client.id,
+          },
+          select : {
+            id : true,
+            startDate : true,
+            endDate : true,
+            unitPrice : true,
+             totalDays : true,
+             totalPrice : true,
+             currentOccupancy : true,
+             discoveryChannel : true,
+             roomNumber : true,
+             roomType : true,
+             source : true,
+             state : true , 
+             
+        }
+        });
+        newReservation = { reservation: createdReservation };
+      } else {
+        const createdPendingReservation = await prisma.pendingReservation.create({
+          data: {
+            ...data,
+            totalPrice,
+            unitPrice: room.price.toNumber(),
+            hotelId,
+            employeeId,
+            roomId: room.id,
+            clientId: client.id,
+          },
+        });
+        newReservation = { reservation: createdPendingReservation };
+      }
 
       await prisma.room.update({
         where: { id: room.id },
-        data: { status: RoomStatus.reservee },
+        data: { status:(data.state===ReservationState.valide)? RoomStatus.reservee :RoomStatus.en_attente},
       });
 
       if (data.state === ReservationState.valide) {
@@ -68,7 +100,6 @@ export async function addReservation(
           client.gender,
           client.dateOfBirth,
           null,
-
           client.clientOrigin,
           totalPrice,
           prisma,
@@ -76,12 +107,13 @@ export async function addReservation(
         );
       }
 
-      return { reservation: newReservation };
+      return newReservation; // Return directly here
     });
   } catch (error) {
     throw throwAppropriateError(error);
   }
 }
+
 
 export async function getAllReservations(
   hotelId: string
@@ -89,6 +121,21 @@ export async function getAllReservations(
   try {
     const reservations = await prisma.reservation.findMany({
       where: { hotelId: hotelId },
+      select : {
+        id : true,
+        startDate : true,
+        endDate : true,
+        unitPrice : true,
+         totalDays : true,
+         totalPrice : true,
+         currentOccupancy : true,
+         discoveryChannel : true,
+         roomNumber : true,
+         roomType : true,
+         source : true,
+         state : true , 
+         
+    }
     });
 
     return { reservations };

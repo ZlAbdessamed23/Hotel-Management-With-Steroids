@@ -8,7 +8,7 @@ import React, { useState } from 'react'
 import RestauItemImage from "/public/RestauItemImage.svg";
 import { getAllRestauMenuItems } from '@/app/utils/funcs'
 import { CafeteriaMenuProvider } from '@/app/main/components/CafeteriaMeniContext'
-import PagesStructure2 from '../../../managerestaurant/components/PageStructure2'
+import PagesStructure2 from '@/app/main/components/PageStructure2'
 
 export default function RestauMenuPage({params} : {
     params : {menuId : string , id : string}

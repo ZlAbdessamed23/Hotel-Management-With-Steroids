@@ -35,6 +35,18 @@ export async function addMember(
           hotelId,
           employeeId,
         },
+        select : {
+          address : true,
+          id : true , 
+          email : true,
+          phoneNumber : true,
+          dateOfBirth : true,
+          fullName : true,
+          identityCardNumber : true,
+          nationality : true,
+          gender : true,
+        
+        }
       });
 
       await prisma.reservation.update({

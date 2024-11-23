@@ -9,7 +9,7 @@ import CafeteriaMenuFacturePart2 from '@/app/main/components/other/CafeteriaMenu
 import { CafeteriaMenuProvider } from '@/app/main/components/CafeteriaMeniContext'
 import { getAllCafeteriaMenuItems } from '@/app/utils/funcs'
 import { StaticImageData } from 'next/image'
-import PagesStructure2 from '../../../managerestaurant/components/PageStructure2'
+import PagesStructure2 from '@/app/main/components/PageStructure2'
 
 export default function RestauMenuPage({ params }: {
     params: { menuId: string, id: string }

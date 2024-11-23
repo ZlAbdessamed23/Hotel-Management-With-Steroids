@@ -31,8 +31,40 @@ export const requiredClientFields: (keyof AddClientData)[] = [
   "gender",
 ];
 export type ClientResult = {
-  client: Prisma.ClientGetPayload<{}>;
+  client: Prisma.ClientGetPayload<{select : {
+    fullName : true,
+    address : true,
+    email : true,
+    phoneNumber : true,
+    id : true,
+    identityCardNumber : true,
+    gender : true,
+    dateOfBirth : true ,
+    clientOrigin : true,
+    kidsNumber : true,
+    nationality : true,
+    membersNumber : true,
+    hotelId : true,
+    createdAt : true,
+
+  }}>;
 };
 export type ClientsResult = {
-  clients: Prisma.ClientGetPayload<{}>[];
+  clients: Prisma.ClientGetPayload<{select : {
+    fullName : true,
+    address : true,
+    email : true,
+    phoneNumber : true,
+    id : true,
+    identityCardNumber : true,
+    gender : true,
+    dateOfBirth : true ,
+    clientOrigin : true,
+    kidsNumber : true,
+    nationality : true,
+    membersNumber : true,
+    hotelId : true,
+    createdAt : true,
+    
+  }}>[];
 };

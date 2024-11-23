@@ -10,30 +10,38 @@ export async function getStockData(
   try {
     
 
-    const [items, transactions, budgets, categoryCount] = await Promise.all([
+    const [items, transactions, budgets,stocks, categoryCount] = await Promise.all([
       prisma.item.findMany({
         where: { hotelId },
         select: {
           quantity: true,
-          stockType: true,
+          
           name: true,
           isNeeded: true,
           supplierAddress: true,
           supplierName: true,
           supplierPhone: true,
+          stockId:true,
           category: { select: { name: true } },
         },
       }),
       prisma.transaction.findMany({
         where: { hotelId },
-        select: { type: true, transactionAmount: true, stockType: true , createdAt : true },
+        select: { type: true, transactionAmount: true , createdAt : true,stockId:true },
         orderBy: {
           createdAt: "desc",
         },
       }),
       prisma.budget.findMany({
         where: { hotelId },
-        select: { amount: true, stockType: true, id: true },
+        select: { amount: true,stockId:true, id: true },
+        orderBy: {
+          createdAt: "desc",
+        },
+      }),
+      prisma.stock.findMany({
+        where: { hotelId },
+        select: {id:true,name:true },
         orderBy: {
           createdAt: "desc",
         },
@@ -50,6 +58,7 @@ export async function getStockData(
       items: items,
       transactions: transactions,
       budgets: budgets,
+      stocks : stocks
     };
 
     console.log("Stock dashboard data fetched:", dashboardData);

@@ -1,8 +1,9 @@
-import { Prisma, StockType } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 export type BudgetItem = {
-  stockType: StockType;
+  
   amount: number;
+  stockId : string
 };
 
 export type AddMultipleBudgetsData = {

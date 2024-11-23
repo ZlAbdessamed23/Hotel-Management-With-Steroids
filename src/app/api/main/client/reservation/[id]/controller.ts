@@ -38,6 +38,9 @@ export async function deleteReservation(
                   },
                 },
               },
+              pendingReservation:{
+                select:{id : true}
+              }
             },
           },
         },
@@ -48,13 +51,28 @@ export async function deleteReservation(
       }
 
       // Delete reservation and update room status in parallel
-      const [deletedReservation] = await Promise.all([
+      const [deletedReservation,updatedRoom] = await Promise.all([
         prisma.reservation.delete({
           where: { id: reservationId },
+          select : {
+            id : true,
+            startDate : true,
+            endDate : true,
+            unitPrice : true,
+             totalDays : true,
+             totalPrice : true,
+             currentOccupancy : true,
+             discoveryChannel : true,
+             roomNumber : true,
+             roomType : true,
+             source : true,
+             state : true , 
+             
+        }
         }),
         prisma.room.update({
           where: { id: reservationWithCount.roomId },
-          data: { status: RoomStatus.disponible },
+          data: { status:(reservationWithCount.client.pendingReservation.length>0)? RoomStatus.en_attente:RoomStatus.disponible },
         }),
       ]);
       ///////////////////// historique ////////////////////////

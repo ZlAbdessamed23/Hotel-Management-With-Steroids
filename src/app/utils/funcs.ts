@@ -39,6 +39,8 @@ import {
   Restaurant,
   Cafeteria,
   LostObj,
+  PendingClients,
+  StockBudget,
 } from "../types/types";
 import {
   DaysOfWeek,
@@ -313,7 +315,7 @@ export async function updateCafeteria(stock: Cafeteria, id: string): Promise<str
 
 export async function getRestauMenuItems(
   restauMenuId: string,
-  restauId : string,
+  restauId: string,
 ): Promise<{ [key: string]: Restau_CafeteriaItem[] }> {
   const menus = await axios.get(
     `${mainBaseUrl}/food/restaurant/item/${restauMenuId}`
@@ -323,7 +325,7 @@ export async function getRestauMenuItems(
 
 export async function getCafeteriaMenuItems(
   cafeteriaMenuId: string,
-  cafeteriaId : string,
+  cafeteriaId: string,
 ): Promise<{ [key: string]: Restau_CafeteriaItem[] }> {
   const menus = await axios.get(
     `${mainBaseUrl}/food/restaurant/item/${cafeteriaId}`
@@ -350,7 +352,7 @@ export async function getAllCafeterias(): Promise<{
   return infos.json();
 };
 
-export async function getRestauMenus(id : string): Promise<{
+export async function getRestauMenus(id: string): Promise<{
   [key: string]: RestauMenu[];
 }> {
   const menus = await axios.get(`${mainBaseUrl}/food/restaurant/menu/${id}`);
@@ -358,7 +360,7 @@ export async function getRestauMenus(id : string): Promise<{
 };
 
 
-export async function getCafeteriaMenus(id : string): Promise<{
+export async function getCafeteriaMenus(id: string): Promise<{
   [key: string]: CafeteriaMenu[];
 }> {
   const menus = await axios.get(`${mainBaseUrl}/food/cafeteria/menu/${id}`);
@@ -1049,7 +1051,7 @@ export async function getStockTransactions(
 
 //Budget
 
-export async function editBudget(budget: BudgetModalProps) {
+export async function editBudget(budget: StockBudget[]) {
   const obj = Object.entries(budget).map(([key, value]) => {
     return {
       stockType: key,
@@ -1068,7 +1070,9 @@ export async function editBudget(budget: BudgetModalProps) {
   } catch (err: any) {
     throw new Error(err.response.data.message);
   }
-}
+};
+
+
 
 //Report
 
@@ -1963,7 +1967,7 @@ export async function getHotelForBill(): Promise<{ Hotel: HotelInfos }> {
 
 
 
-export async function addLostObj(obj : LostObj) {
+export async function addLostObj(obj: LostObj) {
   try {
     return await axios
       .post(
@@ -1977,7 +1981,7 @@ export async function addLostObj(obj : LostObj) {
   }
 };
 
-export async function updateLostObj(obj : LostObj , id : string) {
+export async function updateLostObj(obj: LostObj, id: string) {
   try {
     return await axios
       .patch(
@@ -2001,6 +2005,51 @@ export async function getHouseKeepingPlanifications(): Promise<{ HouseKeepingPla
 
 export async function getLostObjs(): Promise<{ LostObjects: LostObj[] }> {
   const infos = await fetch(`${mainBaseUrl}/lostObject`, {
+    cache: "no-cache",
+  });
+  return infos.json();
+};
+
+
+export async function getWaitingList(): Promise<{ pendingClients: PendingClients[] }> {
+  const infos = await fetch(`${mainBaseUrl}/client/pendingClients`, {
+    cache: "no-cache",
+  });
+  return infos.json();
+};
+
+
+export async function updateReservationState(clientId: string, reservationId: string) {
+  try {
+    return await axios
+      .post(
+        `${mainBaseUrl}/client/pendingClients/${clientId}/${reservationId}`
+      )
+      .then((res) => {
+        return res.data.message;
+      });
+  } catch (err: any) {
+    throw new Error(err.response.data.message);
+  }
+};
+
+
+export async function deletePendingReservation(clientId: string, reservationId: string) {
+  try {
+    return await axios
+      .delete(
+        `${mainBaseUrl}/client/pendingClients/${clientId}/${reservationId}`
+      )
+      .then((res) => {
+        return res.data.message;
+      });
+  } catch (err: any) {
+    throw new Error(err.response.data.message);
+  };
+};
+
+export async function getHouseKeepingEmployees(): Promise<{ Employees: RegisteredEmployee[] }> {
+  const infos = await fetch(`${mainBaseUrl}/housekeeping`, {
     cache: "no-cache",
   });
   return infos.json();

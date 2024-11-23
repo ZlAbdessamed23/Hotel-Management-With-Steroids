@@ -14,9 +14,23 @@ export const requiredCalendarFields: (keyof AddCalendarData)[] = [
 ];
 
 export type CalendarResult = {
-  Calendar: Prisma.CalendarGetPayload<{}>;
+  Calendar: Prisma.CalendarGetPayload<{select:{
+    id : true,
+    end: true,
+    description:true,
+    start:true,
+    title : true,
+    createdAt : true
+  }}>;
 };
 
 export type CalendarsResult = {
-  Calendars: Prisma.CalendarGetPayload<{}>[];
+  Calendars: Prisma.CalendarGetPayload<{select:{
+    id : true,
+    end: true,
+    description:true,
+    start:true,
+    title : true,
+    createdAt : true
+  }}>[];
 };

@@ -17,10 +17,17 @@ export async function getCalendarById(
 ): Promise<CalendarResult> {
   try {
     const existingCalendar = await prisma.calendar.findUnique({
-      where: { id: id, hotelId },
+      where: { id: id, hotelId },select:{
+        id : true,
+        end: true,
+        description:true,
+        start:true,
+        title : true,
+        createdAt : true
+      }
     });
 
-    if (!existingCalendar || existingCalendar.hotelId !== hotelId) {
+    if (!existingCalendar ) {
       throw new NotFoundError(
         `Calendrier non trouvé`
       );
@@ -39,18 +46,18 @@ export async function deleteCalendar(
 ): Promise<CalendarResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      const existingSeance = await prisma.calendar.findUnique({
-        where: { id, hotelId },
-      });
-
-      if (!existingSeance || existingSeance.hotelId !== hotelId) {
-        throw new NotFoundError(
-          `séance non trouvé`
-        );
-      }
+     
 
       const deletedSeance = await prisma.calendar.delete({
         where: { id },
+        select:{
+          id : true,
+          end: true,
+          description:true,
+          start:true,
+          title : true,
+          createdAt : true
+        }
       });
 
       return { Calendar: deletedSeance };
@@ -68,16 +75,7 @@ export async function updateCalendar(
 ): Promise<CalendarResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      const existingSeance = await prisma.calendar.findUnique({
-        where: { id: id, hotelId },
-      });
-
-      if (!existingSeance || existingSeance.hotelId !== hotelId) {
-        throw new NotFoundError(
-          `séance non trouvé`
-        );
-      }
-
+     
       const updateData: Prisma.CalendarUpdateInput = {
         title: data.title,
         description: data.description,
@@ -97,6 +95,14 @@ export async function updateCalendar(
       const updatedSeance = await prisma.calendar.update({
         where: { id: id },
         data: updateData,
+        select:{
+          id : true,
+          end: true,
+          description:true,
+          start:true,
+          title : true,
+          createdAt : true
+        }
       });
 
       return { Calendar: updatedSeance };

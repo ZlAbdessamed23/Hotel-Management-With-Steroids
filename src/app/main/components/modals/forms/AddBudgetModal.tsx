@@ -1,82 +1,92 @@
-import { BudgetModalProps, ModalProps } from '@/app/types/types'
+import { ModalProps, StockBudget } from '@/app/types/types';
 import { editBudget } from '@/app/utils/funcs';
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input } from '@nextui-org/react';
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  Input,
+} from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
-import React, { useEffect } from 'react'
-import { useForm, SubmitHandler } from 'react-hook-form';
+import React, { useEffect } from 'react';
+import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
-export default function AddBudgetModal({ props, initialData }: { props: ModalProps, initialData: BudgetModalProps }) {
+export default function AddBudgetModal({
+  props,
+  initialData,
+}: {
+  props: ModalProps;
+  initialData: StockBudget[];
+}) {
   const router = useRouter();
-  const { register, handleSubmit, reset } = useForm<BudgetModalProps>({
-    defaultValues: initialData || {
-      material: 0,
-      restaurant: 0,
-      spa: 0,
-    },
+
+  const { register, handleSubmit, reset, control } = useForm<{ stocks: StockBudget[] }>({
+    defaultValues: { stocks: initialData || [] },
   });
 
-  async function handleAdd(data : BudgetModalProps) {
-    const message = await editBudget(data)
+  const { fields } = useFieldArray({
+    control,
+    name: 'stocks',
+  });
+
+  async function handleAdd(data: { stocks: StockBudget[] }) {
+    const message = await editBudget(data.stocks);
     router.refresh();
     return message;
   };
 
-  const onSubmit: SubmitHandler<BudgetModalProps> = async (data) => {
+  const onSubmit: SubmitHandler<{ stocks: StockBudget[] }> = async (data) => {
+    console.log(data);
     const result = handleAdd(data);
     await toast.promise(result, {
       loading: 'Loading...',
       success: (data) => `${data}`,
       error: (err) => `${err.toString()}`,
-    })
+    });
   };
 
   useEffect(() => {
-    reset(initialData);
-  },[initialData]);
+    reset({ stocks: initialData });
+  }, [initialData, reset]);
 
   return (
-    <Modal isOpen={props.isOpen} onOpenChange={props.onOpenChange} className='font-segoe'>
+    <Modal isOpen={props.isOpen} onOpenChange={props.onOpenChange} className="font-segoe">
       <ModalContent>
         {(onClose) => (
           <>
             <ModalHeader className="flex flex-col gap-1">Editer le Budget</ModalHeader>
             <ModalBody>
-              <form className='flex flex-col gap-1 items-start' onSubmit={handleSubmit(onSubmit)}>
-                <Input
-                  variant='bordered'
-                  color='secondary'
-                  type='number'
-                  {...register('material')}
-                  label="material"
-                />
-                <Input
-                  variant='bordered'
-                  color='secondary'
-                  type='number'
-                  {...register('restaurant')}
-                  label="restau"
-                />
-                <Input
-                  variant='bordered'
-                  color='secondary'
-                  type='number'
-                  {...register('spa')}
-                  label="spa"
-                />
+              <form className="flex flex-col gap-3 items-start" onSubmit={handleSubmit(onSubmit)}>
+                {fields.map((field, index) => (
+                  <div key={field.id} className="flex flex-col w-full">
+                    <label className="font-semibold text-sm text-gray-700">
+                      {field.stockName}:
+                    </label>
+                    <Input
+                      variant="bordered"
+                      color="secondary"
+                      type="number"
+                      {...register(`stocks.${index}.amount`, { valueAsNumber: true })}
+                      placeholder="Enter budget"
+                    />
+                  </div>
+                ))}
               </form>
             </ModalBody>
             <ModalFooter>
               <Button color="danger" variant="light" onPress={onClose}>
                 Fermer
               </Button>
-              <Button color="primary" variant='shadow' onClick={handleSubmit(onSubmit)}>
+              <Button color="primary" variant="shadow" onClick={handleSubmit(onSubmit)}>
                 Sauvegarder
               </Button>
             </ModalFooter>
           </>
         )}
       </ModalContent>
-    </Modal>)
-};
-
+    </Modal>
+  );
+}
