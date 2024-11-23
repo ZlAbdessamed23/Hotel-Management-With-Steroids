@@ -21,6 +21,14 @@ export async function getStockCategories(
         hotelId: hotelId,
         stockId: stockId,
       },
+      select : {
+        id : true,
+        description : true,
+        createdAt  : true,
+        stockId : true,
+        name : true,
+        
+      }
     });
 
     return { Categories: stockCategories };})

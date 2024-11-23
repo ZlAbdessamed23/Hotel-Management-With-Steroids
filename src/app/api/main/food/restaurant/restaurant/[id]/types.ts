@@ -10,5 +10,5 @@ export type UpdateRestaurantData = {
 };
 
 export type RestaurantResult = {
-  Restaurant: Prisma.RestaurantGetPayload<{}> | null;
+  Restaurant: Prisma.RestaurantGetPayload<{select: { id: true, name: true, description: true , createdAt : true }}> | null;
 };

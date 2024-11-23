@@ -10,6 +10,18 @@ export async function getAllClientsHistorique(
     // Fetch all ClientsHistorique excluding sensitive fields
     const ClientsHistorique = await prisma.clientsHistorique.findMany({
       where: { hotelId: hotelId },
+      select : {
+        fullName : true,
+        starDate : true,
+        endDate : true,
+        gender : true,
+        identityCardNumber : true,
+        id : true,
+        nationality : true,
+        phoneNumber : true,
+        createdAt : true,
+    
+      }
     });
 
     return { ClientsHistorique: ClientsHistorique };

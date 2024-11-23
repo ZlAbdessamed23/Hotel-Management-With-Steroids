@@ -18,10 +18,8 @@ export async function addEventMember(
 ): Promise<EventMemberResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      const [event, reservation, attendee] = await Promise.all([
-        prisma.event.findUnique({
-          where: { id: data.eventId, hotelId: hotelId },
-        }),
+      const [ reservation, attendee] = await Promise.all([
+        
         prisma.reservation.findUnique({
           where: { id: data.reservationId },
           include: { room: true },
@@ -37,9 +35,7 @@ export async function addEventMember(
         }),
       ]);
 
-      if (!event) {
-        throw new NotFoundError("évenement non trouvé");
-      }
+      
 
       if (!reservation || !reservation.room) {
         throw new NotFoundError("Réservation ou chambre non touvée");
@@ -58,13 +54,28 @@ export async function addEventMember(
         where: { id: attendee.id, eventId: data.eventId },
         data: {
           reservation: { connect: { id: data.reservationId } },
-        },
+        },select : {
+          fullName :true,
+          nationality : true,
+          address : true,
+           dateOfBirth : true,
+           email : true,
+           id : true,
+           gender : true,
+           eventId : true,
+           identityCardNumber : true,
+           phoneNumber : true,
+           type : true,
+           reservationSource : true,
+           
+        }
       });
 
       // Increment current occupancy of the reservation
       await prisma.reservation.update({
         where: { id: data.reservationId },
         data: { currentOccupancy: { increment: 1 } },
+        
       });
 
       return { EventMember: updatedAttendee };

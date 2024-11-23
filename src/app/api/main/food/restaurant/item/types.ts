@@ -16,5 +16,12 @@ export const requiredRestaurantMenuItemFields: (keyof AddRestaurantMenuItemData)
   ["name", "mealType", "restaurantMenuId"];
 
 export type RestaurantMenuItemResult = {
-  restaurantMenuItem: Prisma.RestaurantMenuItemGetPayload<{}>;
+  restaurantMenuItem: Prisma.RestaurantMenuItemGetPayload<{select  :{
+    id : true,
+    name : true,
+    description : true,
+    mealType : true,
+    category : true,
+    createdAt : true
+  }}>;
 };

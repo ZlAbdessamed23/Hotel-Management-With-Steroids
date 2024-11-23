@@ -18,9 +18,9 @@ export const requiredTaskFields: (keyof AddTaskData)[] = [
 ];
 
 export type TaskResult = {
-  Task: Prisma.TaskGetPayload<{}>;
+  Task: Prisma.TaskGetPayload<{select : {id : true,title : true,description : true,isDone : true,deadline : true,createdAt : true}}>;
 };
 
 export type TasksResult = {
-  Tasks: Prisma.TaskGetPayload<{}>[];
+  Tasks: Prisma.TaskGetPayload<{select : {id : true,title : true,description : true,isDone : true,deadline : true,createdAt : true}}>[];
 };

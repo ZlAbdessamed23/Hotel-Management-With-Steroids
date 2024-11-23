@@ -44,6 +44,13 @@ export async function updateCafeteria(
 
             const existingCafeteria = await prisma.cafeteria.findUnique({
                 where: { id: CafeteriaId,hotelId },
+                select : {
+                    id : true,
+                  location : true,
+                  name : true,
+                  description : true,
+                  createdAt : true    
+                  }
             });
             return { Cafeteria: existingCafeteria };
         });
@@ -92,6 +99,13 @@ export async function deleteCafeteria(
         return await prisma.$transaction(async (prisma) => {
         const deletedCafeteria = await prisma.cafeteria.delete({
                 where: { id: CafeteriaId, hotelId },
+                select : {
+                    id : true,
+                  location : true,
+                  name : true,
+                  description : true,
+                  createdAt : true    
+                  }
             });
 
             return { Cafeteria: deletedCafeteria };

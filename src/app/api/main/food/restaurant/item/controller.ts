@@ -15,6 +15,7 @@ export async function addRestaurantMenuItem(
       // Check if the Restaurant menu exists
       const existingRestaurantMenu = await prisma.restaurantMenu.findUnique({
         where: { id: data.restaurantMenuId },
+        
       });
 
       if (!existingRestaurantMenu) {
@@ -32,6 +33,14 @@ export async function addRestaurantMenuItem(
             connect: { id: data.restaurantMenuId },
           },
         },
+        select  :{
+          id : true,
+          name : true,
+          description : true,
+          mealType : true,
+          category : true,
+          createdAt : true
+        }
       });
 
       return { restaurantMenuItem };

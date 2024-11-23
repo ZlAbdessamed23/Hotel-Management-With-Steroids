@@ -48,10 +48,31 @@ export async function addRoom(
 
       const createdRoom = await prisma.room.create({
         data: { ...data, hotelId },
-        include: {
-          hotel: true,
-          reservation: true,
+        select : {
+      id : true,
+      capacity : true,
+      description : true,
+      floorNumber : true,
+      number : true,
+      outOfServiceDescription : true,
+      price : true,
+      status : true,
+      type : true,
+      
+    
+      reservation: {
+        select: {
+          startDate: true,
+          endDate: true,
+          client: {
+            select: {
+              id: true,
+              fullName: true,
+            },
+          },
         },
+      },
+    } 
       });
       
       await updateRoomStatistics(hotelId, "add", prisma);
@@ -68,10 +89,20 @@ export async function getAllRooms(hotelId: string): Promise<RoomsResult> {
   try {
     const rooms = await prisma.room.findMany({
       where: { hotelId: hotelId },
-      include: {
+      select : {
+        id : true,
+        capacity : true,
+        description : true,
+        floorNumber : true,
+        number : true,
+        outOfServiceDescription : true,
+        price : true,
+        status : true,
+        type : true,
+        
+      
         reservation: {
           select: {
-            id: true,
             startDate: true,
             endDate: true,
             client: {
@@ -82,7 +113,7 @@ export async function getAllRooms(hotelId: string): Promise<RoomsResult> {
             },
           },
         },
-      },
+      } 
     });
 
     return { rooms };

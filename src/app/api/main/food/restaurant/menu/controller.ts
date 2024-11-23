@@ -48,6 +48,20 @@ export async function addRestaurantMenu(
 
       const createdRestaurantMenu = await prisma.restaurantMenu.create({
         data: { ...data, hotelId },
+        select : {
+          id : true,
+          name  :true,
+          createdAt : true,
+          description : true,
+          lunchStartTime : true,
+           lunchEndTime : true,
+           dinnerStartTime : true,
+           dinnerEndTime : true,
+           restaurantId : true,
+           hotelId:true
+            
+      
+        }
       });
 
       return { RestaurantMenu: createdRestaurantMenu };

@@ -17,9 +17,29 @@ export const requiredCafeteriaMenuFields: (keyof AddCafeteriaMenuData)[] = [
 ];
 
 export type CafeteriaMenuResult = {
-  CafeteriaMenu: Prisma.CafeteriaMenuGetPayload<{}>;
+  CafeteriaMenu: Prisma.CafeteriaMenuGetPayload<{
+    select : {
+      id : true,
+      endTime : true,
+      startTime : true,
+      name : true,
+      createdAt : true,
+      cafeteriaId : true,
+      description : true,
+
+    }
+  }>;
 };
 
 export type CafeteriaMenusResult = {
-  CafeteriaMenus: Prisma.CafeteriaMenuGetPayload<{}>[];
+  CafeteriaMenus: Prisma.CafeteriaMenuGetPayload<{select : {
+      id : true,
+      endTime : true,
+      startTime : true,
+      name : true,
+      createdAt : true,
+      cafeteriaId : true,
+      description : true,
+      
+    }}>[];
 };

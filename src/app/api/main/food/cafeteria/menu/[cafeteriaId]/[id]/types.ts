@@ -7,5 +7,14 @@ export type UpdateCafeteriaMenuData = {
   endTime?: string;
 };
 export type CafeteriaMenuResult = {
-  CafeteriaMenu: Prisma.CafeteriaMenuGetPayload<{}>;
+  CafeteriaMenu: Prisma.CafeteriaMenuGetPayload<{select : {
+    id : true,
+    endTime : true,
+    startTime : true,
+    name : true,
+    createdAt : true,
+    cafeteriaId : true,
+    description : true,
+
+  }}>;
 };

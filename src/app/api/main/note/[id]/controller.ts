@@ -19,9 +19,16 @@ export async function getNoteById(
       where: { id: noteId,...(userRole.includes(UserRole.admin)
         ? { adminId: userId }
         : { employeeId: userId }), },
+        select : {
+          id : true,
+          title : true,
+          deadline : true,
+          createdAt : true,description : true,
+          
+        }
     });
 
-    if (!note || note.hotelId !== hotelId) {
+    if (!note ) {
       throw new NotFoundError(
         `Note n'est pas trouvée`
       );
@@ -49,6 +56,13 @@ export async function deleteNote(
         where: { id: noteId,...(userRole.includes(UserRole.admin)
           ? { adminId: userId }
           : { employeeId: userId }), },
+          select : {
+            id : true,
+            title : true,
+            deadline : true,
+            createdAt : true,description : true,
+            
+          }
       });
       await updateNoteStatistics(hotelId, "remove", prisma);
       return { note: deletedNote };
@@ -91,6 +105,13 @@ export async function updateNote(
           ? { adminId: userId }
           : { employeeId: userId }), },
         data: updateData,
+        select : {
+          id : true,
+          title : true,
+          deadline : true,
+          createdAt : true,description : true,
+          
+        }
       });
 
       return { note: updatedNote };

@@ -13,5 +13,6 @@ export type UpdateStockItemData = {
   stockCategoryId?: string;
 };
 export type ItemResult = {
-  Item: Prisma.ItemGetPayload<{}>;
+  Item: Prisma.ItemGetPayload<{select : {id : true,name : true ,supplierAddress : true,supplierEmail : true,supplierName : true,supplierPhone : true,sku : true,minimumQuantity : true,
+    categoryId : true,isNeeded : true,quantity : true,description : true ,stockId : true,unit : true,unitPrice : true,}}>;
 };

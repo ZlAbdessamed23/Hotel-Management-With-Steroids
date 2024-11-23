@@ -20,10 +20,19 @@ export async function getCafeteriaMenuById(
     return await prisma.$transaction(async (prisma) => {
       await checkUserCafeteriaAccess(userId,cafeteriaId,userRole,prisma)
       const existingMenu = await prisma.cafeteriaMenu.findUnique({
-      where: { id: cafeteriaMenuId, hotelId: hotelId ,cafeteriaId},
+      where: { id: cafeteriaMenuId, hotelId: hotelId ,cafeteriaId},select : {
+        id : true,
+        endTime : true,
+        startTime : true,
+        name : true,
+        createdAt : true,
+        cafeteriaId : true,
+        description : true,
+  
+      }
     });
 
-    if (!existingMenu || existingMenu.hotelId !== hotelId) {
+    if (!existingMenu ) {
       throw new NotFoundError(`Cafeteria menu non trouvée`);
     }
 
@@ -45,7 +54,16 @@ export async function deleteCafeteriaMenu(
     return await prisma.$transaction(async (prisma) => {
       await checkUserCafeteriaAccess(userId,cafeteriaId,userRole,prisma)
       const deletedMenu = await prisma.cafeteriaMenu.delete({
-        where: { id: cafeteriaMenuId, hotelId: hotelId,cafeteriaId },
+        where: { id: cafeteriaMenuId, hotelId: hotelId,cafeteriaId },select : {
+          id : true,
+          endTime : true,
+          startTime : true,
+          name : true,
+          createdAt : true,
+          cafeteriaId : true,
+          description : true,
+    
+        }
       });
       await updateCafeteriaMenuStatistics(hotelId, "remove", prisma);
       return { CafeteriaMenu: deletedMenu };

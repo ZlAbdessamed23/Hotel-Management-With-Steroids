@@ -29,9 +29,11 @@ export const requiredStockItemFields: (keyof AddStockItemData)[] = [
 ];
 
 export type ItemResult = {
-  Item: Prisma.ItemGetPayload<{}>;
+  Item: Prisma.ItemGetPayload<{select : {id : true,name : true ,supplierAddress : true,supplierEmail : true,supplierName : true,supplierPhone : true,sku : true,minimumQuantity : true,
+  categoryId : true,isNeeded : true,quantity : true,description : true ,stockId : true,unit : true,unitPrice : true,}}>;
 };
 
 export type ItemsResult = {
-  Items: Prisma.ItemGetPayload<{}>[];
+  Items: Prisma.ItemGetPayload<{select : {id : true,name : true ,supplierAddress : true,supplierEmail : true,supplierName : true,supplierPhone : true,sku : true,minimumQuantity : true,
+    categoryId : true,isNeeded : true,quantity : true,description : true ,stockId : true,unit : true,unitPrice : true,}}>[];
 };

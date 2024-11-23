@@ -7,5 +7,11 @@ export type UpdateNoteData = {
 };
 
 export type NoteResult = {
-  note: Prisma.NoteGetPayload<{}>;
+  note: Prisma.NoteGetPayload<{select : {
+    id : true,
+    title : true,
+    deadline : true,
+    createdAt : true,description : true,
+    
+  }}>;
 };

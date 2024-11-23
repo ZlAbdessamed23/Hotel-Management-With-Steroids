@@ -21,8 +21,30 @@ export async function getRoomById(
           id: roomId
         }
       },
-      include: {
-        reservation: true
+      select : {
+        id : true,
+        capacity : true,
+        description : true,
+        floorNumber : true,
+        number : true,
+        outOfServiceDescription : true,
+        price : true,
+        status : true,
+        type : true,
+        
+      
+        reservation: {
+          select: {
+            startDate: true,
+            endDate: true,
+            client: {
+              select: {
+                id: true,
+                fullName: true,
+              },
+            },
+          },
+        },
       }
     });
 
@@ -48,9 +70,31 @@ export async function deleteRoomById(
           id: roomId,
           hotelId: hotelId,
         },
-        include: {
-          reservation: true,
-        },
+        select : {
+          id : true,
+          capacity : true,
+          description : true,
+          floorNumber : true,
+          number : true,
+          outOfServiceDescription : true,
+          price : true,
+          status : true,
+          type : true,
+          
+        
+          reservation: {
+            select: {
+              startDate: true,
+              endDate: true,
+              client: {
+                select: {
+                  id: true,
+                  fullName: true,
+                },
+              },
+            },
+          },
+        }
       });
 
       if (!room) {

@@ -9,5 +9,12 @@ export type UpdateHouseKeepingPlanificationData = {
 };
 
 export type HouseKeepingPlanificationResult = {
-  HouseKeepingPlanification: Prisma.HouseKeepingPlanificationGetPayload<{}>;
+  HouseKeepingPlanification: Prisma.HouseKeepingPlanificationGetPayload<{select : {
+    id : true,
+    description : true,
+    end : true,
+    title : true,
+    start : true,
+    
+  }}>;
 };

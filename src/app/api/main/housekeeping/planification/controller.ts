@@ -51,6 +51,14 @@ export async function addHouseKeepingPlanification(
       // Create the attendee
       const createdHouseKeepingPlanification = await prisma.houseKeepingPlanification.create({
         data: { ...data,hotelId },
+        select : {
+          id : true,
+          description : true,
+          end : true,
+          title : true,
+          start : true,
+          
+        }
       });
 
       return { HouseKeepingPlanification: createdHouseKeepingPlanification };
@@ -70,6 +78,14 @@ export async function getAllHouseKeepingPlanifications(
           hotelId: hotelId,
          
         },
+        select : {
+          id : true,
+          description : true,
+          end : true,
+          title : true,
+          start : true,
+          
+        }
        
       });
   

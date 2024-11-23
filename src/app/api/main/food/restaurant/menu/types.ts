@@ -23,7 +23,20 @@ export const requiredRestaurantMenuFields: (keyof AddRestaurantMenuData)[] = [
 ];
 
 export type RestaurantMenuResult = {
-  RestaurantMenu: Prisma.RestaurantMenuGetPayload<{}>;
+  RestaurantMenu: Prisma.RestaurantMenuGetPayload<{select : {
+    id : true,
+    name  :true,
+    createdAt : true,
+    description : true,
+    lunchStartTime : true,
+     lunchEndTime : true,
+     dinnerStartTime : true,
+     dinnerEndTime : true,
+     restaurantId : true,
+     hotelId:true
+      
+
+  }}>;
 };
 
 export type RestaurantMenusResult = {

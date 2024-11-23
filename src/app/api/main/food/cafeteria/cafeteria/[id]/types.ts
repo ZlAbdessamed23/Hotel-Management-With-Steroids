@@ -10,5 +10,11 @@ export type UpdateCafeteriaData = {
 };
 
 export type CafeteriaResult = {
-  Cafeteria: Prisma.CafeteriaGetPayload<{}> | null;
+  Cafeteria: Prisma.CafeteriaGetPayload<{select : {
+    id : true,
+  location : true,
+  name : true,
+  description : true,
+  createdAt : true    
+  }}> | null;
 };

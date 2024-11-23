@@ -65,6 +65,8 @@ export async function addStockItem(
           hotelId,
           categoryId: stockCategoryId,
         },
+        select : {id : true,name : true ,supplierAddress : true,supplierEmail : true,supplierName : true,supplierPhone : true,sku : true,minimumQuantity : true,
+          categoryId : true,isNeeded : true,quantity : true,description : true ,stockId : true,unit : true,unitPrice : true,}
       });
       await updateStockItemsStatistics(hotelId, "add", prisma);
       return { Item: createdStockItem };
@@ -78,6 +80,8 @@ export async function getAllStockItems(hotelId: string): Promise<ItemsResult> {
   try {
     const stockItems = await prisma.item.findMany({
       where: { hotelId: hotelId },
+      select : {id : true,name : true ,supplierAddress : true,supplierEmail : true,supplierName : true,supplierPhone : true,sku : true,minimumQuantity : true,
+        categoryId : true,isNeeded : true,quantity : true,description : true ,stockId : true,unit : true,unitPrice : true,}
     });
 
     return { Items: stockItems };

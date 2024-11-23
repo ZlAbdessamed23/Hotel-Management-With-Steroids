@@ -16,7 +16,7 @@ export const requiredDocumentFields: (keyof AddDocumentData)[] = [
 ];
 
 export type DocumentResult = {
-  Document: Prisma.DocumentGetPayload<{}>;
+  Document: Prisma.DocumentGetPayload<{select: { id: true; title: true; description: true };}>;
 };
 
 export type DocumentsResult = {

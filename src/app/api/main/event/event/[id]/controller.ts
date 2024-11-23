@@ -18,9 +18,22 @@ export async function getEventById(
   try {
     const existingEvent = await prisma.event.findUnique({
       where: { id: eventId, hotelId: hotelId },
+      select : {
+        bankCard : true,
+        createdAt : true,
+        name : true,
+        description : true,
+        guests : true,
+        leader : true,
+        id : true,
+        startDate : true,
+        endDate : true , 
+        eventType : true,
+        
+      }
     });
 
-    if (!existingEvent || existingEvent.hotelId !== hotelId) {
+    if (!existingEvent ) {
       throw new NotFoundError(
         `évenement non trouvé`
       );
@@ -38,18 +51,22 @@ export async function deleteEvent(
 ): Promise<EventResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      const existingEvent = await prisma.event.findUnique({
-        where: { id: eventId },
-        select: { hotelId: true },
-      });
-
-      if (!existingEvent || existingEvent.hotelId !== hotelId) {
-        throw new NotFoundError(
-          `évenement non trouvé`
-          );
-      }
+     
       const deletedMenu = await prisma.event.delete({
         where: { id: eventId, hotelId: hotelId },
+        select : {
+          bankCard : true,
+          createdAt : true,
+          name : true,
+          description : true,
+          guests : true,
+          leader : true,
+          id : true,
+          startDate : true,
+          endDate : true , 
+          eventType : true,
+          
+        }
       });
      await updateEventStatistics(hotelId, "remove", prisma);
 
@@ -67,16 +84,7 @@ export async function updateEvent(
 ): Promise<EventResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      const existingEvent = await prisma.event.findUnique({
-        where: { id: eventId },
-        select: { hotelId: true },
-      });
-
-      if (!existingEvent || existingEvent.hotelId !== hotelId) {
-        throw new NotFoundError(
-          `évenement non trouvé`
-          );
-      }
+      
 
       const updateData: Prisma.EventUpdateInput = {
         name: data.name,
@@ -96,6 +104,19 @@ export async function updateEvent(
       const updatedEvent = await prisma.event.update({
         where: { id: eventId },
         data: updateData,
+        select : {
+          bankCard : true,
+          createdAt : true,
+          name : true,
+          description : true,
+          guests : true,
+          leader : true,
+          id : true,
+          startDate : true,
+          endDate : true , 
+          eventType : true,
+          
+        }
       });
 
       return { Event: updatedEvent };

@@ -13,5 +13,16 @@ export type UpdateSportsFacilityData = {
   }[];
 };
 export type SportsFacilityResult = {
-  sportsFacility: Prisma.SportsFacilityGetPayload<{}>;
+  sportsFacility: Prisma.SportsFacilityGetPayload<{select : {
+    id : true,
+    capacity : true,
+    createdAt : true,
+    description : true,
+    location : true,
+     name : true,
+     price : true,
+     openingDays : true,
+     type : true,
+     
+  }}>;
 };

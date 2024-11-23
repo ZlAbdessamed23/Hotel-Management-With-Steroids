@@ -76,6 +76,7 @@ export async function addDocument(
             ],
           },
         },
+        select: { id: true, title: true, description: true }
       });
 
       await updateReportStatistics(hotelId, "add", prisma);

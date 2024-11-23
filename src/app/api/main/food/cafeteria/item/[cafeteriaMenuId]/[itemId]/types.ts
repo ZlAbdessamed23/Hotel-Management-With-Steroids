@@ -6,5 +6,12 @@ export type UpdateCafeteriaMenuItemData = {
   category: CafeteriaRestaurentItemCategory;
 };
 export type CafeteriaMenuItemResult = {
-  cafeteriaMenuItem: Prisma.CafeteriaMenuItemGetPayload<{}>;
+  cafeteriaMenuItem: Prisma.CafeteriaMenuItemGetPayload<{select : {
+    id : true,
+    name : true,
+    description : true,
+    cafeteriaMenuId : true,
+    category : true,
+    
+  }}>;
 };

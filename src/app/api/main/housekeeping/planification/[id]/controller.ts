@@ -20,6 +20,14 @@ import {
     try {
       const existingHouseKeepingPlanification = await prisma.houseKeepingPlanification.findUnique({
         where: { id: houseKeepingPlanificationId, hotelId },
+        select : {
+          id : true,
+          description : true,
+          end : true,
+          title : true,
+          start : true,
+          
+        }
        
       });
   
@@ -45,6 +53,14 @@ import {
       return await prisma.$transaction(async (prisma) => {
         const existinghouseKeepingPlanification = await prisma.houseKeepingPlanification.findUnique({
           where: { id: houseKeepingPlanificationId, hotelId},
+          select : {
+            id : true,
+            description : true,
+            end : true,
+            title : true,
+            start : true,
+            
+          }
           
         });
   
@@ -76,6 +92,14 @@ import {
       return await prisma.$transaction(async (prisma) => {
         const existinghouseKeepingPlanification = await prisma.houseKeepingPlanification.findUnique({
           where: { id: houseKeepingPlanificationId, hotelId },
+          select : {
+            id : true,
+            description : true,
+            end : true,
+            title : true,
+            start : true,
+            
+          }
          
         });
   

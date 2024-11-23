@@ -43,6 +43,7 @@ model Plan{
   maxHouseKeepingPlanifications          Int
   maxRestaurants                        Int
   maxCafeterias                          Int
+  maxStocks                             Int
 
   subscription                          Subscription[]
  createdAt                              DateTime @default(now())
@@ -867,7 +868,7 @@ model Statistics {
 model Budget{
   id                                   String                                     @id @default(cuid())
   
-  amount                               Float
+  amount                               Float                                      @default(0)
   stock                                Stock                                      @relation("budget",fields: [stockId],references: [id],onDelete: Cascade)
   stockId                              String                                     @unique
                               

@@ -21,6 +21,20 @@ export async function getRestaurantMenuById(
       await checkUserRestaurantAccess(userId,restaurantId,userRole,prisma)
       const existingMenu = await prisma.restaurantMenu.findUnique({
         where: { id: restaurantMenuId, hotelId: hotelId,restaurantId },
+        select : {
+          id : true,
+          name  :true,
+          createdAt : true,
+          description : true,
+          lunchStartTime : true,
+           lunchEndTime : true,
+           dinnerStartTime : true,
+           dinnerEndTime : true,
+           restaurantId : true,
+           hotelId:true
+            
+      
+        }
       });
   
       if (!existingMenu || existingMenu.hotelId !== hotelId) {
@@ -47,6 +61,20 @@ export async function deleteRestaurantMenu(
       await checkUserRestaurantAccess(userId,restaurantId,userRole,prisma)
       const deletedMenu = await prisma.restaurantMenu.delete({
         where: { id: restaurantMenuId, hotelId: hotelId,restaurantId },
+        select : {
+          id : true,
+          name  :true,
+          createdAt : true,
+          description : true,
+          lunchStartTime : true,
+           lunchEndTime : true,
+           dinnerStartTime : true,
+           dinnerEndTime : true,
+           restaurantId : true,
+           hotelId:true
+            
+      
+        }
       });
 
       return { RestaurantMenu: deletedMenu };
@@ -89,6 +117,20 @@ export async function updateRestaurantMenu(
       const updatedMenu = await prisma.restaurantMenu.update({
         where: { id: restaurantMenuId,hotelId,restaurantId },
         data: updateData,
+        select : {
+          id : true,
+          name  :true,
+          createdAt : true,
+          description : true,
+          lunchStartTime : true,
+           lunchEndTime : true,
+           dinnerStartTime : true,
+           dinnerEndTime : true,
+           restaurantId : true,
+           hotelId:true
+            
+      
+        }
       });
 
       return { RestaurantMenu: updatedMenu };

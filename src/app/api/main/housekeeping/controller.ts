@@ -10,8 +10,20 @@ export async function getAllHouseKeeping(hotelId: string): Promise<EmployeesResu
       // Fetch all employees excluding sensitive fields
       const employees = await prisma.employee.findMany({
         where: { hotelId: hotelId },
-        include:{employeeTask:{include:{task:true}}
-      }});
+        select : {
+          id : true,firstName : true,
+          lastName : true,
+          email  : true,
+          address : true,
+          dateOfBirth : true,
+          gender : true,
+          departement : true,
+          role : true,
+          phoneNumber : true,
+          workingDays : true,
+          state : true,
+           
+        }});
   
       return { Employees: employees };
     } catch (error) {

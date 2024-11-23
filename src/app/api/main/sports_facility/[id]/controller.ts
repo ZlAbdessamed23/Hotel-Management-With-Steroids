@@ -16,9 +16,21 @@ export async function getSportsFacilityById(
   try {
     const existingFacility = await prisma.sportsFacility.findUnique({
       where: { id: sportsFacilityId, hotelId: hotelId },
+      select : {
+        id : true,
+        capacity : true,
+        createdAt : true,
+        description : true,
+        location : true,
+         name : true,
+         price : true,
+         openingDays : true,
+         type : true,
+         
+      }
     });
 
-    if (!existingFacility || existingFacility.hotelId !== hotelId) {
+    if (!existingFacility ) {
       throw new NotFoundError(
         `Salle de sport non trouvée`
       );
@@ -40,6 +52,18 @@ export async function deleteSportsFacility(
       
       const deletedFacility = await prisma.sportsFacility.delete({
         where: { id: sportsFacilityId, hotelId: hotelId },
+        select : {
+          id : true,
+          capacity : true,
+          createdAt : true,
+          description : true,
+          location : true,
+           name : true,
+           price : true,
+           openingDays : true,
+           type : true,
+           
+        }
       });
       await updateSportsFacilityStatistics(hotelId, "remove", prisma);
       return { sportsFacility: deletedFacility };
@@ -141,13 +165,18 @@ export async function updateSportsFacility(
       const updatedFacility = await prisma.sportsFacility.update({
         where: { id: facilityId },
         data: updateData,
-        include: {
-          sportFacilityCoaches: {
-            include: {
-              employee: true,
-            },
-          },
-        },
+        select : {
+          id : true,
+          capacity : true,
+          createdAt : true,
+          description : true,
+          location : true,
+           name : true,
+           price : true,
+           openingDays : true,
+           type : true,
+           
+        }
       });
 
       return { sportsFacility: updatedFacility };

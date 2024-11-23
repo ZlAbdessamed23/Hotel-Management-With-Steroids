@@ -6,5 +6,12 @@ export type UpdateStockCategoryData = {
   
 };
 export type CategoryResult = {
-  Category: Prisma.CategoryGetPayload<{}>;
+  Category: Prisma.CategoryGetPayload<{select : {
+    id : true,
+    description : true,
+    createdAt  : true,
+    stockId : true,
+    name : true,
+    
+  }}>;
 };

@@ -14,9 +14,21 @@ export const requiredNoteFields: (keyof AddNoteData)[] = [
 ];
 
 export type NoteResult = {
-  Note: Prisma.NoteGetPayload<{}>;
+  Note: Prisma.NoteGetPayload<{select : {
+    id : true,
+    title : true,
+    deadline : true,
+    createdAt : true,description : true,
+
+  }}>;
 };
 
 export type NotesResult = {
-  notes: Prisma.NoteGetPayload<{}>[];
+  notes: Prisma.NoteGetPayload<{select : {
+    id : true,
+    title : true,
+    deadline : true,
+    createdAt : true,description : true,
+    
+  }}>[];
 };

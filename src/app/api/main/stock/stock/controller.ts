@@ -18,7 +18,7 @@ export async function addStock(
               select: {
                 plan: {
                   select: {
-                    maxReports: true,
+                    maxStocks: true,
                   },
                 },
               },
@@ -33,7 +33,7 @@ export async function addStock(
         if (!hotel) throw new NotFoundError("Hotel non trouvée");
         if (!hotel.subscription?.plan)
           throw new SubscriptionError("Hotel n'a pas d'abonnement actif");
-        if (hotel._count.stock >= hotel.subscription.plan.maxReports) {
+        if (hotel._count.stock >= hotel.subscription.plan.maxStocks) {
           throw new LimitExceededError(
             "Le nombre Maximum des stocks pour ce plan est déja atteint"
           );
@@ -50,6 +50,12 @@ export async function addStock(
           data: {
             name: data.name,
             description: data.description,
+            budget : {
+              create: {
+                amount: 0,
+                hotel: { connect: { id: hotelId } } 
+              }
+            },
             hotel: { connect: { id: hotelId } },
            
             stockEmployee: {

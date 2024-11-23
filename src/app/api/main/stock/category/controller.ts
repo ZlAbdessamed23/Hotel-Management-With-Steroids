@@ -59,6 +59,14 @@ export async function addStockCategory(
 
       const createdStockCategory = await prisma.category.create({
         data: { ...data,hotelId },
+        select : {
+          id : true,
+          description : true,
+          createdAt  : true,
+          stockId : true,
+          name : true,
+          
+        }
       });
 
       return { Category: createdStockCategory };
@@ -74,6 +82,14 @@ export async function getAllStockCategories(
   try {
     const stockCategories = await prisma.category.findMany({
       where: { stockId: stockId },
+      select : {
+        id : true,
+        description : true,
+        createdAt  : true,
+        stockId : true,
+        name : true,
+        
+      }
     });
 
     return { Categories: stockCategories };

@@ -9,5 +9,18 @@ export type UpdateRestaurantMenuData = {
   dinnerEndTime?: string;
 };
 export type RestaurantMenuResult = {
-  RestaurantMenu: Prisma.RestaurantMenuGetPayload<{}>;
+  RestaurantMenu: Prisma.RestaurantMenuGetPayload<{select : {
+    id : true,
+    name  :true,
+    createdAt : true,
+    description : true,
+    lunchStartTime : true,
+     lunchEndTime : true,
+     dinnerStartTime : true,
+     dinnerEndTime : true,
+     restaurantId : true,
+     hotelId:true
+      
+
+  }}>;
 };

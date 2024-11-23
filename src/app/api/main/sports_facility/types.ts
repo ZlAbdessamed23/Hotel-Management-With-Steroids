@@ -22,9 +22,31 @@ export const requiredSportsFacilityFields: (keyof AddSportsFacilityData)[] = [
 ];
 
 export type SportsFacilityResult = {
-  sportsFacility: Prisma.SportsFacilityGetPayload<{}>;
+  sportsFacility: Prisma.SportsFacilityGetPayload<{select : {
+    id : true,
+    capacity : true,
+    createdAt : true,
+    description : true,
+    location : true,
+     name : true,
+     price : true,
+     openingDays : true,
+     type : true,
+
+  }}>;
 };
 
 export type SportsFacilitiesResult = {
-  sportsFacilities: Prisma.SportsFacilityGetPayload<{}>[];
+  sportsFacilities: Prisma.SportsFacilityGetPayload<{select : {
+    id : true,
+    capacity : true,
+    createdAt : true,
+    description : true,
+    location : true,
+     name : true,
+     price : true,
+     openingDays : true,
+     type : true,
+     
+  }}>[];
 };

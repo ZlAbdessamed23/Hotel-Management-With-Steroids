@@ -17,8 +17,22 @@ export const requiredHouseKeepingPlanificationFields: (keyof AddHouseKeepingPlan
 ];
 
 export type HouseKeepingPlanificationResult = {
-  HouseKeepingPlanification: Prisma.HouseKeepingPlanificationGetPayload<{}>;
+  HouseKeepingPlanification: Prisma.HouseKeepingPlanificationGetPayload<{select : {
+    id : true,
+    description : true,
+    end : true,
+    title : true,
+    start : true,
+
+  }}>;
 };
 export type HouseKeepingPlanificationsResult = {
-  HouseKeepingPlanifications: Prisma.HouseKeepingPlanificationGetPayload<{}>[];
+  HouseKeepingPlanifications: Prisma.HouseKeepingPlanificationGetPayload<{select : {
+    id : true,
+    description : true,
+    end : true,
+    title : true,
+    start : true,
+    
+  }}>[];
 };

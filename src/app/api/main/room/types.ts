@@ -24,11 +24,46 @@ export const requiredRoomFields: (keyof AddRoomData)[] = [
   "capacity",
 ];
 export type RoomResult = {
-  room: Prisma.RoomGetPayload<{}>;
+  room: Prisma.RoomGetPayload<{select : {
+    id : true,
+    capacity : true,
+    description : true,
+    floorNumber : true,
+    number : true,
+    outOfServiceDescription : true,
+    price : true,
+    status : true,
+    type : true,
+    
+  
+    reservation: {
+      select: {
+        startDate: true;
+        endDate: true;
+        client: {
+          select: {
+            id: true;
+            fullName: true;
+          };
+        };
+      };
+    };
+  } }>;
 };
 export type RoomsResult = {
   rooms: Prisma.RoomGetPayload<{
-    include: {
+    select : {
+      id : true,
+      capacity : true,
+      description : true,
+      floorNumber : true,
+      number : true,
+      outOfServiceDescription : true,
+      price : true,
+      status : true,
+      type : true,
+      
+    
       reservation: {
         select: {
           startDate: true;
@@ -41,6 +76,5 @@ export type RoomsResult = {
           };
         };
       };
-    };
-  }>[];
+    } }>[];
 };

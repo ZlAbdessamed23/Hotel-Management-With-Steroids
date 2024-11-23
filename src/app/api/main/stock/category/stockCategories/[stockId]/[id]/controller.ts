@@ -19,10 +19,17 @@ export async function getStockCategoryById(
     return await prisma.$transaction(async (prisma) => {
       await checkUserStockAccess(userId, stockId, userRole, prisma)
       const existingCategory = await prisma.category.findUnique({
-        where: { id: stockCategoryId, hotelId: hotelId, stockId },
+        where: { id: stockCategoryId, hotelId: hotelId, stockId },select : {
+          id : true,
+          description : true,
+          createdAt  : true,
+          stockId : true,
+          name : true,
+          
+        }
       });
 
-      if (!existingCategory || existingCategory.hotelId !== hotelId) {
+      if (!existingCategory ) {
         throw new NotFoundError(`Category non trouvée`);
       }
 
@@ -46,6 +53,14 @@ export async function deleteStockCategory(
       await checkUserStockAccess(userId, stockId, userRole, prisma)
       const deletedMenu = await prisma.category.delete({
         where: { id: stockCategoryId, hotelId: hotelId, stockId },
+        select : {
+          id : true,
+          description : true,
+          createdAt  : true,
+          stockId : true,
+          name : true,
+          
+        }
       });
 
       return { Category: deletedMenu };
@@ -84,6 +99,14 @@ export async function updateStockCategory(
       const updatedCategory = await prisma.category.update({
         where: { id: stockCategoryId, hotelId, stockId },
         data: updateData,
+        select : {
+          id : true,
+          description : true,
+          createdAt  : true,
+          stockId : true,
+          name : true,
+          
+        }
       });
 
       return { Category: updatedCategory };

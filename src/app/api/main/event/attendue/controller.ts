@@ -17,11 +17,7 @@ export async function addAttendue(
   try {
     return await prisma.$transaction(async (prisma) => {
       // Check if the hotel exists and include its events
-      const event = await prisma.event.findUnique({
-        where: { id: data.eventId, hotelId },
-      });
-
-      if (!event) throw new NotFoundError("évenement non touvée");
+      
 
       // Create the attendee
       const createdAttendee = await prisma.attendue.create({

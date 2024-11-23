@@ -16,6 +16,20 @@ export async function getAllRestaurantMenus(
             await checkUserRestaurantAccess(userId,restaurantId,userRole,prisma)
             const RestaurantMenus = await prisma.restaurantMenu.findMany({
             where: { hotelId: hotelId,restaurantId },
+            select : {
+              id : true,
+              name  :true,
+              createdAt : true,
+              description : true,
+              lunchStartTime : true,
+               lunchEndTime : true,
+               dinnerStartTime : true,
+               dinnerEndTime : true,
+               restaurantId : true,
+               hotelId:true
+                
+          
+            }
           });
       
           return { RestaurantMenus: RestaurantMenus };})

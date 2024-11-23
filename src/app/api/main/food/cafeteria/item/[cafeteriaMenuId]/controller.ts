@@ -16,6 +16,14 @@ export async function getAllCafeteriaMenuItems(
       const [cafeteriaMenuItems, hotel] = await Promise.all([
         prisma.cafeteriaMenuItem.findMany({
           where: { cafeteriaMenuId },
+          select : {
+            id : true,
+            name : true,
+            description : true,
+            cafeteriaMenuId : true,
+            category : true,
+            
+          }
         }),
         prisma.hotel.findUnique({
           where: { id: hotelId },

@@ -65,6 +65,20 @@ export async function updateRoomState(
         prisma.room.update({
           where: { id: roomId },
           data: updateData,
+          select : {
+            id : true,
+            capacity : true,
+            description : true,
+            floorNumber : true,
+            number : true,
+            outOfServiceDescription : true,
+            price : true,
+            status : true,
+            type : true,
+            
+          
+            
+          }
         })
         
    

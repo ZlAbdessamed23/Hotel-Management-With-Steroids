@@ -34,6 +34,34 @@ export const requiredAttendueReservationFields: (keyof CreateReservationWithAtte
 
 export type ReservationWithAttendeeResult = {
   reservation: Prisma.ReservationGetPayload<{
-    include: { attendues: true };
+    select : {
+      id : true,
+      startDate : true,
+      endDate : true,
+      unitPrice : true,
+       totalDays : true,
+       totalPrice : true,
+       currentOccupancy : true,
+       discoveryChannel : true,
+       roomNumber : true,
+       roomType : true,
+       source : true,
+       state : true , 
+       attendues : {select : {
+        address : true,
+        id : true,
+        phoneNumber : true,
+        email : true,
+        eventId : true,
+        dateOfBirth : true,
+        identityCardNumber : true,
+        fullName : true,
+        gender : true,
+        nationality : true,
+        type : true,
+        reservationSource : true,
+       }}
+       
+  }
   }>;
 };

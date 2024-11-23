@@ -16,6 +16,16 @@ export async function getAllCafeteriaMenus(
             await checkUserCafeteriaAccess(userId,cafeteriaId,userRole,prisma)
             const cafeteriaMenus = await prisma.cafeteriaMenu.findMany({
             where: { hotelId: hotelId,cafeteriaId },
+            select : {
+              id : true,
+              endTime : true,
+              startTime : true,
+              name : true,
+              createdAt : true,
+              cafeteriaId : true,
+              description : true,
+        
+            }
           });
       
           return { CafeteriaMenus: cafeteriaMenus };})

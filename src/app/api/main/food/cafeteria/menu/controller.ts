@@ -23,7 +23,7 @@ export async function addCafeteriaMenu(
   try {
     return await prisma.$transaction(async (prisma) => {
       await checkUserCafeteriaAccess(userId,data.cafeteriaId,userRole,prisma)
-      const [hotel, cafeteriaMenuCount] = await Promise.all([
+      const [hotel, cafeteriaMenuCount,cafeteria] = await Promise.all([
         prisma.hotel.findUnique({
           where: { id: hotelId },
           include: {
@@ -35,6 +35,7 @@ export async function addCafeteriaMenu(
           },
         }),
         prisma.cafeteriaMenu.count({ where: { hotelId } }),
+        prisma.cafeteria.count({ where: { id : data.cafeteriaId } }),
       ]);
 
       if (!hotel) throw new NotFoundError("Hotel non Trouvee");
@@ -46,9 +47,23 @@ export async function addCafeteriaMenu(
           "Le nombre Maximum des cafeteria menues pour ce plan est déja atteint"
         );
       }
+      if(!cafeteria){
+        throw new NotFoundError("cafeteria non trouvee")
+      }
 
       const createdCafeteriaMenu = await prisma.cafeteriaMenu.create({
         data: { ...data, hotelId },
+        select : {
+          id : true,
+          endTime : true,
+          startTime : true,
+          name : true,
+          createdAt : true,
+          cafeteriaId : true,
+          description : true,
+    
+        }
+        
       });
       await updateCafeteriaMenuStatistics(hotelId, "add", prisma);
 
@@ -65,6 +80,16 @@ export async function getAllCafeteriaMenus(
   try {
     const cafeteriaMenus = await prisma.cafeteriaMenu.findMany({
       where: { hotelId: hotelId },
+      select : {
+        id : true,
+        endTime : true,
+        startTime : true,
+        name : true,
+        createdAt : true,
+        cafeteriaId : true,
+        description : true,
+  
+      }
     });
 
     return { CafeteriaMenus: cafeteriaMenus };

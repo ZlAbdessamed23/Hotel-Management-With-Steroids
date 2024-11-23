@@ -46,6 +46,19 @@ export async function addEvent(
 
       const createdEvent = await prisma.event.create({
         data: { ...data, hotelId },
+        select : {
+          bankCard : true,
+          createdAt : true,
+          name : true,
+          description : true,
+          guests : true,
+          leader : true,
+          id : true,
+          startDate : true,
+          endDate : true , 
+          eventType : true,
+          
+        }
       });
      await updateEventStatistics(hotelId,"add",prisma)
       return { Event: createdEvent };
@@ -59,6 +72,19 @@ export async function getAllEvents(hotelId: string): Promise<EventsResult> {
   try {
     const events = await prisma.event.findMany({
       where: { hotelId: hotelId },
+      select : {
+        bankCard : true,
+        createdAt : true,
+        name : true,
+        description : true,
+        guests : true,
+        leader : true,
+        id : true,
+        startDate : true,
+        endDate : true , 
+        eventType : true,
+        
+      }
     });
 
     return { Events: events };

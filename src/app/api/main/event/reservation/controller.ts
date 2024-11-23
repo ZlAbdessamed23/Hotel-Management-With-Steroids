@@ -10,7 +10,7 @@ import {
   ReservationState,
   ReservationSource,
   RoomStatus,
-  Prisma,
+  
 } from "@prisma/client";
 import {
   CreateReservationWithAttendeeData,
@@ -77,9 +77,35 @@ export async function createReservationWithAttendee(
           room: { connect: { id: room.id } },
           attendues: { connect: { id: data.attendueId } },
         },
-        include: {
-          attendues: true,
-        },
+        select : {
+      id : true,
+      startDate : true,
+      endDate : true,
+      unitPrice : true,
+       totalDays : true,
+       totalPrice : true,
+       currentOccupancy : true,
+       discoveryChannel : true,
+       roomNumber : true,
+       roomType : true,
+       source : true,
+       state : true , 
+       attendues : {select : {
+        address : true,
+        id : true,
+        phoneNumber : true,
+        email : true,
+        eventId : true,
+        dateOfBirth : true,
+        identityCardNumber : true,
+        fullName : true,
+        gender : true,
+        nationality : true,
+        type : true,
+        reservationSource : true,
+       }}
+       
+  }
       });
 
       await prisma.room.update({

@@ -24,9 +24,11 @@ export async function getStockItemById(
       await checkUserStockAccess(userId,stockId,userRole,prisma)
       const existingItem = await prisma.item.findUnique({
       where: { id: itemId, hotelId: hotelId,stockId },
+      select : {id : true,name : true ,supplierAddress : true,supplierEmail : true,supplierName : true,supplierPhone : true,sku : true,minimumQuantity : true,
+        categoryId : true,isNeeded : true,quantity : true,description : true ,stockId : true,unit : true,unitPrice : true,}
     });
 
-    if (!existingItem || existingItem.hotelId !== hotelId) {
+    if (!existingItem ) {
       throw new NotFoundError(`Stock item non trouvée`);
     }
 
@@ -51,6 +53,8 @@ export async function deleteStockItem(
 
       const deletedItem = await prisma.item.delete({
         where: { id: itemId, hotelId: hotelId },
+        select : {id : true,name : true ,supplierAddress : true,supplierEmail : true,supplierName : true,supplierPhone : true,sku : true,minimumQuantity : true,
+          categoryId : true,isNeeded : true,quantity : true,description : true ,stockId : true,unit : true,unitPrice : true,}
       });
       await updateStockItemsStatistics(hotelId, "remove", prisma);
       return { Item: deletedItem };

@@ -16,6 +16,14 @@ export async function getAllRestaurantMenuItems(
       const restaurantMenuItems = await 
         prisma.restaurantMenuItem.findMany({
           where: { restaurantMenuId },
+          select  :{
+            id : true,
+            name : true,
+            description : true,
+            mealType : true,
+            category : true,
+            createdAt : true
+          }
         })
       return { restaurantMenuItems };
     });

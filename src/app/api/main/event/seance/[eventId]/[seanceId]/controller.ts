@@ -20,10 +20,18 @@ export async function getEventSeanceById(
   try {
     const existingSeance = await prisma.eventSeance.findUnique({
       where: { id: seanceId, eventId: eventId },
-      include: { event: true },
+      select : {
+        id : true,
+        description : true,
+        end : true,
+        start : true,
+        eventId : true,
+        title : true,
+        createdAt : true,
+      }
     });
 
-    if (!existingSeance || existingSeance.event.hotelId !== hotelId) {
+    if (!existingSeance ) {
       throw new NotFoundError(
         `séance non trouvée`
       );
@@ -43,19 +51,18 @@ export async function deleteEventSeance(
 ): Promise<EventSeanceResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      const existingSeance = await prisma.eventSeance.findUnique({
-        where: { id: seanceId, eventId: eventId },
-        include: { event: true },
-      });
-
-      if (!existingSeance || existingSeance.event.hotelId !== hotelId) {
-        throw new NotFoundError(
-          `séance non trouvée`
-        );
-      }
-
+      
       const deletedSeance = await prisma.eventSeance.delete({
         where: { id: seanceId },
+        select : {
+          id : true,
+          description : true,
+          end : true,
+          start : true,
+          eventId : true,
+          title : true,
+          createdAt : true,
+        }
       });
 
       return { EventSeance: deletedSeance };
@@ -74,16 +81,7 @@ export async function updateEventSeance(
 ): Promise<EventSeanceResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      const existingSeance = await prisma.eventSeance.findUnique({
-        where: { id: seanceId, eventId: eventId },
-        include: { event: true },
-      });
-
-      if (!existingSeance || existingSeance.event.hotelId !== hotelId) {
-        throw new NotFoundError(
-          `séance non trouvée`
-        );
-      }
+     
 
       const updateData: Prisma.EventSeanceUpdateInput = {
         title: data.title,
@@ -104,6 +102,15 @@ export async function updateEventSeance(
       const updatedSeance = await prisma.eventSeance.update({
         where: { id: seanceId },
         data: updateData,
+        select : {
+          id : true,
+          description : true,
+          end : true,
+          start : true,
+          eventId : true,
+          title : true,
+          createdAt : true,
+        }
       });
 
       return { EventSeance: updatedSeance };

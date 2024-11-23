@@ -9,5 +9,13 @@ export type UpdateEventSeanceData = {
 };
 
 export type EventSeanceResult = {
-  EventSeance: Prisma.EventSeanceGetPayload<{}>;
+  EventSeance: Prisma.EventSeanceGetPayload<{select : {
+    id : true,
+    description : true,
+    end : true,
+    start : true,
+    eventId : true,
+    title : true,
+    createdAt : true,
+  }}>;
 };

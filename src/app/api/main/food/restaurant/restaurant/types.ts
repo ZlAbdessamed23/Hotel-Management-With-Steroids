@@ -17,7 +17,7 @@ export const requiredRestaurantFields: (keyof AddRestaurantData)[] = [
 ];
 
 export type RestaurantResult = {
-  Restaurant: Prisma.RestaurantGetPayload<{}>;
+  Restaurant: Prisma.RestaurantGetPayload<{select: { id: true; name: true; description: true , createdAt : true };}>;
 };
 
 export type RestaurantsResult = {

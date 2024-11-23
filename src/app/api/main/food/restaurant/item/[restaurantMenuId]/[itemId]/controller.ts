@@ -19,10 +19,17 @@ export async function getRestaurantMenuItemById(
   try {
     const existingItem = await prisma.restaurantMenuItem.findUnique({
       where: { id: itemId, restaurantMenuId: restaurantMenuId },
-      include: { restaurantMenu: true },
+      select  :{
+        id : true,
+        name : true,
+        description : true,
+        mealType : true,
+        category : true,
+        createdAt : true
+      }
     });
 
-    if (!existingItem || existingItem.restaurantMenu.hotelId !== hotelId) {
+    if (!existingItem ) {
       throw new NotFoundError(`Restaurant menu item non trouvée`);
     }
 
@@ -42,6 +49,14 @@ export async function deleteRestaurantMenuItem(
     return await prisma.$transaction(async (prisma) => {
       const deletedItem = await prisma.restaurantMenuItem.delete({
         where: { id: itemId },
+        select  :{
+          id : true,
+          name : true,
+          description : true,
+          mealType : true,
+          category : true,
+          createdAt : true
+        }
       });
 
       return { restaurantMenuItem: deletedItem };
@@ -79,6 +94,14 @@ export async function updateRestaurantMenuItem(
       const updatedItem = await prisma.restaurantMenuItem.update({
         where: { id: itemId },
         data: updateData,
+        select  :{
+          id : true,
+          name : true,
+          description : true,
+          mealType : true,
+          category : true,
+          createdAt : true
+        }
       });
 
       return { restaurantMenuItem: updatedItem };

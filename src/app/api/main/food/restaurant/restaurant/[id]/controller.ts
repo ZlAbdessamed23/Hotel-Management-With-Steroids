@@ -32,6 +32,7 @@ export async function updateRestaurant(
                     })),
                 };
             }
+            
 
             if (Object.keys(updateData).length > 0) {
                 const updatedRestaurant = await prisma.restaurant.update({
@@ -92,6 +93,7 @@ export async function deleteRestaurant(
         return await prisma.$transaction(async (prisma) => {
         const deletedRestaurant = await prisma.restaurant.delete({
                 where: { id: RestaurantId, hotelId },
+                select: { id: true, name: true, description: true , createdAt : true }
             });
 
             return { Restaurant: deletedRestaurant };

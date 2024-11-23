@@ -62,6 +62,7 @@ export async function addRestaurant(
               ],
             },
           },
+          select: { id: true, name: true, description: true , createdAt : true }
         });
   
         

@@ -58,6 +58,13 @@ export async function addNote(
             ? { adminId: userId }
             : { employeeId: userId }),
         },
+        select : {
+          id : true,
+          title : true,
+          deadline : true,
+          createdAt : true,description : true,
+          
+        }
       });
       await updateNoteStatistics(hotelId, "add", prisma);
 
@@ -81,9 +88,13 @@ export async function getAllNotes(
           ? { adminId: userId }
           : { employeeId: userId }), // If not admin, get only employee notes
       },
-      include: {
-        employee: true,
-        admin: true,
+      select : {
+        id : true,
+        title : true,
+        deadline : true,
+        createdAt : true,
+        description : true,
+        
       },
       orderBy: {
         createdAt: "desc", // Order by creation date, newest first

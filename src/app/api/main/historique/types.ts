@@ -10,7 +10,18 @@ export type AddClientsHistoriqueData = {
 };
 
 export type ClientsHistorique = {
-  ClientsHistorique: Prisma.ClientsHistoriqueGetPayload<{}>[];
+  ClientsHistorique: Prisma.ClientsHistoriqueGetPayload<{select : {
+    fullName : true,
+    starDate : true,
+    endDate : true,
+    gender : true,
+    identityCardNumber : true,
+    id : true,
+    nationality : true,
+    phoneNumber : true,
+    createdAt : true,
+
+  }}>[];
 };
 export type ClientHistorique = {
   ClientHistorique: Prisma.ClientsHistoriqueGetPayload<{}>;

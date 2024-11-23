@@ -20,6 +20,8 @@ export async function getStockItems(
         stockId
         
       },
+      select : {id : true,name : true ,supplierAddress : true,supplierEmail : true,supplierName : true,supplierPhone : true,sku : true,minimumQuantity : true,
+        categoryId : true,isNeeded : true,quantity : true,description : true ,stockId : true,unit : true,unitPrice : true,}
     });
 
     return { Items: stockItems };})

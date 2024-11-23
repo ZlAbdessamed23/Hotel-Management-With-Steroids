@@ -13,9 +13,23 @@ export const requiredStockCategoryFields: (keyof AddStockCategoryData)[] = [
 ];
 
 export type CategoryResult = {
-  Category: Prisma.CategoryGetPayload<{}>;
+  Category: Prisma.CategoryGetPayload<{select : {
+    id : true,
+    description : true,
+    createdAt  : true,
+    stockId : true,
+    name : true,
+
+  }}>;
 };
 
 export type CategoriesResult = {
-  Categories: Prisma.CategoryGetPayload<{}>[];
+  Categories: Prisma.CategoryGetPayload<{select : {
+    id : true,
+    description : true,
+    createdAt  : true,
+    stockId : true,
+    name : true,
+    
+  }}>[];
 };

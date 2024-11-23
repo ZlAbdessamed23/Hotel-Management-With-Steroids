@@ -84,14 +84,18 @@ export async function addSportsFacility(
               }
             : undefined,
         },
-        include: {
-          hotel: true,
-          sportFacilityCoaches: {
-            include: {
-              employee: true,
-            },
-          },
-        },
+        select : {
+          id : true,
+          capacity : true,
+          createdAt : true,
+          description : true,
+          location : true,
+           name : true,
+           price : true,
+           openingDays : true,
+           type : true,
+           
+        }
       });
 
       await updateSportsFacilityStatistics(hotelId, "add", prisma);
@@ -109,6 +113,18 @@ export async function getAllSportsFacility(
   try {
     const sportsFacilities = await prisma.sportsFacility.findMany({
       where: { hotelId: hotelId },
+      select : {
+        id : true,
+        capacity : true,
+        createdAt : true,
+        description : true,
+        location : true,
+         name : true,
+         price : true,
+         openingDays : true,
+         type : true,
+         
+      }
     });
 
     return { sportsFacilities };
