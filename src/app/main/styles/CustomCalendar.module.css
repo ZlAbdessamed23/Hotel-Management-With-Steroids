@@ -1,0 +1,70 @@
+.customCalendar {
+    height: 140px;
+    width: 370px;
+    font-family: Arial, sans-serif;
+    box-sizing: border-box;
+    @apply rounded-3xl p-2 bg-white text-gray-900 dark:text-white dark:bg-slate-800;
+  }
+  
+  .calendarHeader {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  
+  .calendarGrid {
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 15px;
+    cursor: grab;
+    user-select: none;
+  }
+  
+  .calendarGrid:active {
+    cursor: grabbing;
+  }
+  
+  .calendarGrid::-webkit-scrollbar {
+    height: 0.6rem;
+    background-color: white;
+    border-radius: 1rem;
+    display: none;
+  }
+  
+  .calendarGrid::-webkit-scrollbar-thumb {
+    height: 0.6rem;
+    border-radius: 1rem;
+    @apply bg-primary;
+  }
+  
+  .dayColumn {
+    flex: 0 0 auto;
+    width: 40px;
+    text-align: center;
+    margin-right: 10px;
+    padding: 5px;
+    padding-right: 6px;
+    padding-top: 6px;
+    transition: background-color 0.3s ease;
+    @apply rounded-2xl
+  }
+  
+  .dayName {
+    font-weight: bold;
+  }
+  
+  .dayNumber {
+    font-size: 24px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .startDate {
+    @apply bg-success text-white;
+  }
+  
+  .endDate {
+    @apply bg-danger text-white;
+  }

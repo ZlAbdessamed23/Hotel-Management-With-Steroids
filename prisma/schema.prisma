@@ -1,0 +1,922 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+
+generator client {
+  provider = "prisma-client-js"
+ 
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+ 
+}
+
+model Plan{
+  id                                    String   @id @default(cuid())
+  name                                  String @unique 
+  price                                 Float
+  currency                              String
+  availableChat                         Boolean
+  availableReportManagement             Boolean
+  availableEventManagement              Boolean
+  availableCafeteriaManagement          Boolean
+  availableStockManagement              Boolean
+  availableSportManagement              Boolean
+  maxEmployees                          Int
+  maxClients                            Int
+  maxRooms                              Int
+  maxReports                            Int
+  maxEvents                             Int
+  maxSales                              Int
+  maxCafeteriaMenu                      Int
+  maxRestaurantMenu                     Int
+  maxNotes                              Int
+  maxTasks                              Int
+  maxStockCategory                      Int
+  maxStockItem                          Int
+  maxStockTransactions                  Int
+  maxHouseKeepingPlanifications          Int
+  maxRestaurants                        Int
+  maxCafeterias                          Int
+  maxStocks                             Int
+
+  subscription                          Subscription[]
+ createdAt                              DateTime @default(now())
+}
+//////////////////     ENUM /////////////////////////////////
+/////////////////////// user enum///////////////////////////
+enum UserGender {
+  homme
+  femme   
+}
+enum UserRole {
+  admin             
+  receptionist        
+  chef              
+  nettoyeur             
+  restaurent_Manager   // Underscores instead of spaces
+  reception_Manager      // Underscores instead of spaces
+  stock_Manager              // Underscores instead of spaces
+  entraineur
+  gouvernante
+  valet_de_chambre
+}
+/////////////////////////// employee enum ///////////////////////////////////
+enum DaysOfWeek {
+  Dimanche
+  Lundi
+  Mardi
+  Mercredi
+  Jeudi
+  Vendredi
+  Samedi
+}
+
+enum EmployeeState {
+  en_travaille   
+  absent    
+  en_vacance  
+}
+enum Departements {
+  restauration  
+  reception   
+}
+
+/////////////////////////////////// room enum /////////////////////////////////////////////////
+
+enum RoomType {
+  individuelle         
+  double         
+  triple         
+  familiale      
+  communiquante  
+  suite          
+}
+
+enum RoomStatus {
+  disponible      
+  reservee   
+  en_attente     
+  hors_service
+  en_panne  
+}
+
+
+////////////// client ////////////////////////
+enum ClientOrigin{
+  etranger
+  local
+
+}
+/////////////////////////////// reservation enum /////////////////////////////
+enum ReservationState {
+  en_attente
+  valide
+  libere
+  annule
+  absent
+
+}
+
+enum ReservationSource {
+  seul       
+  agence_de_voyage     
+  evenement     
+         
+}
+ enum DiscoveryChannel {
+  facebook 
+  instagram
+  site_web 
+  google 
+  
+ 
+  plateforme_de_reservation 
+  
+ 
+  television 
+  email
+  autre
+}
+
+//////////////////////// cafeteria enum ////////////////
+enum CafeteriaRestaurentItemCategory{
+  caffee
+  lait                 
+  jus                
+  plat                   
+  sandwich
+  fruit
+  gateau                 
+}
+/////////////////////// restaurent enum ////////////////////////
+enum MealType{
+  lunch                   @map("petit_déjeuner")
+  dinner                  @map("dîner")
+}
+//////////////////////// Task enum ///////////////////////
+enum TaskStatus {
+  
+  inProgress        @map("en_cours")
+  completed         @map("terminé")
+}
+////////////////////////////// Stock enum ///////////////////////////
+
+
+enum TransactionOperationType{
+  acheter
+  transferer                         
+}
+/////////////////////////// sports facility enum ////////////////////////
+enum SportsFacilityType {
+  football
+  basketball
+  handball
+  volleyball
+  tennis
+  golf
+  musculation
+  fitness
+  gymnastique
+  autre
+}
+////////////////////////// event enum //////////////////////////
+enum EventType {
+  anniversaire                     
+  fetes                      
+  evenement                        
+  reunion                      
+  evenement_social                 
+}
+enum AttendueType{
+  normale
+  organizatrice
+  serveur
+}
+
+//////////////////////// Admin section ///////////////////////////////
+model Admin {
+  id                              String                       @id @default(cuid())
+  firstName                       String
+  lastName                        String
+  address                         String
+  dateOfBirth                     DateTime
+  email                           String                       @unique
+  phoneNumber                     String
+  gender                          UserGender
+  nationality                     String
+  password                        String
+  hotel                           Hotel?
+  role                            UserRole[]                   @default([admin])    
+  emailVerificationToken          EmailVerificationToken[]
+  notes                           Note[]
+  createdDocument                 Document[]                   @relation("AdminCreatedDocuments") 
+  documentAccess                  DocumentAccess[]             @relation("AdminDocumentAccess") 
+  createdTask                     Task[]                       @relation("AdminCreatedTasks")
+  isActivated                     Boolean                      @default(false)
+  resetCode                       String?
+  resetCodeExpiresAt              DateTime?
+  createdAt                       DateTime                     @default(now())
+  updatedAt                       DateTime                     @updatedAt
+}
+
+model Hotel {
+  id                               String               @id @default(cuid())
+  hotelName                        String
+  hotelAddress                     String
+  country                          String
+  hotelPhoneNumber                 String
+  hotelEmail                       String
+  cardNumber                       String
+  admin                            Admin                @relation(fields: [adminId], references: [id])
+  adminId                          String               @unique
+  subscription                     Subscription?
+  employee                         Employee[]
+  room                             Room[]
+  client                           Client[]
+  reservation                      Reservation[]
+  pendingReservation               PendingReservation[]      @relation("PendingReservation")
+  member                           Member[]
+  note                             Note[]
+  sportsFacility                   SportsFacility[]
+  cafeteriaMenu                    CafeteriaMenu[]
+  restaurantMenu                   RestaurantMenu[]
+  document                         Document[]
+  task                             Task[]
+  stockCategory                    Category[]
+  stockItem                        Item[]
+  stockTransaction                 Transaction[]
+  budget                           Budget[]              @relation("Budget")
+  event                            Event[]
+  attendue                         Attendue[]
+  calendar                         Calendar[]           @relation("Calendar")
+  dailyStatistics                  Statistics[]         @relation("Statistics")
+  clientHistorique                 ClientsHistorique[]    @relation("ClientsHistorique") 
+  stock                            Stock[]
+  cafeteria                        Cafeteria[]
+  restaurant                       Restaurant[]
+  houseKeepingPlanification        HouseKeepingPlanification[]     @relation("HouseKeepingPlanification")
+  lostObject                       LostObject[]                    @relation("LostObject")
+  
+  createdAt                        DateTime             @default(now())
+  updatedAt                        DateTime             @updatedAt
+}
+model Subscription {
+  id                               String               @id @default(cuid())
+  startDate                        DateTime             @default(now())
+  endDate                          DateTime             @default(now())
+  hotel                            Hotel                @relation(fields: [hotelId], references: [id])
+  hotelId                          String               @unique
+  plan                             Plan                 @relation(fields: [planId], references: [id])
+  planId                           String
+}
+model EmailVerificationToken {
+  id                               String               @id @default(cuid())
+  token                            String               @unique
+  adminId                          String?  
+  admin                            Admin?               @relation(fields: [adminId], references: [id],onDelete: Cascade)
+  employeeId                       String? 
+  employee                         Employee?            @relation(fields: [employeeId], references: [id],onDelete: Cascade)
+  createdAt                        DateTime             @default(now())
+  expiresAt                        DateTime
+}
+/////////////////////// employee section /////////////////////////////////////////////
+
+
+
+
+
+model Employee {
+  id                        String                   @id @default(cuid())
+  firstName                 String
+  lastName                  String
+  address                   String
+  dateOfBirth               DateTime
+  email                     String                   @unique
+  phoneNumber               String
+  gender                    UserGender
+  nationality               String
+  password                  String
+  role                      UserRole[]
+  departement               Departements[]
+  workingDays               DaysOfWeek[]
+  state                     EmployeeState?
+  emailVerificationToken    EmailVerificationToken[]
+  hotel                     Hotel                    @relation(fields: [hotelId], references: [id])
+  hotelId                   String                   
+  isActivated               Boolean                  @default(false)
+  resetCode                 String?
+  resetCodeExpiresAt        DateTime?
+  client                    Client[]
+  reservation               Reservation[]
+  pendingReservation        PendingReservation[]             @relation("PendingReservation")
+  member                    Member[]
+  note                      Note[]
+  createdDocument           Document[]               @relation("EmployeeCreatedDocuments") 
+  documentAccess            DocumentAccess[]         @relation("EmployeeDocumentAccess") 
+  createdTasks              Task[]                   @relation("EmployeeCreatedTasks")
+  employeeTask              EmployeeTask[]
+  sportFacilityCoaches      SportsFacilityCoach[]    @relation("SportFacilityCoach")
+  stokEmployee              StockEmployee[]           @relation("stockEmployee")
+  cafeteriaEmployee         CafeteriaEmployee[]       @relation("cafeteriaEmployee")
+  restaurantEmployee        RestaurantEmployee[]       @relation("restaurantEmployee")
+  createdAt                 DateTime                 @default(now())
+  updatedAt                 DateTime                 @updatedAt
+}
+
+//////////////////// Rooms section  /////////////////////////////////////
+
+model Room {
+  id                        String                  @id @default(cuid())
+  type                      RoomType
+  number                    String
+  floorNumber               String
+  description               String?
+  price                     Decimal
+  capacity                  Int
+  status                    RoomStatus               @default(disponible)
+      
+  outOfServiceDescription   String?
+  hotel                     Hotel                    @relation(fields: [hotelId], references: [id])
+  hotelId                   String
+  reservation               Reservation?
+  pendingReservation        PendingReservation[]          @relation("PendingReservation")             
+  createdAt                 DateTime                 @default(now())
+  updatedAt                 DateTime                 @updatedAt
+  
+  
+}
+///////////////////////////// Client ///////////////////////////////////
+model Client {
+  id                              String                         @id @default(cuid())
+  fullName                        String
+  dateOfBirth                     DateTime                       
+  phoneNumber                     String
+  email                           String?
+  identityCardNumber              String
+  address                         String
+  nationality                     String
+  gender                          UserGender
+  membersNumber                   Int?
+  kidsNumber                      Int?
+  clientOrigin                    ClientOrigin                   @default(local)
+  employee                        Employee                       @relation(fields: [employeeId], references: [id])
+  employeeId                      String
+  hotel                           Hotel                          @relation(fields: [hotelId], references: [id])
+  hotelId                         String
+  reservations                    Reservation[]
+  pendingReservation              PendingReservation[]                     @relation("PendingReservation")
+  sportFacilityMember             SportsFacilityMember[]
+  
+  createdAt                       DateTime                       @default(now())
+  updatedAt                       DateTime                       @updatedAt
+}
+/////////////////////////// Rservation ////////////////////////////////////////
+model Reservation {
+  id                                String                              @id @default(cuid())
+  roomNumber                        String
+  roomType                          RoomType
+  startDate                         DateTime
+  endDate                           DateTime
+  totalDays                         Int
+  totalPrice                        Int
+  unitPrice                         Int
+  state                             ReservationState                   @default(en_attente)
+  source                            ReservationSource?                   @default(seul)
+  currentOccupancy                  Int                                 @default(1)
+  discoveryChannel                  DiscoveryChannel?
+
+  hotel                             Hotel                               @relation(fields: [hotelId], references: [id])
+  hotelId                           String
+  employee                          Employee                            @relation(fields: [employeeId], references: [id])
+  employeeId                        String
+  client                            Client?                              @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientId                          String?
+  room                              Room                                @relation(fields: [roomId], references: [id],onDelete: Cascade)
+  roomId                            String                              @unique                            
+  member                            Member[]
+  attendues                         Attendue[]                          @relation("attendue_reservation")
+  createdAt                         DateTime                            @default(now())
+  updatedAt                         DateTime                            @updatedAt
+  
+}
+model PendingReservation {
+  id                                String                              @id @default(cuid())
+  roomNumber                        String
+  roomType                          RoomType
+  startDate                         DateTime
+  endDate                           DateTime
+  totalDays                         Int
+  totalPrice                        Int
+  unitPrice                         Int
+  state                             ReservationState                   @default(en_attente)
+  source                            ReservationSource?                   @default(seul)
+  currentOccupancy                  Int                                 @default(1)
+  discoveryChannel                  DiscoveryChannel?
+
+  hotel                             Hotel                               @relation("PendingReservation",fields: [hotelId], references: [id])
+  hotelId                           String
+  employee                          Employee                            @relation("PendingReservation",fields: [employeeId], references: [id])
+  employeeId                        String
+  client                            Client?                              @relation("PendingReservation",fields: [clientId], references: [id], onDelete: Cascade)
+  clientId                          String?
+  room                              Room                                @relation("PendingReservation",fields: [roomId], references: [id],onDelete: Cascade)
+  roomId                            String                                                         
+  
+  createdAt                         DateTime                            @default(now())
+  updatedAt                         DateTime                            @updatedAt
+  
+}
+/////////////////////////////// member //////////////////////////////////////////
+model Member {
+  id                String     @id @default(cuid())
+  fullName          String
+  dateOfBirth       DateTime
+  phoneNumber       String
+  email             String?    // This makes it optional in both Prisma and database
+  identityCardNumber String
+  address           String
+  nationality       String?
+  gender            UserGender
+  hotel             Hotel      @relation(fields: [hotelId], references: [id])
+  hotelId           String
+  employee          Employee   @relation(fields: [employeeId], references: [id])
+  employeeId        String
+  reservation       Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  reservationId     String
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+}
+///////////////////////////////// note ///////////////////////////////////////////////////
+model Note{
+  id                                String                             @id @default(cuid())
+  title                             String
+  description                       String
+  deadline                          DateTime
+  
+  hotel                             Hotel                              @relation(fields: [hotelId], references: [id])
+  hotelId                           String
+  admin                             Admin?                             @relation(fields: [adminId], references: [id])
+  adminId                           String?
+  employee                          Employee?                          @relation(fields: [employeeId], references: [id])
+  employeeId                        String?
+  createdAt                         DateTime                           @default(now())
+  updatedAt                         DateTime                           @updatedAt
+}
+//////////////////////////////// Sports Facility ///////////////////////////////////////////
+model SportsFacility{
+  id                                String                             @id @default(cuid())
+  name                              String
+  description                       String?
+  capacity                          Int
+  price                             Decimal?
+  member                            SportsFacilityMember[]
+  openingDays                       DaysOfWeek[]
+  location                          String?
+  type                              SportsFacilityType
+  sportFacilityCoaches              SportsFacilityCoach[]              @relation("SportFacility")
+  
+  hotel                             Hotel                              @relation(fields: [hotelId], references: [id])
+  hotelId                           String
+  createdAt                         DateTime                           @default(now())
+  updatedAt                         DateTime                           @updatedAt
+ 
+}
+model SportsFacilityCoach {
+  id                                String                             @id @default(cuid())
+  sportFacility                     SportsFacility                     @relation("SportFacility",fields: [sportFacilityId], references: [id], onDelete: Cascade)
+  sportFacilityId                   String
+  employee                          Employee                           @relation("SportFacilityCoach",fields: [employeeId], references: [id], onDelete: Cascade)
+  employeeId                        String
+  
+  @@unique([sportFacilityId, employeeId])
+}
+model SportsFacilityMember{
+  id                                String                             @id @default(cuid())
+  email                             String?
+  phoneNumber                       String?
+  identityCardNumber                String?
+  clientName                        String
+  client                            Client                             @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  gender                            UserGender
+  clientId                          String
+  sportsFacility                    SportsFacility                     @relation(fields: [sportsFacilityId], references: [id], onDelete: Cascade)
+  sportsFacilityId                  String
+  createdAt                         DateTime                           @default(now())
+  updatedAt                         DateTime                           @updatedAt
+}
+///////////////////////////////////   cafeteria ////////////////////////////////////
+model Cafeteria{
+  id                                          String                   @id @default(cuid())
+  name                                        String
+  description                                 String?
+  location                                    String?
+ 
+  cafeteriaEmployee                           CafeteriaEmployee[]          @relation("cafeteria")
+  hotel                                       Hotel                    @relation(fields: [hotelId], references: [id])
+  hotelId                                     String
+  cafeteriaMenu                               CafeteriaMenu[]          @relation("cafeteriaMenu") 
+  
+  createdAt                                   DateTime                 @default(now())
+  updatedAt                                   DateTime                 @updatedAt
+}
+model CafeteriaEmployee {
+  id                                String                             @id @default(cuid())
+  cafeteria                         Cafeteria                          @relation("cafeteria",fields: [cafeteriaId], references: [id], onDelete: Cascade)
+  cafeteriaId                           String
+  employee                          Employee                           @relation("cafeteriaEmployee",fields: [employeeId], references: [id], onDelete: Cascade)
+  employeeId                        String
+  createdAt                         DateTime                           @default(now())
+  updatedAt                         DateTime                           @updatedAt
+  
+  @@unique([cafeteriaId, employeeId])
+}
+model CafeteriaMenu{
+  id                                String                             @id @default(cuid())
+  name                              String
+  description                       String
+  startTime                         String
+  endTime                           String
+  hotel                             Hotel                              @relation(fields: [hotelId], references: [id])
+  hotelId                           String
+  cafeteria                         Cafeteria                          @relation("cafeteriaMenu",fields: [cafeteriaId],references: [id],onDelete: Cascade)
+  cafeteriaId                       String
+  cafeteriaMenuItem                 CafeteriaMenuItem[]
+  createdAt                         DateTime                           @default(now())
+  updatedAt                         DateTime                           @updatedAt
+}
+model CafeteriaMenuItem{
+  id                                String                             @id @default(cuid())
+  name                              String
+  description                       String?
+  category                          CafeteriaRestaurentItemCategory
+  cafeteriaMenu                     CafeteriaMenu                      @relation(fields: [cafeteriaMenuId], references: [id], onDelete: Cascade)
+  cafeteriaMenuId                   String
+  createdAt                         DateTime                           @default(now())
+  updatedAt                         DateTime                           @updatedAt
+}
+
+//////////////////////// Restaurant ////////////////////////////////////////////////////////////
+model Restaurant{
+  id                                          String                   @id @default(cuid())
+  name                                        String
+  description                                 String?
+  location                                    String?
+ 
+  restaurantEmployee                          RestaurantEmployee[]     @relation("restaurant")
+  hotel                                       Hotel                    @relation(fields: [hotelId], references: [id])
+  hotelId                                     String
+  restaurantMenu                              RestaurantMenu[]          @relation("restaurantMenu") 
+  
+  createdAt                                   DateTime                 @default(now())
+  updatedAt                                   DateTime                 @updatedAt
+}
+model RestaurantEmployee {
+  id                                String                             @id @default(cuid())
+  restaurant                        Restaurant                          @relation("restaurant",fields: [restaurantId], references: [id], onDelete: Cascade)
+  restaurantId                       String
+  employee                          Employee                           @relation("restaurantEmployee",fields: [employeeId], references: [id], onDelete: Cascade)
+  employeeId                        String
+  createdAt                         DateTime                           @default(now())
+  updatedAt                         DateTime                           @updatedAt
+  
+  @@unique([restaurantId, employeeId])
+}
+model RestaurantMenu{
+  id                                String                             @id @default(cuid())
+  name                              String
+  description                       String
+  
+  lunchStartTime                    String
+  lunchEndTime                      String
+  dinnerStartTime                   String
+  dinnerEndTime                     String
+  hotel                             Hotel                              @relation(fields: [hotelId], references: [id])
+  hotelId                           String
+  restaurant                        Restaurant                          @relation("restaurantMenu",fields: [restaurantId],references: [id],onDelete: Cascade)
+  restaurantId                       String
+  restaurantMenuItem                RestaurantMenuItem[]
+  createdAt                         DateTime                           @default(now())
+  updatedAt                         DateTime                           @updatedAt
+}
+
+model RestaurantMenuItem{
+  id                                String                             @id @default(cuid())
+  name                              String
+  description                       String?
+  mealType                          MealType
+  category                          CafeteriaRestaurentItemCategory
+  restaurantMenu                    RestaurantMenu                     @relation(fields: [restaurantMenuId], references: [id], onDelete: Cascade)
+  restaurantMenuId                  String
+  createdAt                         DateTime                           @default(now())
+  updatedAt                         DateTime                           @updatedAt
+}
+//////////////////////////////// document ////////////////////////////////////////////
+model Document {
+  id                                String                             @id @default(cuid())
+  title                             String
+  description                       String?
+  content                           String?                              
+  createdByEmployee                 Employee?                          @relation( "EmployeeCreatedDocuments",fields: [createdByEmployeeId], references: [id])
+  createdByEmployeeId               String?
+  createdByAdmin                    Admin?                             @relation("AdminCreatedDocuments", fields: [createdByAdminId], references: [id])
+  createdByAdminId                  String?
+  hotel                             Hotel                              @relation(fields: [hotelId], references: [id])
+  hotelId                           String
+  documentAccess                    DocumentAccess[]                   @relation("DocumentToAccess")
+  createdAt                         DateTime                           @default(now())
+  updatedAt                         DateTime                           @updatedAt
+}
+
+model DocumentAccess {
+  id                                String                             @id @default(cuid())
+  document                          Document                           @relation("DocumentToAccess",fields: [documentId], references: [id],onDelete: Cascade)
+  documentId                        String
+  employee                          Employee?                          @relation("EmployeeDocumentAccess",fields: [employeeId], references: [id],onDelete: Cascade)
+  employeeId                        String?
+  admin                             Admin?                             @relation("AdminDocumentAccess",fields: [adminId], references: [id],onDelete: Cascade)
+  adminId                           String?
+  createdAt                         DateTime                           @default(now())
+  updatedAt                         DateTime                           @updatedAt
+
+  @@unique([documentId, employeeId, adminId])
+}
+/////////////////////////////// Task //////////////////////////////////////////
+model Task {
+  id                                String                             @id @default(cuid())
+  title                             String
+  description                       String
+  deadline                          DateTime
+  isDone                            Boolean                           @default(false)
+  createdByEmployeeId               String?
+  createdByEmployee                 Employee?                          @relation("EmployeeCreatedTasks", fields: [createdByEmployeeId], references: [id])
+  createdByAdminId                  String?
+  createdByAdmin                    Admin?                             @relation("AdminCreatedTasks", fields: [createdByAdminId], references: [id])
+  hotel                             Hotel                              @relation(fields: [hotelId], references: [id])
+  hotelId                           String
+  assignedEmployees                 EmployeeTask[]
+  createdAt                         DateTime                           @default(now())
+  updatedAt                         DateTime                           @updatedAt
+  
+}
+
+model EmployeeTask {
+  id                                String                             @id @default(cuid())
+  employee                          Employee                           @relation(fields: [employeeId], references: [id],onDelete: Cascade)
+  employeeId                        String
+  task                              Task                               @relation(fields: [taskId], references: [id],onDelete: Cascade)
+  taskId                            String
+  createdAt                         DateTime                           @default(now())
+  updatedAt                         DateTime                           @updatedAt
+
+  @@unique([employeeId, taskId])
+}
+/////////////////////////// Stock ////////////////////////////////////
+model Stock {
+  id                                          String                   @id @default(cuid())
+  name                                        String
+  description                                 String?
+  location                                    String?
+ 
+  stockEmployee                               StockEmployee[]          @relation("stock")
+  hotel                                       Hotel                    @relation(fields: [hotelId], references: [id])
+  hotelId                                     String 
+  stockCategory                               Category[]               @relation("Category")
+  stockItem                                   Item[]                   @relation("Item")
+  stockTransaction                            Transaction[]            @relation("Transaction")
+  budget                                      Budget?                   @relation("budget")
+  createdAt                                   DateTime                 @default(now())
+  updatedAt                                   DateTime                 @updatedAt
+
+}
+model StockEmployee {
+  id                                String                             @id @default(cuid())
+  stock                             Stock                              @relation("stock",fields: [stockId], references: [id], onDelete: Cascade)
+  stockId                           String
+  employee                          Employee                           @relation("stockEmployee",fields: [employeeId], references: [id], onDelete: Cascade)
+  employeeId                        String
+  createdAt                         DateTime                           @default(now())
+  updatedAt                         DateTime                           @updatedAt
+  
+  @@unique([stockId, employeeId])
+}
+
+
+
+
+
+
+model Category {
+  id                                          String                   @id @default(cuid())
+  name                                        String
+  description                                 String?
+  
+  
+  items                                       Item[]
+  hotel                                       Hotel                    @relation(fields: [hotelId], references: [id])
+  hotelId                                     String
+  stock                                       Stock                    @relation("Category",fields: [stockId],references: [id],onDelete: Cascade)
+  stockId                                     String
+  createdAt                                   DateTime                 @default(now())
+  updatedAt                                   DateTime                 @updatedAt
+}
+
+model Item {
+  id              String      @id @default(cuid())
+  name            String
+  quantity        Int
+  description     String?     
+  unitPrice       Float
+  sku             String?
+  unit            String?
+  minimumQuantity Int
+  isNeeded        Boolean     @default(false)
+  supplierName    String?
+  supplierPhone   String?
+  supplierAddress String? 
+  supplierEmail   String?    
+  
+  category        Category    @relation(fields: [categoryId], references: [id])
+  categoryId      String
+  hotel           Hotel       @relation(fields: [hotelId], references: [id])
+  hotelId         String
+  transactions    Transaction[]
+  stock           Stock       @relation("Item", fields: [stockId], references: [id], onDelete: Cascade)
+  stockId         String
+  
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model Transaction {
+  id                                          String                    @id @default(cuid())
+  quantity                                    Int
+  
+  type                                        TransactionOperationType                                     
+                                   
+  transactionAmount                           Float  
+  
+  item                                        Item                      @relation(fields: [itemId], references: [id])
+  itemId                                      String
+  hotel                                       Hotel                     @relation(fields: [hotelId], references: [id])
+  hotelId                                     String
+  stock                                       Stock                    @relation("Transaction",fields: [stockId],references: [id],onDelete: Cascade)
+  stockId                                     String
+  createdAt                                   DateTime                  @default(now())
+}
+/////////////////////////////////// Event //////////////////////////////////////
+model Event{
+  id                                          String                    @id @default(cuid())
+  name                                        String
+  leader                                      String?
+  guests                                      Int?
+  description                                 String?
+  bankCard                                    String?
+  startDate                                   DateTime
+  endDate                                     DateTime
+  attendue                                    Attendue[]
+  eventType                                   EventType
+  eventSeance                                 EventSeance[]
+  hotel                                       Hotel                     @relation(fields: [hotelId], references: [id])
+  hotelId                                     String
+  createdAt                                   DateTime                  @default(now())
+  updatedAt                                   DateTime                  @updatedAt
+
+}
+model Attendue {
+  id                              String                         @id @default(cuid())
+  fullName                        String
+  dateOfBirth                     DateTime                       
+  phoneNumber                     String
+  email                           String?
+  identityCardNumber              String
+  address                         String
+  nationality                     String
+  gender                          UserGender
+  type                            AttendueType
+  reservationSource               ReservationSource              @default(evenement)
+  hotel                           Hotel                          @relation(fields: [hotelId], references: [id])
+  hotelId                         String
+  event                           Event                          @relation(fields: [eventId],references: [id],onDelete: Cascade)
+  eventId                         String
+  reservation                     Reservation?                   @relation("attendue_reservation",fields: [reservationId], references: [id])
+  reservationId                   String?
+  createdAt                       DateTime                       @default(now())
+  updatedAt                       DateTime                       @updatedAt
+}
+model EventSeance {
+  id                              String                         @id @default(cuid())
+  title                           String
+  description                     String?
+  start                           String
+  end                             String
+  event                           Event                          @relation(fields: [eventId], references: [id],onDelete: Cascade)
+  eventId                         String
+  createdAt                       DateTime                       @default(now())
+  updatedAt                       DateTime                       @updatedAt
+}
+model Calendar {
+  id                              String                         @id @default(cuid())
+  title                           String
+  description                     String?
+  start                           String
+  end                             String
+  hotel                           Hotel                          @relation("Calendar",fields: [hotelId], references: [id])
+  hotelId                         String
+  
+  createdAt                       DateTime                       @default(now())
+  updatedAt                       DateTime                       @updatedAt
+}
+/////////////////// Statistics ///////////////////////////////
+model Statistics {
+  id                                   String                                     @id @default(cuid())
+  date                                 DateTime                                    
+  totalEmployees                       Int                                        @default(0)
+  totalRooms                           Int                                        @default(0)
+  totalEvents                          Int                                        @default(0)
+  totalMenuItems                       Int                                        @default(0)
+  totalSportsFacilities                Int                                        @default(0)
+  totalStockItems                      Int                                        @default(0)
+  totalTransactions                    Int                                        @default(0)
+  totalTransactionAmount               Float                                      @default(0) 
+  totalCafeteriaMenu                   Int                                        @default(0) 
+  totalNote                            Int                                        @default(0)
+  totalTask                            Int                                        @default(0)
+  totalReport                          Int                                        @default(0)
+  
+  totalClients                         Int                                        @default(0)
+  newClients                           Int                                        @default(0)
+  checkIns                             Int                                        @default(0)
+  checkOuts                            Int                                        @default(0)
+  ClientPrice                          Int                                        @default(0)
+  ClientAge                            Int[]                                          
+  LocalClient                          Int                                        @default(0)
+  maleClients                          Int                                        @default(0) 
+  
+                   
+  hotelId                              String
+  hotel                                Hotel                                      @relation("Statistics",fields: [hotelId], references: [id])
+  
+  createdAt                            DateTime                                   @default(now())
+  updatedAt                            DateTime                                   @updatedAt
+}
+model Budget{
+  id                                   String                                     @id @default(cuid())
+  
+  amount                               Float                                      @default(0)
+  stock                                Stock                                      @relation("budget",fields: [stockId],references: [id],onDelete: Cascade)
+  stockId                              String                                     @unique
+                              
+  
+  hotelId                              String
+  hotel                                Hotel                                      @relation("Budget",fields: [hotelId], references: [id])
+  createdAt                            DateTime                                   @default(now())
+  updatedAt                            DateTime                                   @updatedAt
+
+
+}
+model ClientsHistorique{
+  id                                   String                                     @id @default(cuid())
+  fullName                             String
+  phoneNumber                          String
+  identityCardNumber                   String
+  nationality                          String
+  gender                               UserGender
+  starDate                             DateTime
+  endDate                              DateTime
+  hotelId                              String
+  hotel                                Hotel                                      @relation("ClientsHistorique",fields: [hotelId], references: [id])
+  createdAt                            DateTime                                   @default(now())
+  updatedAt                            DateTime                                   @updatedAt
+}
+//////////////////////////   housekeeping ////////////////////////////////////////
+model HouseKeepingPlanification {
+  id                              String                         @id @default(cuid())
+  title                           String
+  description                     String?
+  start                           String
+  end                             String
+  hotelId                         String
+  hotel                           Hotel                                      @relation("HouseKeepingPlanification",fields: [hotelId], references: [id])
+  
+  createdAt                       DateTime                       @default(now())
+  updatedAt                       DateTime                       @updatedAt
+}
+model LostObject{
+  id                              String                         @id @default(cuid())
+  name                            String
+  description                     String?
+  location                        String
+  hotelId                         String
+  hotel                           Hotel                                      @relation("LostObject",fields: [hotelId], references: [id])
+  
+  
+ 
+  createdAt                       DateTime                       @default(now())
+  updatedAt                       DateTime                       @updatedAt
+}

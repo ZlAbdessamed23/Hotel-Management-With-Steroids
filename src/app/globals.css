@@ -1,0 +1,275 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* @media print {
+  * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      background-color: white !important;
+  }
+} */
+
+body {
+  @apply bg-slate-300 w-screen overflow-x-hidden
+}
+/* 
+.main-layout-container{
+  display: grid;
+  grid-template-columns: 331px 1fr;
+  gap: 1%;
+} */
+
+.gradient-line {
+  position: relative;
+  width: 100%;
+  height: 5px;
+  margin-bottom: 1rem; 
+}
+
+.gradient-line::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 2px; /* Adjust this to make the middle part thicker */
+  background: linear-gradient(to right, transparent, black, transparent);
+  clip-path: polygon(0% 50%, 50% 0%, 100% 50%, 50% 100%);
+}
+
+.card-gradient-line {
+  position: relative;
+  width: 100%;
+  height: 5px;
+  margin-bottom: 1rem;
+}
+.card-gradient-line::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 2px; /* Adjust this to make the middle part thicker */
+  background: linear-gradient(to right, transparent, white, transparent);
+  clip-path: polygon(0% 50%, 50% 0%, 100% 50%, 50% 100%);
+  color: white; 
+}
+
+
+.card-vertical-gradient-line {
+  position: relative;
+  width: 5px; /* Adjust width for vertical orientation */
+  height: 100%;
+  margin-right: 1rem; /* Adjust margin for vertical layout */
+}
+.card-vertical-gradient-line::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 2px; /* Adjust width for vertical orientation */
+  height: 100px;
+  background: linear-gradient(to bottom, transparent, white, transparent);
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  color: white;
+}
+
+.data-grid-container {
+  width: calc(100vw - 400px);
+}
+
+/* .data-grid-wrapper::-webkit-scrollbar {
+  @apply h-2
+}
+
+.data-grid-wrapper::-webkit-scrollbar-track {
+  @apply bg-foreground-200
+}
+
+.data-grid-wrapper::-webkit-scrollbar-thumb {
+  @apply bg-primary-200  hover:bg-primary rounded-full
+} */
+
+
+.e-gantt-splitter , .e-table thead {
+  @apply border-t-1 rounded-t-md rounded-tr-md text-secondary text-xl font-bold font-segoe !important
+}
+
+/* .se-toolbar , button {
+  @apply text-primary !important
+} */
+
+.se-container , .sun-editor {
+  @apply rounded-tl-lg rounded-tr-lg !important
+}
+
+.se-btn-tray {
+  @apply flex flex-row items-center gap-[0.1rem] p-1 !important
+}
+
+.se-wrapper-inner {
+  @apply min-h-[70vh] !important
+}
+
+.e-gantt-tree-grid table , .e-gridcontent{
+  @apply hidden !important
+}
+
+
+.next-ui-bordered-input-container > div {
+  border: 2px solid black;
+}
+
+.next-ui-input-container > div > div {
+  border: 0;
+}
+
+.next-ui-select-container button {
+  background-color: transparent;
+  border: 2px solid black;
+}
+
+.glass-effect {
+  background: linear-gradient(135deg, rgba(191,191,191,0.15) 0%, rgba(200, 197, 255, 0.203) 100%);
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.344);
+  box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.15);
+}
+
+
+.auth-page {
+  background-image: url('../../public/HeroImage.svg');
+  background-repeat: no-repeat; /* Prevent the image from repeating */
+  background-size: cover; /* Scale the image to cover the entire background */
+  background-position: center; /* Center the image */
+}
+
+.first-section-landing-page-container {
+  background-image: url('../../public/HeroImage.svg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+/* Ensure this is in your CSS file or a <style> tag */
+.return-p:hover .size-6 {
+  transform: translateX(-0.5rem);
+  transition: transform 0.3s ease;
+}
+
+.bank-card-image-container {
+  background-image: url('../../public/BankCardImage.svg');
+  background-repeat: no-repeat; /* Prevent the image from repeating */
+  background-size: cover; /* Scale the image to cover the entire background */
+  background-position: center; /* Center the image */
+}
+
+.bank-card-image-container > div:first-child {
+  background: linear-gradient(135deg, rgba(191,191,191,0.15) 0%, rgba(200, 197, 255, 0.203) 100%);
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.344);
+  box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.15);
+}
+
+.dashboared-hero-section {
+  background-image: url('../../public/DashboardHeroImage.svg');
+  background-repeat: no-repeat; /* Prevent the image from repeating */
+  background-size: cover; /* Scale the image to cover the entire background */
+  background-position: center; /* Center the image */
+}
+
+.text-shadow-sm {
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+.text-shadow-md {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+.text-shadow-lg {
+  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+.text-shadow-none {
+  text-shadow: none;
+}
+
+/* .sx__calendar , .sx__calendar-header-content {
+  @apply bg-slate-700 text-white dark:bg-white dark:text-black !important;
+}
+
+.sx__view-selection {
+  @apply bg-slate-950 border border-white rounded-md  
+} */
+
+.test-glass-shining-effect {
+  height: 13.5rem;
+  width: 25rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  border-radius: 1rem;
+  overflow: hidden;
+  margin-bottom: 5rem;
+  @apply bg-gray-200;
+}
+
+.first-test-kid {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  height: 0;
+  width: 0;
+  background-color: transparent;
+  border-left: 16rem solid transparent;
+  border-bottom: 16rem solid rgba(255, 255, 255, 0.116);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+
+}
+
+.second-test-kid {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  height: 0;
+  width: 0;
+  background-color: transparent;
+  border-left: 14rem solid transparent;
+  border-bottom: 14rem solid rgba(255, 255, 255, 0.205);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+  z-index: 6;
+}
+
+.third-test-kid {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  height: 0;
+  width: 0;
+  background-color: transparent;
+  border-left: 12rem solid transparent;
+  border-bottom: 12rem solid rgba(255, 255, 255, 0.325);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  z-index: 10;
+}
+
+.fourth-test-kid {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  height: 0;
+  width: 0;
+  background-color: transparent;
+  border-left: 10rem solid transparent;
+  border-bottom: 10rem solid rgba(255, 255, 255, 0.441);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  z-index: 12;
+}
+
+
