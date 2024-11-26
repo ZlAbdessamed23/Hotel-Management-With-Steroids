@@ -4,7 +4,7 @@ import { SidebarItemType } from '@/app/types/types'
 import Link from 'next/link'
 import React from 'react'
 import { FaHome , FaBed , FaCalendarAlt , FaTimes , FaHistory } from "react-icons/fa"
-import { IoStatsChart, IoCafe, IoStorefrontSharp } from "react-icons/io5"
+import { IoStatsChart, IoCafe } from "react-icons/io5"
 import { ImSpoonKnife } from "react-icons/im"
 import { FaRegNewspaper, FaUserGroup } from "react-icons/fa6"
 import { MdOutlineWatchLater, MdAreaChart, MdOutlineSportsTennis } from "react-icons/md"
@@ -14,7 +14,7 @@ import { TiGroup } from "react-icons/ti"
 import { TfiStatsUp } from "react-icons/tfi";
 import Image from 'next/image'
 import DocumentsImage from "/public/documents.svg"
-import { Accordion, AccordionItem, Button } from '@nextui-org/react'
+import { Button } from '@nextui-org/react'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSidebar } from './SidebarContext'
@@ -49,37 +49,58 @@ const sideBarLinks: Array<SidebarItemType> = [
         url: "/main/admin/manageemployees",
     },
     {
-        icon: FaHistory,
-        title: "Historique des Clients",
-        url: "/main/admin/history",
-    },
-]
-
-const sideBarLinks2: Array<SidebarItemType> = [
-    {
         icon: GrTask,
         title: "Taches",
         url: "/main/manager/managetasks",
     },
+    {
+        icon: FaHistory,
+        title: "Historique des Clients",
+        url: "/main/admin/history",
+    },
+    {
+        icon: TfiStatsUp,
+        title: "Stock Centrale",
+        url: "/main/employee/managestock",
+    },
+];
+
+const sideBarLinks2: Array<SidebarItemType> = [
+   
     {
         icon: FaUserGroup,
         title: "Clients",
         url: "/main/employee/reception/manageclients",
     },
     {
-        icon: CgNotes,
-        title: "Notes",
-        url: "/main/managenotes",
+        icon: FaBed,
+        title: "Chambres",
+        url: "/main/employee/reception/managerooms",
+    },
+    {
+        icon: FaBed,
+        title: "Entretien Ménager",
+        url: "/main/employee/housekeeping",
     },
     {
         icon: ImSpoonKnife,
         title: "Restaurant",
-        url: "/main/employee/restauration/managerestaurant",
+        url: "/main/employee/restauration/customrestaurant",
     },
     {
         icon: IoCafe,
         title: "Cafeteria",
-        url: "/main/employee/restauration/managecafeteria",
+        url: "/main/employee/restauration/customcafeteria",
+    },
+    {
+        icon: GrRestaurant,
+        title: "stock personnalisé",
+        url: "/main/employee/managestock/customstock",
+    },
+    {
+        icon: CgNotes,
+        title: "Notes",
+        url: "/main/managenotes",
     },
     {
         icon: FaRegNewspaper,
@@ -92,11 +113,6 @@ const sideBarLinks2: Array<SidebarItemType> = [
         url: "/main/employee/reception/managegyms",
     },
     {
-        icon: FaBed,
-        title: "Chambres",
-        url: "/main/employee/reception/managerooms",
-    },
-    {
         icon: MdOutlineWatchLater,
         title: "Evenements",
         url: "/main/employee/reception/manageevents",
@@ -105,19 +121,6 @@ const sideBarLinks2: Array<SidebarItemType> = [
         icon: FaCalendarAlt,
         title: "Calendrier",
         url: "/main/hoteleventsschedular",
-    },
-];
-
-const accordionStockItems: Array<SidebarItemType> = [
-    {
-        icon: TfiStatsUp,
-        title: "Stock Centrale",
-        url: "/main/employee/managestock",
-    },
-    {
-        icon: GrRestaurant,
-        title: "stock personnalisé",
-        url: "/main/employee/managestock/customstock",
     },
 ];
 
@@ -172,16 +175,6 @@ export default function SideBar() {
                     <div className='gradient-line sm:hidden lg:gradient-line'></div>
                     <section className='flex flex-col gap-1 mb-4 font-semibold'>
                         {sideBarLinks.map((elem) => sideBarItem(elem, path))}
-                        <Accordion className='pl-6 sm:pl-0 lg:pl-6 '>
-                            <AccordionItem classNames={{
-                                title: "font-semibold text-md pl-2 sm:hidden lg:block",
-                                indicator: "sm:hidden lg:block"
-                            }} startContent={<IoStorefrontSharp className='size-7 p-1 rounded-md text-black bg-primary-100 dark:text-white dark:bg-slate-800' />} key={1} title="Stock" aria-label="Stock">
-                                {
-                                    accordionStockItems.map((item) => sideBarItem(item, path))
-                                }
-                            </AccordionItem>
-                        </Accordion>
                     </section>
                     <h2 className='sm:hidden lg:block mb-4 pl-0 font-bold'>Organisation</h2>
                     <section className='flex flex-col gap-1 font-semibold mb-4'>
@@ -232,16 +225,6 @@ export default function SideBar() {
                                 </section>
                                 <section className='flex flex-col gap-1 mb-4 font-semibold'>
                                     {sideBarLinks.map((elem) => sideBarItem(elem, path))}
-                                    <Accordion className='pl-7 sm:pl-7 sm:mx-auto lg:pl-7'>
-                                        <AccordionItem classNames={{
-                                            title: "font-semibold text-md pl-2 sm:hidden lg:block",
-                                            indicator: "sm:hidden lg:block"
-                                        }} startContent={<IoStorefrontSharp className='size-5' />} key={1} title="Stock" aria-label="Stock">
-                                            {
-                                                accordionStockItems.map((item) => sideBarItem(item, path))
-                                            }
-                                        </AccordionItem>
-                                    </Accordion>
                                 </section>
                                 <h2 className='mb-4 pl-[10%] font-bold'>Organisation</h2>
                                 <section className='flex flex-col gap-1 font-semibold mb-4'>

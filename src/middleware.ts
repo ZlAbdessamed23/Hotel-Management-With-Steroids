@@ -33,6 +33,10 @@ export async function middleware(request: NextRequest) {
           return NextResponse.redirect(new URL("/main", request.nextUrl));
         };
 
+        if (pathname.includes("housekeeping") && !(payload.role.includes("admin") || payload.role.includes("reception_Manager") || payload.role.includes("gouvernante") || payload.role.includes("nettoyeur"))) {
+          return NextResponse.redirect(new URL("/main", request.nextUrl));
+        };
+
         if (pathname === "/main/profile") {
           if (payload.role.includes("admin")) {
             return NextResponse.redirect(new URL("/main/profile/admin", request.nextUrl));

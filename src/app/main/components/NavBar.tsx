@@ -24,6 +24,10 @@ function TranslateRoutesKeysFromEngToFr(key: string): string {
     case "Reports": return "Rapports";
     case "Material": return "Materiel";
     case "Tasks": return "Taches";
+    case "Customstock": return "Stock Personalisé";
+    case "Housekeeping": return "Entretien Ménager";
+    case "Customrestaurant": return "Restaurant Personalisé";
+    case "Customcafeteria": return "Cafeteria Personalisé";
     default: return key;
   };
 };
@@ -79,7 +83,6 @@ export default function NavBar() {
       </section>
       <section className='flex flex-row items-center gap-4'>
         <Button className='bg-transparent' isIconOnly={true} onClick={() => redirectToAccountPage()}><IoPersonOutline className='size-7 cursor-pointer' /></Button>
-        {/* <Button className='bg-transparent' isIconOnly={true}><IoMdNotificationsOutline className='size-7 cursor-pointer' /></Button> */}
         <Button className='bg-transparent' isIconOnly={true} onClick={() => setTheme(theme === "light" ? "dark" : "light")}>{theme === "light" ? <FaMoon className='size-6' /> : <FaSun className='size-6' />}</Button>
       </section>
     </div>

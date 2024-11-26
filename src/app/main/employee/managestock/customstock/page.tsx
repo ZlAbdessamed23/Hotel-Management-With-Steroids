@@ -47,6 +47,12 @@ export default function CustomStock() {
 
     return (
         <div>
+            <section className='relative w-full h-64 p-6 grid grid-cols-[75%,25%] bg-gradient-to-r from-blue-900 to-blue-600 rounded-xl mb-10'>
+                <div>
+                    <h1 className='text-3xl lg:text-4xl xl:text-5xl font-medium mb-4'>Gestion de Stock Personnalisé</h1>
+                    <p className='text-base md:text-xl font-medium w-2/3 md:pl-8 mb-2 md:w-fit'>Créez et gérez vos stocks personnalisés pour une organisation optimale et un suivi précis de vos inventaires.</p>
+                </div>
+            </section>
             <section className='flex flex-col gap-4 sm:gap-0 sm:flex-row sm:items-center sm:justify-between'>
                 <div className=''>
                     <Input

@@ -19,7 +19,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         { status: 400 }
       );
     }
-   console.log(data);
+
     const { admin, token } = await createAdmin(data);
 
     await sendVerificationEmail(admin.email, token);
