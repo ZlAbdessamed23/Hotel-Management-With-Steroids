@@ -51,6 +51,6 @@ export function handleVerificationResult(
         400
       );
     case "success":
-      return NextResponse.redirect(new URL("/login", "http://localhost:3000"));
+      return NextResponse.redirect(new URL("/login", "http://104.154.75.47"));
   }
 }
