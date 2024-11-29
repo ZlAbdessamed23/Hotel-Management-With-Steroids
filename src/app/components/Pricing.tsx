@@ -17,51 +17,65 @@ interface PricingProps {
     data: JsonObj;
 };
 
-
 const pricingData: Array<PricingProps> = [
     {
         title: "Basic",
         data: {
-            "Gestion des Clients": true,
-            "Juste 21 Chambres": true,
-            "1 Seul Employé": true,
-            "Admin Dashboared": true,
-            "Gestion des Evenements" : false,
+            "Gestion des Clients (20 clients)": true,
+            "gestion des Chambres (14 chambres)": true,
+            "Gestion d'Employées (un seul)": true,
+            "Admin Dashboared": false,
+            "Admin Statistiques": false,
+            "Gestion des Entretiens de Ménage" : true,
+            "Gestion d'Historique des Clients (20 clients)" : true,
+            "Gestion des Evenements (0 evenements)" : false,
             "Gestion des Salles de Sport" : false,
-            "Gestion du Cafeteria" : false,
+            "Gestion du Cafeterias" : false,
+            "Gestion du Restaurants" : false,
             "Gestion du Stock" : false,
             "Gestion des Rapports" : false,
-            "Gestion des Tâches/Notes" : false,
+            "Gestion des Notes (7 notes)" : true,
+            "Gestion des Taches" : false,
         },
     },
     {
         title: "Standard",
         data: {
-            "Gestion des Clients": true,
-            "Juste 50 Chambres": true,
-            "6 Employés": true,
+            "Gestion des Clients (105 clients)": true,
+            "gestion des Chambres (70 chambres)": true,
+            "Gestion d'Employées (10 employées)": true,
             "Admin Dashboared": true,
-            "Gestion des Evenements" : false,
-            "Gestion des Salles de Sport" : false,
-            "Gestion du Cafeteria" : false,
-            "Gestion du Stock" : false,
-            "Gestion des Rapports" : true,
-            "Gestion des Tâches/Notes" : true,
+            "Admin Statistiques": true,
+            "Gestion des Entretiens de Ménage" : true,
+            "Gestion d'Historique des Clients (150 clients)" : true,
+            "Gestion des Evenements (3 evenements)" : true,
+            "Gestion des Salles de Sport (3 salles)" : true,
+            "Gestion du Cafeterias (une seule)" : true,
+            "Gestion du Restaurants (une seule)" : true,
+            "Gestion du Stock (2 stocks)" : true,
+            "Gestion des Rapports (10 rapports)" : true,
+            "Gestion des Notes (7 notes)" : true,
+            "Gestion des Taches (30 taches)" : true,
         },
     },
     {
         title: "Premium",
         data: {
-            "Gestion des Clients": true,
-            "Chambres illémitées": true,
-            "20 Employés": true,
+            "Gestion des Clients (180 clients)": true,
+            "gestion des Chambres (140 chambres)": true,
+            "Gestion d'Employées (25 employées)": true,
             "Admin Dashboared": true,
-            "Gestion des Evenements" : true,
-            "Gestion des Salles de Sport" : true,
-            "Gestion du Cafeteria" : true,
-            "Gestion du Stock" : true,
-            "Gestion des Rapports" : true,
-            "Gestion des Tâches/Notes" : true,
+            "Admin Statistiques": true,
+            "Gestion des Entretiens de Ménage" : true,
+            "Gestion d'Historique des Clients (220 clients)" : true,
+            "Gestion des Evenements (10 evenements)" : true,
+            "Gestion des Salles de Sport (10 salles)" : true,
+            "Gestion du Cafeterias (3 cafétérias)" : true,
+            "Gestion du Restaurants (10 restaurants)" : true,
+            "Gestion du Stock (6 stocks)" : true,
+            "Gestion des Rapports (50 rapports)" : true,
+            "Gestion des Notes (10 notes)" : true,
+            "Gestion des Taches (75 taches)" : true,
         },
     },
 ];
@@ -71,12 +85,12 @@ export default function Pricing() {
     const PricingElement: React.FC<PricingProps> = ({ data, title }) => {
         const values = Object.entries(data);
         return (
-            <div className={`h-[40rem] w-full md:w-[50%] lg:w-[29%] rounded-xl shadow-md p-4 relative ${title === "Standard" ? "bg-primary-500" : "bg-gray-200 dark:bg-gray-800 dark:bg-opacity-45"}`}>
+            <div className={`h-[59rem] w-full md:w-[50%] lg:w-[29%] rounded-xl shadow-md p-4 relative ${title === "Standard" ? "bg-primary-500" : "bg-gray-200 dark:bg-gray-800 dark:bg-opacity-45"}`}>
                 <h3 className='text-center text-2xl font-semibold mb-2'>{title} Plan</h3>
                 {
                     title === "Basic" ? <h2 className='text-center text-4xl font-semibold text-green-500 mb-6'>Gratuit</h2> 
                     : 
-                    <h2 className={`text-center text-4xl font-semibold flex items-end justify-center gap-4 mb-6 ${title === 'Standard' ? "text-black " : "text-green-500"}`}><span>{title === "Standard" ? 6800 : 9600}</span><span className='text-2xl'>DA/mo</span></h2>
+                    <h2 className={`text-center text-4xl font-semibold flex items-end justify-center gap-4 mb-6 ${title === 'Standard' ? "text-black " : "text-green-500"}`}><span>{title === "Standard" ? 8400 : 12500}</span><span className='text-2xl'>DA/mo</span></h2>
     
                 }
                 <section className='flex flex-col gap-4 mb-8'>
@@ -113,4 +127,4 @@ export default function Pricing() {
             </section>
         </div>
     )
-}
+};
