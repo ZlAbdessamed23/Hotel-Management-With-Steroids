@@ -3,7 +3,7 @@
 import { SidebarItemType } from '@/app/types/types'
 import Link from 'next/link'
 import React from 'react'
-import { FaHome , FaBed , FaCalendarAlt , FaTimes , FaHistory } from "react-icons/fa"
+import { FaHome, FaBed, FaCalendarAlt, FaTimes, FaHistory } from "react-icons/fa"
 import { IoStatsChart, IoCafe } from "react-icons/io5"
 import { ImSpoonKnife } from "react-icons/im"
 import { FaRegNewspaper, FaUserGroup } from "react-icons/fa6"
@@ -66,7 +66,7 @@ const sideBarLinks: Array<SidebarItemType> = [
 ];
 
 const sideBarLinks2: Array<SidebarItemType> = [
-   
+
     {
         icon: FaUserGroup,
         title: "Clients",
@@ -220,9 +220,6 @@ export default function SideBar() {
                                         <FaTimes className='size-6' />
                                     </button>
                                 </div>                                <div className='gradient-line'></div>
-                                <section className='flex flex-col gap-1 mb-4 font-semibold'>
-                                    {sideBarLinks.map((elem) => sideBarItem(elem, path))}
-                                </section>
                                 <section className='flex flex-col gap-1 mb-4 font-semibold'>
                                     {sideBarLinks.map((elem) => sideBarItem(elem, path))}
                                 </section>

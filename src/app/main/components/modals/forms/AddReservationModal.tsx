@@ -91,7 +91,7 @@ const AddReservationModal: React.FC<ReservationModalProps> = ({ props, client })
     }
     else{
       async() => await getRoomReservation();
-      if(client.reservations){
+      if(client.reservations && client.reservations.length > 0){
         const data : Reservation = {
           roomNumber : gottenRoom?.roomNumber as string,
           roomType : gottenRoom?.roomType as RoomType,
