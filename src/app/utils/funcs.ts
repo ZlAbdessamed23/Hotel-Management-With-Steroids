@@ -52,8 +52,8 @@ import {
 } from "../types/constants";
 import { ForgetPasswordData } from "@/app/api/auth/password/forgetPassword/types";
 
-const mainBaseUrl = "http://10.128.0.5/api/main";
-const authBaseUrl = "http://10.128.0.5/api/auth";
+const mainBaseUrl = "http://34.133.50.116/api/main";
+const authBaseUrl = "http://34.133.50.116/api/auth";
 
 //AUTH
 export async function signUp(user: RegistrationInfos) {
