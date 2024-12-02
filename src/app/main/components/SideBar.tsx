@@ -6,8 +6,8 @@ import React from 'react'
 import { FaHome, FaBed, FaCalendarAlt, FaTimes, FaHistory } from "react-icons/fa"
 import { IoStatsChart, IoCafe } from "react-icons/io5"
 import { ImSpoonKnife } from "react-icons/im"
-import { FaRegNewspaper, FaUserGroup } from "react-icons/fa6"
-import { MdOutlineWatchLater, MdAreaChart, MdOutlineSportsTennis } from "react-icons/md"
+import { FaRegNewspaper, FaUserGroup , FaUserClock } from "react-icons/fa6"
+import { MdOutlineWatchLater, MdAreaChart, MdOutlineSportsTennis , MdCleaningServices } from "react-icons/md"
 import { GrTask, GrRestaurant } from "react-icons/gr"
 import { CgNotes } from "react-icons/cg"
 import { TiGroup } from "react-icons/ti"
@@ -73,12 +73,17 @@ const sideBarLinks2: Array<SidebarItemType> = [
         url: "/main/employee/reception/manageclients",
     },
     {
+        icon: FaUserClock,
+        title: "Clients en Attente",
+        url: "/main/employee/reception/manageclients/waitinglist",
+    },
+    {
         icon: FaBed,
         title: "Chambres",
         url: "/main/employee/reception/managerooms",
     },
     {
-        icon: FaBed,
+        icon: MdCleaningServices,
         title: "Entretien Ménager",
         url: "/main/employee/housekeeping",
     },

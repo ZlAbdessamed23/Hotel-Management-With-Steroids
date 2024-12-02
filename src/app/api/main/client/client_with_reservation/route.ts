@@ -15,7 +15,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
     checkReceptionistRole(user.role);
 
     const data: ClientReservationData = await request.json();

@@ -17,102 +17,97 @@ export async function addReservation(
   data: AddReservationData,
   hotelId: string,
   employeeId: string
-): Promise<ReservationResult> {
+ ): Promise<ReservationResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
       const [room, client] = await Promise.all([
         prisma.room.findFirst({
           where: {
-            hotelId: hotelId,
+            hotelId,
             number: data.roomNumber,
             type: data.roomType,
-            status: RoomStatus.disponible,
+            status: RoomStatus.disponible
           },
+          
         }),
         prisma.client.findUnique({
           where: { id: data.clientId },
-        }),
+          select: {
+            id: true,
+            gender: true,
+            dateOfBirth: true,
+            clientOrigin: true
+          }
+        })
       ]);
-
-      if (!room) {
-        throw new NotFoundError("Chambre non trouvée ou déjà réservée ou elle est en panne ou hors service");
-      }
-
-      if (!client) {
-        throw new NotFoundError("Client non trouvé");
-      }
-
+ 
+      if (!room) throw new NotFoundError("Chambre non trouvée ou déjà réservée ou elle est en panne ou hors service");
+      if (!client) throw new NotFoundError("Client non trouvé");
+ 
       const totalPrice = data.totalDays * room.price.toNumber();
-      let newReservation: ReservationResult;
-
-      if (data.state === ReservationState.en_attente) {
-        const createdReservation = await prisma.reservation.create({
-          data: {
-            ...data,
-            totalPrice,
-            unitPrice: room.price.toNumber(),
-            hotelId,
-            employeeId,
-            roomId: room.id,
-            clientId: client.id,
-          },
-          select : {
-            id : true,
-            startDate : true,
-            endDate : true,
-            unitPrice : true,
-             totalDays : true,
-             totalPrice : true,
-             currentOccupancy : true,
-             discoveryChannel : true,
-             roomNumber : true,
-             roomType : true,
-             source : true,
-             state : true , 
-             
-        }
-        });
-        newReservation = { reservation: createdReservation };
-      } else {
-        const createdPendingReservation = await prisma.pendingReservation.create({
-          data: {
-            ...data,
-            totalPrice,
-            unitPrice: room.price.toNumber(),
-            hotelId,
-            employeeId,
-            roomId: room.id,
-            clientId: client.id,
-          },
-        });
-        newReservation = { reservation: createdPendingReservation };
-      }
-
+ 
+      const reservationData = {
+        ...data,
+        totalPrice,
+        unitPrice: room.price.toNumber(),
+        hotelId,
+        employeeId,
+        roomId: room.id,
+        clientId: client.id
+      };
+ 
+      const newReservation = await (data.state === ReservationState.en_attente ?
+        prisma.pendingReservation.create({
+          data: reservationData
+        }) :
+        prisma.reservation.create({
+          data: reservationData,
+          select: {
+            id: true,
+            startDate: true, 
+            endDate: true,
+            unitPrice: true,
+            totalDays: true,
+            totalPrice: true,
+            currentOccupancy: true,
+            discoveryChannel: true,
+            roomNumber: true,
+            roomType: true,
+            source: true,
+            state: true
+          }
+        })
+      );
+ 
       await prisma.room.update({
         where: { id: room.id },
-        data: { status:(data.state===ReservationState.valide)? RoomStatus.reservee :RoomStatus.en_attente},
+        data: { 
+          status: data.state === ReservationState.valide ? 
+            RoomStatus.reservee : 
+            RoomStatus.en_attente 
+        }
       });
-
+ 
       if (data.state === ReservationState.valide) {
         await updateClientCheckInStatistics(
           hotelId,
           null,
           client.gender,
           client.dateOfBirth,
-          null,
+          null, 
           client.clientOrigin,
           totalPrice,
           prisma,
           true
         );
       }
-
-      return newReservation; // Return directly here
+ 
+      return { reservation: newReservation };
     });
   } catch (error) {
     throw throwAppropriateError(error);
   }
-}
+ }
 
 
 export async function getAllReservations(
