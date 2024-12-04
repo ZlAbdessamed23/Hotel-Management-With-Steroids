@@ -314,7 +314,7 @@ export default async function Statistics() {
             <section className='h-96 w-full'>
                 <ReGlowingLineChart data={glowingData} />
             </section>
-            <section className='grid pl-7 grid-rows-3 lg:pl-0 lg:grid-rows-none lg:grid-cols-3 w-11/12 mx-auto gap-4 '>
+            <section className='grid pl-7 grid-rows-3 xl:pl-0 xl:grid-rows-none xl:grid-cols-3 w-11/12 mx-auto gap-4 '>
                 {
                     cards.map((card) => <StatCardItem key={card.title} icon={card.icon} title={card.title} value={card.value} />)
                 }

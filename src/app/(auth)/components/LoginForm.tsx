@@ -48,7 +48,7 @@ export default function LoginForm() {
   };
       
   return (
-    <div className='glass-effect w-96 p-6 pt-8 pb-4 font-sans flex flex-col gap-6 absolute left-6 top-[70%] sm:top-[55%] sm:left-1/4 xl:right-[10%] xl:top-[15%] xl:left-auto z-50 '>
+    <div className='glass-effect w-96 p-6 pt-8 pb-4 font-sans flex flex-col gap-6 absolute left-[1.25%] top-[85%] sm:top-[55%] sm:left-1/4 xl:right-[10%] xl:top-[15%] xl:left-auto z-50 '>
       <div>
         <h1 className='text-3xl font-semibold'>Connectez-vous</h1>
         <p className='text-base font-light opacity-80'>Un peu d&#39;informations pour entrer svp!!</p>

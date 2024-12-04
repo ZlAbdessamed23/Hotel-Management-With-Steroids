@@ -119,7 +119,7 @@ export default function RegisterForm() {
     
 
   return (
-    <div className='glass-effect w-96 p-6 pt-8 pb-4 font-sans flex flex-col gap-6 absolute top-[70%] left-6 sm:top-[55%] sm:left-1/4 md:left-1/3 xl:left-auto xl:right-[10%] xl:top-[3%] z-50 '>
+    <div className='glass-effect w-96 p-6 pt-8 pb-4 font-sans flex flex-col gap-6 absolute top-[87%] left-[1.5%] sm:top-[55%] sm:left-1/4 md:left-1/3 xl:left-auto xl:right-[10%] xl:top-[3%] z-50 '>
     <div>
       <h1 className='text-3xl font-semibold'>Inscrivez-vous</h1>
       <p className='text-base font-light opacity-80'>Un peu d`&#39;informations pour entrer svp!!</p>
