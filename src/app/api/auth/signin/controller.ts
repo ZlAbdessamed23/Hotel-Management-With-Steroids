@@ -112,6 +112,7 @@ async function checkUserActivation(
 async function createVerificationToken(
   token: string,
   userId: string,
+  
   collection: string
 ): Promise<void> {
   await prisma.emailVerificationToken.create({
@@ -158,10 +159,11 @@ async function generateToken(
   userId: string,
   hotelId: string,
   role: UserRole[],
-  endDate: Date
+  endDate: Date,
+  planName :string
 ): Promise<string> {
   const secret = new TextEncoder().encode(process.env.JWT_HOTEL_SECRET);
-  const token = await new SignJWT({ id: userId, hotelId, role, endDate })
+  const token = await new SignJWT({ id: userId, hotelId, role, endDate,planName })
     .setProtectedHeader({ alg: "HS256" })
     .setExpirationTime("7d")
     .sign(secret);
@@ -229,7 +231,8 @@ async function generateUserTokens(user: User): Promise<SignInResult> {
       user.id,
       user.hotel.id,
       user.role,
-      user.hotel.subscription.endDate
+      user.hotel.subscription.endDate,
+      user.hotel?.subscription?.plan.name as string,
     ),
   };
 }
