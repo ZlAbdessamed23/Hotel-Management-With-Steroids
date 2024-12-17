@@ -15,6 +15,7 @@ import DisplayModalStyle3 from '../components/modals/display/DisplayModalStyle3'
 import { getNotes } from '@/app/utils/funcs';
 import { IoMdArrowDropdown } from "react-icons/io";
 import { RefreshMenuProvider } from '../components/RefreshTriggerContext';
+import TodayNotesDisplayModal from '../components/modals/display/TodayNotesDisplayModal';
 
 type NoteType = "all" | "completed" | "nonCompleted" 
 
@@ -34,6 +35,7 @@ export default function ManageNotes() {
     const [filteredNotes, setFilteredNotes] = useState<Note[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
     const displayModalProps = useDisclosure();
+    const todayNotesDisplayModalProps = useDisclosure();
 
     async function getAllNotes() {
         const data = await getNotes(undefined);
@@ -73,14 +75,22 @@ export default function ManageNotes() {
         setSearchTerm(e.target.value);
     };
 
+    const todayNotes: Note[] = notes?.filter((note) => {
+        const noteDate = new Date(note.deadline);
+        const today = new Date();
+        
+        return noteDate.getFullYear() === today.getFullYear() &&
+               noteDate.getMonth() === today.getMonth() &&
+               noteDate.getDate() === today.getDate();
+    }) || [];
 
     return (
         <div className='text-white flex flex-col gap-10 w-full overflow-hidden'>
             <section className='relative w-full h-64 p-6 grid grid-cols-[75%,25%] bg-gradient-to-r from-blue-900 to-blue-600 rounded-xl'>
                 <div>
-                    <h1 className='text-3xl lg:text-4xl xl:text-5xl font-medium mb-4'>Notes Management</h1>
-                    <p className='text-base md:text-xl font-medium w-2/3 md:pl-8 mb-2 md:w-fit'>Vous g&eacute;rez toutes les notes de cette section et avez une r&eacute;flexion approfondie pour organiser votre travail</p>
-                    <Button className='lg:ml-8 bg-success-500 text-white'>Les notes d&#39;aujourd&apos;hui</Button>
+                    <h1 className='text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-medium mb-4'>Notes Management</h1>
+                    <p className='text-sm md:text-base lg:text-xl font-medium w-2/3 md:pl-8 mb-2 md:w-fit'>Vous g&eacute;rez toutes les notes de cette section et avez une r&eacute;flexion approfondie pour organiser votre travail</p>
+                    <Button className='lg:ml-8 bg-success-500 text-white' onClick={todayNotesDisplayModalProps.onOpen}>Les notes d&#39;aujourd&apos;hui</Button>
                 </div>
                 <div>
                     <Image src={NoteHeroImage} alt='' width={300} height={300} className='absolute top-1/4 right-8 sm:top-0 w-44 h-44 md:h-52 md:w-52 md:top-[15%]' />
@@ -119,6 +129,7 @@ export default function ManageNotes() {
                     <Button className='bg-secondary text-white' endContent={<FaPlus className='size-5' />} onClick={onOpen}>Ajouter une nouvelle Note</Button>
                     <RefreshMenuProvider setFetchTrigger={setRefreshTrigger}>
                         <AddNoteModal isOpen={isOpen} onOpen={onOpen} onOpenChange={onOpenChange} mode={OperationMode.add} />
+                        <TodayNotesDisplayModal data={todayNotes} displayModalProps={displayModalProps} props={todayNotesDisplayModalProps} setDisplayedItem={setDisplayedItem} />
                         <DisplayModalStyle3 data1={displayedItem} title1='Note' props={displayModalProps} SecondModal={AddNoteModal} dataType='note' />
                     </RefreshMenuProvider>
                 </div>

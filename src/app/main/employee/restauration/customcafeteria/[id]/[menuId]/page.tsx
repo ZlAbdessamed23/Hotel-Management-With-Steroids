@@ -7,17 +7,45 @@ import CafeteriaItemImage from "/public/CafeteriaItemImage.svg";
 import CafeteriaMenuFacturePart1 from '@/app/main/components/other/CafeteriaMenuFacturePart1'
 import CafeteriaMenuFacturePart2 from '@/app/main/components/other/CafeteriaMenuFacturePart2'
 import { CafeteriaMenuProvider } from '@/app/main/components/CafeteriaMeniContext'
-import { getAllCafeteriaMenuItems } from '@/app/utils/funcs'
+import { deleteCafeteriaMenu, getAllCafeteriaMenuItems } from '@/app/utils/funcs'
 import { StaticImageData } from 'next/image'
 import PagesStructure2 from '@/app/main/components/PageStructure2'
+import { useRouter } from 'next/navigation'
+import toast from 'react-hot-toast'
 
 export default function RestauMenuPage({ params }: {
     params: { menuId: string, id: string }
 }) {
+    const router = useRouter();
     const [items, setItems] = React.useState<Restau_CafeteriaItem[]>([]);
     const [isLoading, setIsLoading] = React.useState(true);
     const [error, setError] = React.useState<string | null>(null);
     const [fetchTrigger, setFetchTrigger] = useState(0);
+
+    async function handleDeleteMenu() {
+        try {
+            const res = await deleteCafeteriaMenu(params.id , params.menuId);
+            if (res) {
+                setTimeout(() => {
+                    router.push("/main/employee/restauration/customcafeteria");
+                }, 1000);
+            }
+            return res;
+        }
+        catch (err: any) {
+            throw new Error(err);
+        };
+    };
+
+    async function handleDelete() {
+        const result = handleDeleteMenu();
+        await toast.promise(result, {
+            loading: 'Loading...',
+            success: (data) => `${data}`,
+            error: (err) => `${err.toString()}`,
+        }
+        );
+    };
 
     const fetchData = React.useCallback(async () => {
         try {
@@ -46,6 +74,7 @@ export default function RestauMenuPage({ params }: {
             mainComponent: CardStyle7,
             AddModal: AddRestau_CafeteriaItemModal,
         },
+        deleteFunc: () => handleDelete()
     };
 
     React.useEffect(() => {

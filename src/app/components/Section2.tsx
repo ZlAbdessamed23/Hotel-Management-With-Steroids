@@ -22,7 +22,7 @@ const ItemDisplay: React.FC<{ icon: StaticImageData, title: string , index : num
 };
 
 const CardDisplay : React.FC = () =>  (
-    <div className='w-96 grid-rows-2 py-4 px-2 rounded-lg shadow-md bg-gray-200 grid md:grid-rows-none md:grid-cols-[35%,65%] gap-0 lg:w-[42rem] dark:bg-gray-800'>
+    <div className='w-full grid-rows-2 py-4 px-2 rounded-lg shadow-md bg-gray-200 grid md:grid-rows-none xl:grid-cols-[50%,50%] gap-0 dark:bg-gray-800'>
         <section className='flex items-center justify-center'>
             <Image src={landingItemsImage5} alt='' width={200} height={200} />
         </section>
@@ -58,12 +58,12 @@ const items : Array<{icon : StaticImageData , title : string}> = [
 
 export default function Section2() {
     return (
-        <div className='ml-8 md:ml-24 lg:ml-32 overflow-x-hidden max-w-screen'>
+        <div className='ml-8 md:ml-16 xl:ml-24 overflow-x-hidden max-w-screen'>
             <section className='mb-4'>
                 <h1 className='text-3xl text-shadow-md leading-[3rem] lg:text-shadow-lg lg:text-5xl font-semibold lg:leading-[4rem] text-landing-pink'>D&eacute;couvrir Notre Syst&egrave;me</h1>
                 <p className='text-xl pl-1 text-gray-500 w-1/2'>Am&eacute;liorez la collaboration de votre &eacute;quipe avec notre outil qui int&egrave;gre la gestion des t&acirc;ches, la messagerie et les rapports.</p>
             </section>
-            <section className='grid grid-cols-[50%,50%]'>
+            <section className='grid grid-rows-2 md:grid-rows-none md:grid-cols-[50%,50%] lg:grid-cols-[50%,45%] gap-16'>
                 <div className='pt-12 flex flex-col gap-8'>
                     <section className='flex items-center justify-between w-[28rem]'>
                         {
@@ -78,7 +78,7 @@ export default function Section2() {
                     </section>
                 </div>
                 <div>
-                    <Image src={SystemScreenShot} alt='' width={700} height={700} />
+                    <Image src={SystemScreenShot} alt='' width={700} height={700} className='w-full h-full' />
                 </div>
             </section>
         </div>

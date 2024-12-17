@@ -18,7 +18,7 @@ export default async function ManageReports() {
             <AddReportBtn />
             {
                 reports.length > 0 ?
-                <section className='grid grid-cols-6 gap-4'>
+                <section className='flex justify-center md:justify-normal md:items-center flex-wrap gap-2'>
                     {
                         reports.map((report) => (
                             <Link key={report.id} href={`/main/managereports/${report.id}`}>

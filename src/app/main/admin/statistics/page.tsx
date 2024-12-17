@@ -48,8 +48,8 @@ const StatCardItem: React.FC<StatCardType> = (props) => {
             }
         </section>
         <section>
-            <p className='text-2xl font-bold dark:text-white'>{props.value}</p>
-            <p className='text-xl font-normal text-gray-500 text-opacity-80 dark:text-opacity-100'>{props.title}</p>
+            <p className='xl:text-2xl xl:font-bold dark:text-white'>{props.value}</p>
+            <p className='xl:text-xl xl:font-normal text-gray-500 text-opacity-80 dark:text-opacity-100'>{props.title}</p>
         </section>
 
     </div>
@@ -327,12 +327,12 @@ export default async function Statistics() {
 
                 </div>
             </section>
-            <section className='grid pl-7 grid-rows-3 lg:pl-0 lg:grid-rows-none lg:grid-cols-3 w-11/12 mx-auto gap-4 '>
+            <section className='grid pl-7 grid-rows-3 xl:pl-0 xl:grid-rows-none xl:grid-cols-3 w-11/12 mx-auto gap-4 '>
                 {
                     cards2.map((card) => <StatCardItem key={card.title} icon={card.icon} title={card.title} value={card.value} />)
                 }
             </section>
-            <section className='w-full grid-rows-3 gap-10 lg:grid-rows-none lg:grid grid-cols-3'>
+            <section className='w-full grid-rows-3 gap-10 xl:grid-rows-none xl:grid grid-cols-3'>
                 <div className='bg-white rounded-xl p-4 shadow-sm dark:bg-slate-800 mb-10'>
                     <h2 className='text-3xl font-semibold mb-4' >Horizontal Bar Chart</h2>
                     <span>

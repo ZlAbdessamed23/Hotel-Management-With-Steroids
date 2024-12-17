@@ -1,7 +1,7 @@
 export enum UserRole {
     receptionist = "receptionist",
     chef = "chef",
-    cleaner = "  valet_de_chambre",
+    cleaner = "valet_de_chambre",
     gouvernante = "gouvernante",
     restaurentManager = "restaurent Manager",
     receptionManager = "reception Manager",

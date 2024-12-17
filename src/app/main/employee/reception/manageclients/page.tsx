@@ -158,7 +158,7 @@ export default function ManageClients() {
         <CardStyle2 infos={item} />
         <TasksLineChart data={chartData} title='Clients' />
       </section>
-      <section className='lg:w-[71rem] lg:overflow-hidden w-full overflow-x-scroll'>
+      <section className='w-[99%] overflow-auto'>
         <RefreshMenuProvider setFetchTrigger={setRefreshTrigger}  >
           <ClientsDataGrid data={data} type='client' Add_Edit_Modal={AddClientModal} />
         </RefreshMenuProvider>

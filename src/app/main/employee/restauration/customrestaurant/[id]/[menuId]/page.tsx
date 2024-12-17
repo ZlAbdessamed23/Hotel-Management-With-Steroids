@@ -6,15 +6,17 @@ import { PageStructureType2, Restau_CafeteriaItem } from '@/app/types/types'
 import { Tabs, Tab } from '@nextui-org/react'
 import React, { useState } from 'react'
 import RestauItemImage from "/public/RestauItemImage.svg";
-import { getAllRestauMenuItems } from '@/app/utils/funcs'
+import { deleteRestaurantMenu, getAllRestauMenuItems } from '@/app/utils/funcs'
 import { CafeteriaMenuProvider } from '@/app/main/components/CafeteriaMeniContext'
 import PagesStructure2 from '@/app/main/components/PageStructure2'
+import { useRouter } from 'next/navigation'
+import toast from 'react-hot-toast'
 
 export default function RestauMenuPage({params} : {
     params : {menuId : string , id : string}
 }) {
+    const router = useRouter();
     const [fetchTrigger , setFetchTrigger] = useState(0);
-
     const fetchLunchData = React.useCallback(async () => {
         try {
             const response = await getAllRestauMenuItems(params.menuId);
@@ -29,6 +31,32 @@ export default function RestauMenuPage({params} : {
             throw err;
         };
     }, [params.menuId]);
+
+    async function handleDeleteMenu() {
+        try {
+            const res = await deleteRestaurantMenu(params.id , params.menuId);
+            if (res) {
+                setTimeout(() => {
+                    router.push("/main/employee/restauration/customrestaurant");
+                }, 1000);
+            }
+            return res;
+        }
+        catch (err: any) {
+            throw new Error(err);
+        };
+    };
+
+    async function handleDelete() {
+        const result = handleDeleteMenu();
+        await toast.promise(result, {
+            loading: 'Loading...',
+            success: (data) => `${data}`,
+            error: (err) => `${err.toString()}`,
+        }
+        );
+    };
+
 
     const fetchDinnerData = React.useCallback(async () => {
         try {
@@ -52,6 +80,7 @@ export default function RestauMenuPage({params} : {
             mainComponent: CardStyle7,
             AddModal: AddRestau_CafeteriaItemModal,
         },
+        deleteFunc : () => handleDelete()
     };
 
     const dinnerPageStructure: PageStructureType2<Restau_CafeteriaItem> = {
@@ -61,6 +90,7 @@ export default function RestauMenuPage({params} : {
             mainComponent: CardStyle7,
             AddModal: AddRestau_CafeteriaItemModal,
         },
+        deleteFunc : () => handleDelete()
     };
 
     return (

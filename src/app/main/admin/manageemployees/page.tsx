@@ -62,11 +62,11 @@ export default async function ManageEmployees() {
     };
   return (
     <div className='w-full overflow-x-hidden'>
-      <section className='flex flex-col gap-4  xl:gap-0 xl:flex-row xl:items-center xl:justify-between mb-12 px-2'>
+      <section className='flex flex-col gap-4 xl:flex-row xl:items-center xl:gap-6 zl:justify-between zl:gap-0 mb-12 px-2'>
         <CardStyle5 infos={item} />
         <CardStyle5 infos={item2} />
       </section>
-      <section className=' w-[25rem] overflow-scroll md:w-[43rem] lg:w-[41rem] xl:overflow-hidden xl:w-[70rem]'>
+      <section className=' w-[99%] overflow-auto'>
         <GenericDataGrid columns={employeeColumns} items={employees} statusColorMap={employeeStatusColorMap} Add_Edit_Modal={AddEmployeeModal} comingDataType='employee' />
       </section>
     </div>

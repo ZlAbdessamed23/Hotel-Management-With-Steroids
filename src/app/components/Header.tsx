@@ -47,7 +47,7 @@ export default function Header() {
     if (!mounted) return <div>Loading ...</div>
     return (
         <header
-            className={`xl:px-16 w-screen overflow-hidden flex flex-row items-center justify-between h-16 border-b-1 border-b-black shadow-md mb-12 dark:shadow-gray-400 dark:border-b-white 
+            className={`px-8 lg:px-16 w-screen overflow-hidden flex flex-row items-center justify-between h-16 border-b-1 border-b-black shadow-md mb-12 dark:shadow-gray-400 dark:border-b-white 
     ${showHeader ? 'translate-y-0' : '-translate-y-20'} 
     transition-transform duration-500 fixed top-0 left-0 w-full bg-white dark:bg-black z-50`} 
         >

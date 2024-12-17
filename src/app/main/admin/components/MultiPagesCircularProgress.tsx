@@ -30,7 +30,7 @@ export default function MultiPagesCircularProgress({ data }: { data: CircularBar
 
   return (
     <div className='text-black dark:text-gray-50'>
-      <section className='w-10/12 mx-auto flex items-center justify-between mb-6'>
+      <section className='w-10/12 lg:w-full mx-auto flex items-center justify-between mb-6'>
         <Button variant='solid' color={desiredSection === "gender" ? 'danger' : 'default'} onClick={() => handleSetSection("gender")}>Sexe</Button>
         <Button variant='solid' color={desiredSection === "age" ? 'danger' : 'default'} onClick={() => handleSetSection("age")}>Age</Button>
         <Button variant='solid' color={desiredSection === "origin" ? 'danger' : 'default'} onClick={() => handleSetSection("origin")}>Origine</Button>

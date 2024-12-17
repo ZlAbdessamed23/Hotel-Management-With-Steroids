@@ -21,13 +21,16 @@ import { Selection } from "@react-types/shared";
 import AddTransactionModal from '@/app/main/components/modals/forms/AddTransactionModal'
 import { TbLayoutDashboard } from 'react-icons/tb'
 import { StockContextProvider } from '@/app/main/components/StockContextProvider'
+import { deleteStock } from '@/app/utils/funcs'
+import { useRouter } from 'next/navigation'
+import toast from 'react-hot-toast'
 
 
 
 export default function StockPageStructure({ CategoriesFetchFunc, TransactionsFetchFunc, ItemsFetchFunc, stockId }: {
   CategoriesFetchFunc: () => Promise<StockCategory[]>, TransactionsFetchFunc: () => Promise<StockTransaction[]>, ItemsFetchFunc: () => Promise<StockItem[]>, stockId: string
 }) {
-  const [refreshTrigger , setRefreshTrigger] = useState<number>(0);
+  const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
   const [selectedTransactionType, setSelectedTransactionType] = useState<Selection>(new Set(["tout"]));
   const [categories, setCategories] = useState<StockCategory[]>([]);
   const [filteredCategories, setFilteredCategories] = useState<StockCategory[]>([]);
@@ -48,7 +51,7 @@ export default function StockPageStructure({ CategoriesFetchFunc, TransactionsFe
   const CategoriesDisplayModal = useDisclosure();
   const TransactionsDisplayModal = useDisclosure();
   const AddTransactionProps = useDisclosure();
-
+  const router = useRouter();
   const Transactions = Object.values(StockTransactionType);
 
   const handleSelectionChange = (keys: Selection) => {
@@ -104,7 +107,6 @@ export default function StockPageStructure({ CategoriesFetchFunc, TransactionsFe
         setItems(items);
       } catch (err) {
         setErrorItems('Failed to fetch transactions');
-        console.error(err);
       };
     };
 
@@ -212,7 +214,7 @@ export default function StockPageStructure({ CategoriesFetchFunc, TransactionsFe
       {
         icon: TbLayoutDashboard,
         title: "Catégories",
-        subject: "catégories dans le stock",
+        subject: "catégories au stock",
         subTitle: `plus élevé: ${mostMentionedCategory}`,
         currentValue: categoriesNbr || 0,
         pourcentage: mostMentionedCategoryPercentage,
@@ -220,7 +222,7 @@ export default function StockPageStructure({ CategoriesFetchFunc, TransactionsFe
       {
         icon: TbLayoutDashboard,
         title: "Tous Les Produits",
-        subject: "produits dans le stock",
+        subject: "produits au stock",
         subTitle: `plus élevé: ${(biggestQuantityItem as StockItem).name || ''}`,
         currentValue: productsNbr || 0,
         pourcentage: biggestQuantityPercentage,
@@ -234,12 +236,42 @@ export default function StockPageStructure({ CategoriesFetchFunc, TransactionsFe
         pourcentage: isNeededLowestItemPercentage,
       },
     ];
-  }
+  };
+
+  async function handleDeleteEvent() {
+    try{
+      const res = await deleteStock(stockId as string);
+      if(res){
+        setTimeout(() => {
+          router.push("/main/employee/managestock/customstock");
+        },1000);
+      }
+      return res;
+    }
+    catch(err : any){
+      throw new Error(err);
+    };
+  };
+
+  async function handleDelete() {
+    const result = handleDeleteEvent();
+    await toast.promise(result, {
+      loading: 'Loading...',
+      success: (data) => `${data}`,
+      error: (err) => `${err.toString()}`,
+    }
+    );
+  };
+
 
 
   return (
-    <div className='flex flex-col gap-12 w-full overflow-x-hidden'>
+    <div className='flex flex-col gap-6 w-full overflow-x-hidden'>
       <StockHeroSection StatisticsFetchFunc={test} />
+      <div className='flex items-center justify-center gap-4 w-full'>
+        <Button color='danger' onClick={handleDelete}>Supprimer le stock</Button>
+        <Button color='success'>Mise à jour du stock</Button>
+      </div>
       <StockContextProvider setRefreshTrigger={setRefreshTrigger} stockId={stockId}>
         <div className='w-[25rem] overflow-auto md:w-full'>
           <Tabs aria-label="Options" className='w-full' classNames={{

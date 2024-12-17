@@ -1,5 +1,5 @@
-import { ModalModeProps, SportHall } from '@/app/types/types';
-import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, Textarea , Selection } from '@nextui-org/react';
+import { Coach, ModalModeProps, SportHall } from '@/app/types/types';
+import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, Textarea, Selection } from '@nextui-org/react';
 import React, { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { DaysOfWeek, OperationMode, SportHalls } from '@/app/types/constants';
@@ -11,8 +11,9 @@ const AddGymModal: React.FC<ModalModeProps<SportHall>> = (props) => {
   const Sports = Object.values(SportHalls);
   const WeekDays = Object.values(DaysOfWeek);
   const router = useRouter();
-  const [selectedCoaches, setSelectedCoaches] = useState<Selection>(new Set([]));
+  const [selectedCoaches, setSelectedCoaches] = useState<Selection>(props.initialData?.coaches ? new Set([((props.initialData.coaches as string[]).join(","))]) : new Set([]));
   const [coaches, setCoaches] = useState<{ id: string, firstName: string, lastName: string }[]>([]);
+  const [selectedWorkingDays, setSelectedWorkingDays] = useState<Selection>(props.initialData?.openingDays ? new Set([...(props.initialData.openingDays as DaysOfWeek[])]) : new Set([]));
 
   const { register, handleSubmit, reset } = useForm<SportHall>({
     defaultValues: {
@@ -28,13 +29,13 @@ const AddGymModal: React.FC<ModalModeProps<SportHall>> = (props) => {
   });
 
   async function handleAddGym(data: SportHall) {
-    if(props.mode === OperationMode.add){
+    if (props.mode === OperationMode.add) {
       const response = await addGym(data);
       router.refresh();
       return response;
     }
-    else{
-      const response = await updateGym(data , props.initialData?.id as string);
+    else {
+      const response = await updateGym(data, props.initialData?.id as string);
       router.refresh();
       return response;
     };
@@ -56,8 +57,8 @@ const AddGymModal: React.FC<ModalModeProps<SportHall>> = (props) => {
   };
 
   useEffect(() => {
+    getCurrentGymCoaches();
     if (props.mode === OperationMode.add) {
-      getCurrentGymCoaches();
       reset({
         name: "",
         description: "",
@@ -70,12 +71,19 @@ const AddGymModal: React.FC<ModalModeProps<SportHall>> = (props) => {
       })
     }
     else {
-      const data : SportHall | undefined = props.initialData ? {
-        ...props.initialData , openingDays : (props.initialData?.openingDays as DaysOfWeek[]).join(',') , coaches : (props.initialData?.coaches as string[]).join(',')
-      } : undefined; 
-      reset(data);
+      if (props.initialData) {
+        console.log(props.initialData);
+        const data: SportHall | undefined = props.initialData ? {
+          ...props.initialData, openingDays: props.initialData.openingDays && (props.initialData?.openingDays as DaysOfWeek[]).join(','), coaches: props.initialData.coaches && (props.initialData?.coaches as string[]).join(',')
+        } : undefined;
+        reset(data);
+        setTimeout(() => {
+          setSelectedWorkingDays(props.initialData?.openingDays ? new Set([...(props.initialData.openingDays as DaysOfWeek[])]) : new Set([]))
+          setSelectedCoaches(props.initialData?.coaches ? new Set([(props.initialData.coaches as string[]).join(",")]) : new Set([]))
+        }, 0);
+      }
     };
-  }, []);
+  }, [props.initialData]);
 
 
   return (
@@ -83,7 +91,7 @@ const AddGymModal: React.FC<ModalModeProps<SportHall>> = (props) => {
       <ModalContent>
         {(onClose) => (
           <>
-            <ModalHeader className="flex flex-col gap-1">Ajouter une Salle de Sport</ModalHeader>
+            <ModalHeader className="flex flex-col gap-1">{props.mode === OperationMode.add ? "Ajouter" : "Editer"} une Salle de Sport</ModalHeader>
             <ModalBody>
               <form className='flex flex-col gap-1 items-start' >
                 <Input variant='bordered' color='secondary' type='text' label="Nom" {...register('name')} />
@@ -97,7 +105,7 @@ const AddGymModal: React.FC<ModalModeProps<SportHall>> = (props) => {
                     </SelectItem>
                   ))}
                 </Select>
-                <Select color='secondary' label="Les Jours de travail" className="w-full" {...register('openingDays')} selectionMode='multiple'>
+                <Select selectedKeys={selectedWorkingDays} color='secondary' label="Les Jours de travail" className="w-full" {...register('openingDays')} selectionMode='multiple'>
                   {WeekDays.map((day) => (
                     <SelectItem key={day} value={day}>
                       {day}

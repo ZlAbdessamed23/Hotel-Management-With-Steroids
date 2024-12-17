@@ -175,7 +175,7 @@ export default function SideBar() {
     return (
         <>
             <div className='hidden sm:block font-sans pl-0 pr-2 lg:px-2 sm:relative absolute top-0 z-50'>
-                <div className='py-4 px-6 w-[250px] sm:py-1 sm:px-1 sm:w-fit lg:py-4 lg:px-6 bg-white dark:bg-slate-800 rounded-lg lg:w-[331px]'>
+                <div className='py-4 px-6 w-[250px] sm:py-1 sm:px-1 sm:w-fit lg:py-4 lg:px-6 bg-white dark:bg-slate-800 rounded-lg lg:w-[300px] zl:w-[331px]'>
                     <h1 className='sm:hidden lg:block text-center text-xl font-semibold text-black mb-4 dark:text-white'>HotyVerse</h1>
                     <div className='gradient-line sm:hidden lg:gradient-line'></div>
                     <section className='flex flex-col gap-1 mb-4 font-semibold'>

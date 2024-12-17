@@ -63,8 +63,8 @@ export default function PagesStructure<CardType extends { title: string }, Fetch
         <div className='text-white flex flex-col gap-10'>
             <section className='w-full h-64 p-6 grid grid-cols-[75%,25%] bg-gradient-to-r from-blue-900 to-blue-600 rounded-xl'>
                 <div>
-                    <h1 className='text-3xl lg:text-4xl xl:text-5xl font-medium mb-4'>{props.hero.title}</h1>
-                    <p className='text-base md:text-xl font-medium w-2/3 md:pl-8 mb-2 md:w-fit'>{props.hero.description}</p>
+                    <h1 className='text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-medium mb-4'>{props.hero.title}</h1>
+                    <p className='text-sm sm:text-base md:text-xl font-medium w-2/3 md:pl-8 mb-2 md:w-fit'>{props.hero.description}</p>
                 </div>
                 <div>
                     <Image
@@ -96,7 +96,7 @@ export default function PagesStructure<CardType extends { title: string }, Fetch
                     <props.main.AddModal isOpen={isOpen} onOpen={onOpen} onOpenChange={onOpenChange} mode={OperationMode.add} />
                 </div>
             </section>
-            <section className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
+            <section className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 zl:grid-cols-4 gap-4'>
                 {isLoading ? (
                     <p>Loading...</p>
                 ) : error ? (

@@ -32,7 +32,7 @@ export default function HistoryPage() {
             <section className='relative w-full h-64 p-6 grid grid-cols-[75%,25%] bg-gradient-to-r from-blue-900 to-blue-600 rounded-xl mb-16'>
                 <div>
                     <h1 className='text-3xl lg:text-4xl xl:text-5xl font-medium mb-4'>Historique des Clients</h1>
-                    <p className='text-base md:text-xl font-medium w-2/3 md:pl-8 mb-2 md:w-fit'>Vous g&eacute;rez tout l&rsquo;historique des clients dans cette section et analysez leurs interactions pour mieux comprendre et anticiper leurs besoins.</p>
+                    <p className='text-sm md:text-xl font-medium w-2/3 md:pl-8 mb-2 md:w-fit'>Vous g&eacute;rez tout l&rsquo;historique des clients dans cette section et analysez leurs interactions pour mieux comprendre et anticiper leurs besoins.</p>
                 </div>
                 <div>
                     <Image src={HistoriqueImage} alt='' width={300} height={300} className='absolute top-1/4 right-8 sm:top-0 w-44 h-44 md:h-52 md:w-52 md:top-[15%]' />

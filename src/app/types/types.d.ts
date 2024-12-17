@@ -777,6 +777,7 @@ interface PageStructureType<T, T1> {
 interface PageStructureType2<Restau_CafeteriaItem> {
     main: SecondMainSection;
     fetchFunc: () => Promise<{ [key: string]: Restau_CafeteriaItem[] }>;
+    deleteFunc : () => Promise<void>;
 };
 
 export type PageStructureGenericType = Restau_CafeteriaItem;

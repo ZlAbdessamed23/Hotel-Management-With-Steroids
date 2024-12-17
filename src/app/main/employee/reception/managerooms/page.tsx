@@ -230,7 +230,7 @@ export default function ManageRooms() {
                     </div>
                 </section>
             </section>
-            <section className='flex flex-col items-center sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
+            <section className='flex justify-center md:justify-normal md:items-center flex-wrap gap-2'>
                 {filteredRooms?.map((room) => (
                     <RoomCard 
                         key={room?.id} 

@@ -55,11 +55,12 @@ import { ForgetPasswordData } from "@/app/api/auth/password/forgetPassword/types
 const mainBaseUrl = "http://104.154.75.47/api/main";
 const authBaseUrl = "http://104.154.75.47/api/auth";
 
+
 //AUTH
 export async function signUp(user: RegistrationInfos) {
   const fullInfos = {
     ...user,
-    planId: "cm3vbagw60000oti1p5mbw6kr",
+    planId: "cm4r5hlwb0000avu14delae6h",
     dateOfBirth: new Date(user.dateOfBirth),
   };
   try {
@@ -168,7 +169,14 @@ export async function getAllEmployees(
 }
 
 export async function deleteEmployee(id: string) {
-  return await axios.delete(`${mainBaseUrl}/employee/${id}`);
+  try {
+    return await axios.delete(`${mainBaseUrl}/employee/${id}`)
+      .then((res) => {
+        return res.data.message;
+      });
+  } catch (err: any) {
+    throw new Error(err.response.data.message);
+  };
 }
 
 export async function updateEmployee(id: string, user: RegisteredEmployee) {
@@ -332,6 +340,27 @@ export async function getCafeteriaMenuItems(
   return menus.data;
 };
 
+export async function deleteCafeteriaMenu(cafeteriaId: string, menuId: string) {
+  try {
+    return await axios.delete(`${mainBaseUrl}/food/cafeteria/menu/${cafeteriaId}/${menuId}`)
+      .then((res) => {
+        return res.data.message;
+      });
+  } catch (err: any) {
+    throw new Error(err.response.data.message);
+  };
+};
+
+export async function deleteRestaurantMenu(restauId: string, menuId: string) {
+  try {
+    return await axios.delete(`${mainBaseUrl}/food/restaurant/menu/${restauId}/${menuId}`)
+      .then((res) => {
+        return res.data.message;
+      });
+  } catch (err: any) {
+    throw new Error(err.response.data.message);
+  };
+};
 
 export async function getAllRestaurants(): Promise<{
   Restaurants: Array<Stock>;
@@ -655,16 +684,14 @@ export async function deleteNote(id: string) {
 //Tasks
 
 export async function addTask(task: Task) {
-  // First split by semicolon to get different entries
-  const employeeAssignedTask = (task.receivers as string)
+  const employeeAssignedTask = task.receivers && (task.receivers.length > 0 ? (task.receivers as string)
     .split(";")
     .filter((receivers) => receivers.trim() !== "")
     .flatMap((receivers) => {
-      // Then split by comma if present
       return receivers.split(",").map((id) => ({
         employeeId: id.trim(),
       }));
-    });
+    }) : []);
 
   const fullInfos = {
     title: task.title,
@@ -672,8 +699,6 @@ export async function addTask(task: Task) {
     deadline: new Date(task.deadline),
     employeeAssignedTask,
   };
-
-  console.log("Task data being sent:", fullInfos); // Debug log
 
   try {
     const response = await axios.post(`${mainBaseUrl}/task`, fullInfos);
@@ -821,7 +846,6 @@ export async function getAllStocks(): Promise<{
 }
 
 export async function addStock(stock: Stock): Promise<string> {
-  // Convert comma-separated string to array of objects
   const stockEmployee = stock.stockEmployee
     ? (stock.stockEmployee as string)
       .split(',')
@@ -862,14 +886,14 @@ export async function updateStock(stock: Stock, id: string) {
 export async function deleteStock(id: string) {
   try {
     return await axios
-      .delete(`${mainBaseUrl}/stock/category/${id}`)
+      .delete(`${mainBaseUrl}/stock/stock/${id}`)
       .then((res) => {
         return res.data.message;
       });
   } catch (err: any) {
     throw new Error(err.response.data.message);
   }
-}
+};
 
 export async function getStockData(): Promise<StockDashboardResult> {
   const infos = await fetch(`${mainBaseUrl}/stock/centralStock`, {
@@ -1131,7 +1155,20 @@ export async function getReport(
 ): Promise<{ Document: ReportWithSteroids }> {
   const infos = await fetch(`${mainBaseUrl}/report/${id}`);
   return infos.json();
-}
+};
+
+export async function deleteReport(id: string) {
+  try {
+    return await axios
+      .delete(`${mainBaseUrl}/report/${id}`)
+      .then((res) => {
+        return res.data.message;
+      });
+  } catch (err: any) {
+    throw new Error(err.response.data.message);
+  };
+};
+
 
 //Rooms
 
@@ -1481,16 +1518,28 @@ export async function addGym(gym: SportHall) {
   } catch (err: any) {
     throw new Error(err.response.data.message);
   }
+};
+
+export async function deleteGym(gymId: string) {
+  try {
+    return await axios
+      .delete(`${mainBaseUrl}/sports_facility/${gymId}`)
+      .then((res) => {
+        return res.data.message;
+      });
+  } catch (err: any) {
+    throw new Error(err.response.data.message);
+  }
 }
 
 export async function updateGym(gym: SportHall, id: string) {
   const fullInfos = {
     location: gym.location,
-    sportsFacilityCoaches: (gym.coaches as string).split(",").map((coach) => {
+    sportsFacilityCoaches: (gym.coaches && gym.coaches.length > 0) ? (gym.coaches as string).split(",").map((coach) => {
       return {
         employeeId: coach,
       };
-    }),
+    }) : [],
     openingDays:
       gym.openingDays === undefined
         ? undefined
@@ -1498,7 +1547,7 @@ export async function updateGym(gym: SportHall, id: string) {
     name: gym.name,
     description: gym.description,
     type: gym.type,
-    capacity: gym.capacity,
+    capacity: Number(gym.capacity),
     price: gym.price === 0 ? undefined : gym.price,
   };
   try {
@@ -1622,7 +1671,19 @@ export async function getEvent(id: string): Promise<{ Event: Event }> {
     cache: "no-cache",
   });
   return infos.json();
-}
+};
+
+export async function deleteEvent(eventId: string) {
+  try {
+    return await axios
+      .delete(`${mainBaseUrl}/event/event/${eventId}`)
+      .then((res) => {
+        return res.data.message;
+      });
+  } catch (err: any) {
+    throw new Error(err.response.data.message);
+  };
+};
 
 export async function addEventStage(stage: EventStage) {
   try {
@@ -1656,6 +1717,7 @@ export async function deleteEventStage(eventId: string, id: string) {
     throw new Error(err.response.data.message);
   };
 };
+
 export async function deleteHotelEventStage(id: string) {
   try {
     return await axios
@@ -1981,14 +2043,14 @@ export async function updateSelfEmployee(employee: SelfUpdateEmployee) {
   const employeeDateOfBirth = employee.dateOfBirth
     ? new Date(employee.dateOfBirth)
     : new Date();
-  
+
 
   try {
     return await axios.patch(`${mainBaseUrl}/profile/employee`, {
       ...employee,
       state: employeeState,
       dateOfBirth: employeeDateOfBirth,
-    }).then((res) => {return res.data.message});
+    }).then((res) => { return res.data.message });
   } catch (err: any) {
     throw new Error(err.response.data.message);
   }
@@ -1997,7 +2059,7 @@ export async function updateSelfEmployee(employee: SelfUpdateEmployee) {
 export async function updateSelfAdmin(admin: SelfUpdateAdmin) {
 
   try {
-    return await axios.patch(`${mainBaseUrl}/profile/admin`, admin).then((res) => {return res.data.message});
+    return await axios.patch(`${mainBaseUrl}/profile/admin`, admin).then((res) => { return res.data.message });
   } catch (err: any) {
     throw new Error(err.response.data.message);
   };

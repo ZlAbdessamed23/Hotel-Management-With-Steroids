@@ -20,7 +20,7 @@ import { IoMdCloudOutline } from "react-icons/io";
 
 const Item1 : React.FC = () => {
     return (
-        <div className='p-4 shadow-md rounded-xl bg-gray-200 dark:bg-gray-800 h-[30rem] lg:h-96 grid grid-cols-2 gap-4 w-full lg:w-[49%] '>
+        <div className='p-4 shadow-md rounded-xl bg-gray-200 dark:bg-gray-800 h-[31rem] lg:h-96 grid grid-cols-2 gap-4 w-full lg:w-[49%] '>
             <section className='flex flex-col justify-between'>
                 <div className='flex flex-col gap-4'>
                     <TbWorldCog className='text-landing-pink size-11 p-2 bg-gray-300 rounded-md shadow-md' />
@@ -76,22 +76,22 @@ const Item3 : React.FC = () => {
                 <p className='text-gray-500 dark:text-gray-400 text-lg font-medium text-center z-10'>Assurez une s&eacute;curit&eacute; robuste dans notre syst&egrave;me de gestion h&ocirc;teli&egrave;re.</p>
             </section>
             <section className='grid grid-cols-2 gap-4'>
-                <span className='p-2 border border-gray-400 bg-transparent text-secondary-400 z-30 rounded-lg text-center'>
+                <span className='p-2 border text-xs border-gray-400 bg-transparent text-secondary-400 z-30 rounded-lg text-center'>
                     axBe21#aa_lll
                 </span>
-                <span className='p-2 border border-gray-400 bg-transparent text-secondary-400 z-30 rounded-lg text-center'>
+                <span className='p-2 border border-gray-400 bg-transparent text-xs text-secondary-400 z-30 rounded-lg text-center'>
                     Authorization
                 </span>
-                <span className='p-2 border border-gray-400 bg-transparent text-secondary-400 z-30 rounded-lg text-center'>
+                <span className='p-2 border border-gray-400 bg-transparent text-xs text-secondary-400 z-30 rounded-lg text-center'>
                     acces par role
                 </span>
-                <span className='p-2 border border-gray-400 bg-transparent text-secondary-400 z-30 rounded-lg text-center'>
+                <span className='p-2 border border-gray-400 bg-transparent text-xs text-secondary-400 z-30 rounded-lg text-center'>
                     lll_axBe21#aa
                 </span>
-                <span className='p-2 border border-gray-400 bg-transparent text-secondary-400 z-30 rounded-lg text-center'>
+                <span className='p-2 border border-gray-400 bg-transparent text-xs text-secondary-400 z-30 rounded-lg text-center'>
                     transmission s&eacute;curis&eacute;
                 </span>
-                <span className='p-2 border border-gray-400 bg-transparent text-secondary-400 z-30 rounded-lg text-center'>
+                <span className='p-2 border border-gray-400 bg-transparent text-xs text-secondary-400 z-30 rounded-lg text-center'>
                     codage des donn&eacute;es
                 </span>
             </section>
@@ -167,7 +167,7 @@ export default function Section4() {
             <h1 className='text-3xl text-shadow-md leading-[3rem] lg:text-shadow-lg lg:text-5xl font-semibold lg:leading-[4rem] text-landing-pink'>Principales Caract&eacute;ristiques du Saas </h1>
             <p className='text-xl text-gray-500 w-96 md:w-[30rem]'>Notre syst&egrave;me est une solution SaaS con&ccedil;ue pour offrir des fonctionnalit&eacute;s &eacute;volutives et accessibles, permettant de g&eacute;rer et d&#39;optimiser vos op&eacute;rations</p>
         </section>
-        <section className='flex flex-col lg:flex-row flex-wrap items-center gap-6'>
+        <section className='flex flex-col lg:flex-row flex-wrap gap-6'>
             <Item1 />
             <Item2 />
             <Item3 />

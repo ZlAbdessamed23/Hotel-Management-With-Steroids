@@ -49,8 +49,8 @@ export default function CustomCafeteria() {
         <div>
             <section className='relative w-full h-64 p-6 grid grid-cols-[75%,25%] bg-gradient-to-r from-blue-900 to-blue-600 rounded-xl mb-10'>
                 <div>
-                    <h1 className='text-3xl lg:text-4xl xl:text-5xl font-medium mb-4'>Gestion de Cafétéria Personnalisée</h1>
-                    <p className='text-base md:text-xl font-medium w-2/3 md:pl-8 mb-2 md:w-fit'>Personnalisez et administrez votre cafétéria en gérant efficacement  les menus et les catégories.</p>
+                    <h1 className='text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-medium mb-4'>Gestion de Cafétéria Personnalisée</h1>
+                    <p className='text-sm md:text-base lg:text-xl font-medium w-2/3 md:pl-8 mb-2 md:w-fit'>Personnalisez et administrez votre cafétéria en gérant efficacement  les menus et les catégories.</p>
 
                 </div>
             </section>
@@ -77,7 +77,7 @@ export default function CustomCafeteria() {
                 </div>
             </section>
 
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 zl:grid-cols-4 gap-4">
                 {filteredCafeterias.map((cafeteria) => <CardStyle8 key={cafeteria.id} Icon={CafeteriaItemImage} infos={{ id: cafeteria.id || "", date: cafeteria.createdAt || new Date(), description: cafeteria.description, title: cafeteria.name }} url={`/main/employee/restauration/customcafeteria`} />)}
             </div>
         </div>

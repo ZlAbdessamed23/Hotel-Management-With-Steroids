@@ -1,10 +1,12 @@
 "use client"
 
 import { ReportWithSteroids } from '@/app/types/types';
-import { getLiteEmployees, getLiteEmployees2, updateReport } from '@/app/utils/funcs';
+import { deleteReport, getLiteEmployees2 , updateReport } from '@/app/utils/funcs';
 import { Button, Select, SelectItem } from '@nextui-org/react';
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
+import toast from 'react-hot-toast';
 import 'suneditor/dist/css/suneditor.min.css';
 import SunEditorCore from "suneditor/src/lib/core";
 
@@ -22,7 +24,7 @@ const TextEditor: React.FC<{ report: ReportWithSteroids }> = ({ report }) => {
   const [reportText, setReportText] = useState<string>(report.content);
   const [receivers, setReceivers] = useState<ReportEmployee[]>([]);
   const [selectedReceivers, setSelectedReceivers] = useState<Array<string>>([]);
-
+  const router = useRouter();
   const editor = useRef<SunEditorCore>();
   const getSunEditorInstance = (sunEditor: SunEditorCore) => {
     editor.current = sunEditor;
@@ -35,6 +37,31 @@ const TextEditor: React.FC<{ report: ReportWithSteroids }> = ({ report }) => {
   function setEmployeesAsReceivers(e : React.ChangeEvent<HTMLSelectElement>) {
     const employees = e.target.value.split(",").filter(value => value.trim() !== "");
     setSelectedReceivers(employees); 
+  };
+
+  async function handleDeleteReport() {
+    try{
+      const res = await deleteReport(report.id);
+      if(res){
+        setTimeout(() => {
+          router.push("/main/managereports");
+        },1000);
+      }
+      return res;
+    }
+    catch(err : any){
+      throw new Error(err);
+    };
+  };
+
+  async function handleDelete() {
+    const result = handleDeleteReport();
+    await toast.promise(result, {
+      loading: 'Loading...',
+      success: (data) => `${data}`,
+      error: (err) => `${err.toString()}`,
+    }
+    );
   };
 
   function submit() {
@@ -78,7 +105,7 @@ const TextEditor: React.FC<{ report: ReportWithSteroids }> = ({ report }) => {
   return (
     <div>
       <section className='flex justify-end gap-4 items-center'>
-        <Button variant='shadow' color='danger'>Delete</Button>
+        <Button variant='shadow' color='danger' onClick={handleDelete}>Delete</Button>
         <Button variant='shadow' color='primary' onClick={() => submit()}>Send</Button>
         <Select selectedKeys={selectedReceivers} selectionMode='multiple' color='secondary' label="Envoyée à" className="max-w-60" onChange={(e) => setEmployeesAsReceivers(e)}>
           {receivers?.map((receiver) => (

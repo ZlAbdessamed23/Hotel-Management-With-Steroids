@@ -1,36 +1,39 @@
 "use client"
 
-import { GymContextProvider} from '@/app/main/components/GymContextProvider';
+import { GymContextProvider } from '@/app/main/components/GymContextProvider';
 import CardStyle3 from '@/app/main/components/cards/CardStyle3';
 import CardStyle9 from '@/app/main/components/cards/CardStyle9';
 
 import AddGymClientModal from '@/app/main/components/modals/forms/AddGymClientModal';
+import AddGymModal from '@/app/main/components/modals/forms/AddGymModal';
 import GenericDataGrid, { DataGridItem } from '@/app/main/components/other/GenericDataGrid';
 import GenericDisplayTable from '@/app/main/components/other/GenericDisplayTable';
-import { ClientState, UserGender } from '@/app/types/constants';
-import { Coach, ModalModeProps,SportHall,SportHallClient,ThirdCardItemType } from '@/app/types/types';
-import { getAllGymCoaches, getGym, getGymMembers } from '@/app/utils/funcs';
-import { ChipProps, Tab, Tabs } from '@nextui-org/react';
+import { ClientState, OperationMode, UserGender } from '@/app/types/constants';
+import { Coach, ModalModeProps, SportHall, SportHallClient, ThirdCardItemType } from '@/app/types/types';
+import { deleteGym, getAllGymCoaches, getGym, getGymMembers } from '@/app/utils/funcs';
+import { Button, ChipProps, Tab, Tabs, useDisclosure } from '@nextui-org/react';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
+import toast from 'react-hot-toast';
 import { FaPerson } from 'react-icons/fa6';
 
-export default function Gym({params} : {
-  params : {id : string}
-}) 
 
-{
 
-  const [gym , setGym] = useState<SportHall>();
-  const [coaches , setCoaches] = useState<Coach[]>([]);
-  const [coachesCount , setCoachesCount] = useState<number>(0);
-  const [members , setMembers] = useState<SportHallClient[]>([]);
-  const [refreshTrigger , setRefreshTrigger] = useState(0);
+export default function Gym({ params }: {
+  params: { id: string }
+}) {
+  const router = useRouter();
+  const [gym, setGym] = useState<SportHall>();
+  const [coaches, setCoaches] = useState<Coach[]>([]);
+  const [coachesCount, setCoachesCount] = useState<number>(0);
+  const [members, setMembers] = useState<SportHallClient[]>([]);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const columns = [
-    {name: "Nom Complet", uid: "clientName"},
-    {name: "PHONE NUMBER", uid: "phoneNumber"},
-    {name: "Email", uid: "email"},
-    {name: "Numéro de la Carte Nationale", uid: "identittyCardNumber"},
-    {name: "ACTIONS", uid: "actions"},
+    { name: "Nom Complet", uid: "clientName" },
+    { name: "PHONE NUMBER", uid: "phoneNumber" },
+    { name: "Email", uid: "email" },
+    { name: "Numéro de la Carte Nationale", uid: "identittyCardNumber" },
+    { name: "ACTIONS", uid: "actions" },
   ];
 
   const statusColorMap: Record<ClientState, ChipProps["color"]> = {
@@ -57,76 +60,110 @@ export default function Gym({params} : {
   useEffect(() => {
     getGymById();
     getMembers();
-  },[refreshTrigger]);
+  }, [refreshTrigger]);
 
   useEffect(() => {
     getCoaches();
-  },[]);
+  }, []);
+
+  async function handleDeleteGym() {
+    try{
+      const res = await deleteGym(gym?.id as string);
+      if(res){
+        setTimeout(() => {
+          router.push("/main/employee/reception/managegyms");
+        },1000);
+      }
+      return res;
+    }
+    catch(err : any){
+      throw new Error(err);
+    };
+  };
+
+  async function handleDelete() {
+    const result = handleDeleteGym();
+    await toast.promise(result, {
+      loading: 'Loading...',
+      success: (data) => `${data}`,
+      error: (err) => `${err.toString()}`,
+    }
+    );
+  };
 
   const currentGymCoaches = coaches.filter((coach) => coach.id === params.id);
   const maleMembers = members.filter((member) => member.gender === UserGender.male).length;
-  const item : ThirdCardItemType = {
-    icon : FaPerson ,
-    title : "Clients",
-    subject : "clients",
-    subTitle : "male",
-    currentValue : members.length,
-    pourcentage : (maleMembers * 100 / members.length) || 0,
+  const item: ThirdCardItemType = {
+    icon: FaPerson,
+    title: "Clients",
+    subject: "clients",
+    subTitle: "male",
+    currentValue: members.length,
+    pourcentage: (maleMembers * 100 / members.length) || 0,
   };
 
-  const item2 : ThirdCardItemType = {
-    icon : FaPerson ,
-    title : "Entraineurs",
-    subject : "entraineurs",
-    subTitle : "dans cette salle",
-    currentValue : coaches.length,
-    pourcentage : currentGymCoaches.length * 100 / coaches.length || 0,
+  const item2: ThirdCardItemType = {
+    icon: FaPerson,
+    title: "Entraineurs",
+    subject: "entraineurs",
+    subTitle: "dans cette salle",
+    currentValue: coaches.length,
+    pourcentage: currentGymCoaches.length * 100 / coaches.length || 0,
   };
 
-  const item3 : ThirdCardItemType = {
-    icon : FaPerson ,
-    title : "Clients",
-    subject : "clients",
-    subTitle : "par rapport au max",
-    currentValue : members.length || 0,
-    pourcentage : (members.length || 0) * 100 / (gym?.capacity || 1),
+  const item3: ThirdCardItemType = {
+    icon: FaPerson,
+    title: "Clients",
+    subject: "clients",
+    subTitle: "par rapport au max",
+    currentValue: members.length || 0,
+    pourcentage: (members.length || 0) * 100 / (gym?.capacity || 1),
   };
 
   const fields = {
-    coach : "samidou",
-    price : gym?.price?.toString() || "",
-    capacity : gym?.capacity?.toString() || "",
+    coach: "samidou",
+    price: gym?.price?.toString() || "",
+    capacity: gym?.capacity?.toString() || "",
   };
+
+  const UpdateGymModalProps = useDisclosure();
 
 
   return (
-    <div className='flex flex-col gap-12'>
-      <section className='grid grid-cols-3 gap-8'>
+    <div className='flex flex-col gap-8'>
+      <section className='grid grid-rows-3 lg:grid-rows-none gap-4 lg:grid-cols-2 xl:grid-cols-3 items-center mb-2 w-full pl-10'>
         <CardStyle3 infos={item} />
         <CardStyle3 infos={item2} />
         <CardStyle3 infos={item3} />
       </section>
-      <section className='grid grid-cols-[35%,60%] gap-4'>
+      <section className='flex items-center justify-end xl:mr-14'>
+        <div className='flex items-center justify-between w-96'>
+          <Button color='danger' onClick={handleDelete}>Supprimer la salle</Button>
+          <Button color='success' onClick={UpdateGymModalProps.onOpen}>Mise à jour de salle</Button>
+        </div>
+        <AddGymModal isOpen={UpdateGymModalProps.isOpen} mode={OperationMode.update} onOpen={UpdateGymModalProps.onOpen} onOpenChange={UpdateGymModalProps.onOpenChange} initialData={gym} />
+      </section>
+      <section className='grid grid-rows-2 xl:grid-rows-none xl:grid-cols-[35%,60%] gap-4 w-full'>
         <div className='flex flex-col gap-8'>
           <CardStyle9 title={gym?.name || "Salle de Musculation"} fields={fields} />
         </div>
-        <div>
-          <Tabs aria-label="Options" className='w-[720px]' classNames={{
-            base : "w-full",
-            tabList: "w-[50rem] flex flex-row items-center justify-between",
-            tab : "w-[10rem]",       
+        <div className='w-[25rem] overflow-auto md:w-full'>
+          <Tabs aria-label="Options" className='w-[99%]' classNames={{
+            base: "w-full",
+            tabList: "w-[99%] flex flex-row items-center justify-between",
+            tab: "w-[10rem]",
           }}>
             <Tab key="Clients" title="Clients">
-              <div className='max-w-[45rem]'>
-                <GymContextProvider  setRefreshTrigger={setRefreshTrigger} gymId={params.id} >
-                  <GenericDataGrid  Add_Edit_Modal={AddGymClientModal as React.FC<ModalModeProps<DataGridItem>>} columns={columns} items={members} statusColorMap={statusColorMap} comingDataType={'gymClient'} /> 
+              <div className='w-[99%]'>
+                <GymContextProvider setRefreshTrigger={setRefreshTrigger} gymId={params.id} >
+                  <GenericDataGrid Add_Edit_Modal={AddGymClientModal as React.FC<ModalModeProps<DataGridItem>>} columns={columns} items={members} statusColorMap={statusColorMap} comingDataType={'gymClient'} />
                 </GymContextProvider>
               </div>
-            </Tab>  
+            </Tab>
             <Tab key="Coaches" title="Entraineurs">
-              <div className='max-w-[45rem]'>
-                <GenericDisplayTable columns={columns} data={coaches}  />
-              </div>            
+              <div className='w-[99%]'>
+                <GenericDisplayTable columns={columns} data={coaches} />
+              </div>
             </Tab>
           </Tabs>
         </div>

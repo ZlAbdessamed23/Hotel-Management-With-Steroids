@@ -112,8 +112,8 @@ export default function WaitingList() {
         <div>
             <section className='relative w-full h-64 p-6 grid grid-cols-[75%,25%] bg-gradient-to-r from-blue-900 to-blue-600 rounded-xl mb-12'>
                 <div>
-                    <h1 className='text-3xl lg:text-4xl xl:text-5xl font-medium mb-4'>Liste d&apos;Attente des Clients</h1>
-                    <p className='text-base md:text-xl font-medium w-2/3 md:pl-8 mb-2 md:w-fit'>
+                    <h1 className='text-xl sm:text-2xl lg:text-4xl xl:text-5xl font-medium mb-4'>Liste d&apos;Attente des Clients</h1>
+                    <p className='text-sm sm:text-base md:text-lg font-medium w-2/3 md:pl-8 mb-2 md:w-fit'>
                         Vous g&eacute;rez le planning des r&eacute;servations en attente dans cette section et veillez à leur organisation
                         efficace pour une meilleure gestion.
                     </p>

@@ -38,7 +38,7 @@ const TasksLineChart : React.FC<TaskLineChartDataType> = ({data , title}) => {
 
       };
   return (
-    <div className='w-96 overflow-x-scroll sm:w-[36rem] md:w-[45rem] lg:w-[47] xl:w-[49.5rem] rounded-xl sm:overflow-hidden bg-black'>
+    <div className='w-[99%] overflow-x-scroll sm:w-[36rem] md:w-[45rem] lg:w-[47] xl:w-[49.5rem] rounded-xl sm:overflow-hidden bg-black'>
       <Chart
         chartType="LineChart"
         width="800px"

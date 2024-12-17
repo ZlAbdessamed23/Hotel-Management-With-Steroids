@@ -206,19 +206,19 @@ export default async function Dashboard() {
 
   return (
     <div className='w-full overflow-x-hidden'>
-      <section className='w-full h-64 p-6 rounded-xl text-white relative mb-[45rem] md:mb-40'>
+      <section className='w-full h-64 p-6 rounded-xl text-white relative mb-[45rem] lg:mb-[20rem] zl:mb-40'>
         <div className='dashboared-hero-section w-full h-full p-6 rounded-xl'>
           <h1 className='text-3xl lg:text-4xl xl:text-5xl font-medium mb-4'>Bonjour Administrateur</h1>
           <p className='text-base md:text-xl font-medium pl-8 mb-12'>Vous pouvez consulter toutes les informations relatives à l&#39;h&ocirc;tel sur cette page et prendre une d&eacute;cision en toute connaissance de cause</p>
         </div>
-        <div className='pl-12 grid items-center justify-center grid-rows-4 lg:pl-1 lg:grid-rows-none lg:grid-cols-4 gap-5 mb-12 text-black absolute top-56'>
+        <div className='pl-12 grid items-center justify-center grid-rows-4 lg:pl-1 lg:grid-rows-none lg:grid-cols-2 lg:ml-[18%] zl:ml-0 zl:grid-cols-4 gap-5 mb-12 text-black absolute top-56'>
           <DashboardCard infos={clientCard} bgColor='bg-success' />
           <DashboardCard infos={employeeCard} bgColor='bg-secondary' />
           <DashboardCard infos={roomCard} bgColor='bg-warning' />
           <DashboardCard infos={gymCard} bgColor='bg-primary' />
         </div>
       </section>
-      <section className='w-full p-4 rounded-xl text-white grid grid-rows-2 lg:grid-rows-none lg:grid-cols-[68%,28%] gap-3'>
+      <section className='w-full p-4 rounded-xl text-white grid grid-rows-2 lg:grid-rows-none lg:grid-cols-[50%,50%] zl:grid-cols-[68%,28%] gap-3'>
         <div className='w-[25rem] lg:w-full flex flex-col gap-8'>
           <span className='h-[30rem] w-full pr-8 pt-8 pb-12 bg-white rounded-xl text-black dark:bg-slate-800'>
             <div className='text-black mb-10 pl-12 text-xl font-semibold font-segoe dark:text-white'>
@@ -226,18 +226,18 @@ export default async function Dashboard() {
             </div>
             <ReAreaChart title='Prix totale' data={clientsPrices} />
           </span>
-          <span className='grid grid-rows-2 lg:grid-rows-none lg:grid-cols-[60%,40%] gap-4 px-4'>
-            <div className='h-[13rem] w-full pr-8 pt-2 pb-2 bg-white rounded-xl text-black dark:bg-slate-800 dark:text-white'>
+          <span className='grid grid-rows-2 xl:grid-rows-none xl:grid-cols-[50%,50%] zl:grid-cols-[60%,40%] gap-4 px-4'>
+            <div className='h-[15rem] w-full pr-8 pt-2 pb-2 bg-white rounded-xl text-black dark:bg-slate-800 dark:text-white'>
               <ReBarChart data={weeklyClientsData} title='Nombre des Clients' />
             </div>
-            <div className='bg-white rounded-xl p-4 h-[13rem] dark:bg-slate-800'>
+            <div className='bg-white rounded-xl p-4 h-[15rem] dark:bg-slate-800'>
               <CircularProgress
                 classNames={{
                   base: "ml-14",
                   svg: "w-36 h-36 drop-shadow-md",
                   indicator: "stroke-[#006FEE]",
                   track: "stroke-black/10",
-                  value: "text-3xl font-semibold text-black dark:text-gray-50",
+                  value: "text-xl zl:text-3xl font-semibold text-black dark:text-gray-50",
                 }}
                 value={(adultClientsCount * 100 / clientSummary?.length) || 0}
                 strokeWidth={4}

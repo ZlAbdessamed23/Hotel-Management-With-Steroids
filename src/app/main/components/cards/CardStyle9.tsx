@@ -5,7 +5,7 @@ import React from 'react';
 const CardStyle9: React.FC<NinthCardItemType> = ({ fields , title }) => {
   const keys = Object.keys(fields);
   return (
-    <div className='w-[370px] h-fit rounded-3xl bg-secondary text-white p-4 font-sans'>
+    <div className='h-fit rounded-3xl bg-secondary text-white p-4 font-sans'>
       <section className='p-4'>
         <p className='text-center text-4xl font-semibold'>{title}</p>
       </section>

@@ -283,7 +283,7 @@ export default function ClientsDataGrid<T extends DataType>({ data, type, Add_Ed
   const topContent = React.useMemo(() => {
     return (
       <div className="flex flex-col gap-4 p-2">
-        <div className="flex justify-between gap-3 items-end">
+        <div className="flex flex-col md:flex-row md:justify-between gap-3 items-end">
           <Input
             classNames={{
               inputWrapper: "border border-black dark:bg-slate-800"

@@ -16,7 +16,6 @@ export default function Report({ params }: {
     const [mounted, setMounted] = useState<boolean>(false);
     async function getCurrentReport() {
         const data = await getReport(params.id);
-        console.log(data);
         setReport(data.Document);
     };
 

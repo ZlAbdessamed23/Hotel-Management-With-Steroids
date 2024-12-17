@@ -35,9 +35,8 @@ const cards : {Icon : StaticImageData | IconType , title : string , text : strin
 
 export default function Section1() {
 
-
     return (
-        <div className='relative h-[110vh] w-full overflow-x-hidden font-sans' id='hero-div-container'>
+        <div className='relative h-fit lg:-[110vh] w-full overflow-x-hidden font-sans' id='hero-div-container'>
             <div className='first-section-landing-page-container w-10/12 mx-auto h-[100vh] font-inter flex items-start mt-12'>
                 <section className='flex items-center gap-4 tracking-wide w-1/2'>
                     <div className='flex flex-col justify-center gap-8 mt-16'>
@@ -53,7 +52,7 @@ export default function Section1() {
                     <Image src={LandingHero} alt='' width={500} height={500} className='absolute w-96 h-96 md:w-[31rem] md:h-[31rem] md:block ml-16' />
                 </section>
             </div>
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-10/12 mx-auto absolute -bottom-12 md:bottom-0 left-[8%]'>
+            <div className='h-fit grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-10/12 mx-auto absolute bottom-[-30rem] sm:-bottom-96 md:-bottom-64 lg:-bottom-24 left-[8%]'>
                 {
                     cards.map((card) => (<LandingCard1 key={card.title} Icon={card.Icon} title={card.title} text={card.text} />))
                 }

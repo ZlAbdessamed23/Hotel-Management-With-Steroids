@@ -48,8 +48,8 @@ export default function CustomRestaurant() {
         <div>
             <section className='relative w-full h-64 p-6 grid grid-cols-[75%,25%] bg-gradient-to-r from-blue-900 to-blue-600 rounded-xl mb-10'>
                 <div>
-                    <h1 className='text-3xl lg:text-4xl xl:text-5xl font-medium mb-4'>Gestion de Restaurant Personnalisé</h1>
-                    <p className='text-base md:text-xl font-medium w-2/3 md:pl-8 mb-2 md:w-fit'>Configurez et gérez les éléments de votre restaurant, y compris les menus et les catégories pour une expérience sur mesure.</p>
+                    <h1 className='text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-medium mb-4'>Gestion de Restaurant Personnalisé</h1>
+                    <p className='text-sm md:text-base lg:text-xl font-medium w-2/3 md:pl-8 mb-2 md:w-fit'>Configurez et gérez les éléments de votre restaurant, y compris les menus et les catégories pour une expérience sur mesure.</p>
                 </div>
             </section>
             <section className='flex flex-col gap-4 sm:gap-0 sm:flex-row sm:items-center sm:justify-between'>
@@ -75,7 +75,7 @@ export default function CustomRestaurant() {
                 </div>
             </section>
 
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="mt-4 flex justify-center md:justify-normal md:items-center flex-wrap gap-2">
                 {filteredRestaurants.map((restaurant) => <CardStyle8 key={restaurant.id} Icon={CafeteriaItemImage} infos={{ id: restaurant.id || "", date: restaurant.createdAt || new Date(), description: restaurant.description, title: restaurant.name }} url={`/main/employee/restauration/customrestaurant`} />)}
             </div>
         </div>

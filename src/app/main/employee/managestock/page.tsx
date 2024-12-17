@@ -92,7 +92,7 @@ export default function ManageCentralStock() {
       {
         icon: TbLayoutDashboard,
         title: "Catégories",
-        subject: "catégories dans le stock",
+        subject: "catégories au stock",
         subTitle: `plus élevé: ${mostMentionedCategory}`,
         currentValue: stockData?.categoryCount || 0,
         pourcentage: mostMentionedCategoryPercentage,
@@ -224,14 +224,10 @@ export default function ManageCentralStock() {
     getStockStat();
   }, []);
 
-  useEffect(() => {
-    console.log(lineChartData);
-  },[lineChartData]);
-
   return (
     <div className='flex flex-col gap-8 w-[99%] overflow-x-hidden'>
       <StockHeroSection StatisticsFetchFunc={test} />
-      <div className='w-full grid grid-rows-2 lg:grid-rows-none lg:grid-cols-[65%,35%] gap-4'>
+      <div className='w-full grid grid-rows-2 lg:grid-rows-none lg:grid-cols-[45%,55%] xl:grid-cols-[58%,42%] zl:grid-cols-[62%,38%] gap-4'>
         <div className='flex flex-col gap-8'>
           <section className='h-[29rem] w-[25rem] lg:w-full overflow-x-auto bg-white rounded-xl shadow-sm p-2 font-inter dark:bg-slate-800'>
             <h2 className='text-2xl font-semibold text-center'>Transactions</h2>
@@ -242,7 +238,7 @@ export default function ManageCentralStock() {
               vAxisTitle="Quantity"
             />
           </section>
-          <section className='w-[25rem] lg:w-full grid grid-rows-2 lg:grid-rows-none lg:grid-cols-2 gap-6 h-[30rem] lg:h-60'>
+          <section className='w-[25rem] lg:w-full grid grid-rows-2 xl:grid-rows-none xl:grid-cols-2 gap-6 h-[30rem] xl:h-60'>
             <span className='w-full bg-white rounded-xl shadow-sm p-2 font-inter dark:bg-slate-800'>
               <StockBarChart data={barChartData} />
             </span>

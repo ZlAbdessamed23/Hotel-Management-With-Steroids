@@ -28,6 +28,14 @@ const config: Config = {
       poppins: ['var(--font-poppins)', 'sans-serif'],
       snigelt : ['var(--font-sniglet)' , 'sans-serif']
     },
+    screens: {
+      'sm': '640px',
+      'md': '768px',
+      'lg': '1024px',
+      'xl': '1280px',
+      'zl' : "1470px",
+      '2xl': '1536px',
+    },
   },
   darkMode: "class",
   plugins: [nextui()]};

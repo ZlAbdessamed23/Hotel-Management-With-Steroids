@@ -173,8 +173,8 @@ export default function HouseKeeping() {
             </section> */}
             <section className='relative w-full h-64 p-6 grid grid-cols-[75%,25%] bg-gradient-to-r from-blue-900 to-blue-600 rounded-xl mb-10'>
                 <div>
-                    <h1 className='text-3xl lg:text-4xl xl:text-5xl font-medium mb-4'>Gestion du Service de Ménage</h1>
-                    <p className='text-base md:text-xl font-medium w-2/3 md:pl-8 mb-2 md:w-fit'>Administrez et suivez les tâches de ménage pour garantir un environnement propre et organisé dans votre établissement.</p>
+                    <h1 className='text-2xl lg:text-4xl xl:text-5xl font-medium mb-4'>Gestion du Service de Ménage</h1>
+                    <p className='text-sm sm:text-base md:text-xl font-medium w-2/3 md:pl-8 mb-2 md:w-fit'>Administrez et suivez les tâches de ménage pour garantir un environnement propre et organisé dans votre établissement.</p>
                 </div>
             </section>
             <section>
