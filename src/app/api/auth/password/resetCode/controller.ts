@@ -15,7 +15,7 @@ import {
   Employee,
   User,
   Plan,
-} from "./types";
+} from "@/app/api/auth/password/resetCode/types";
 import Stripe from "stripe";
 import { throwAppropriateError } from "@/lib/error_handler/throwError";
 import { UserRole } from "@prisma/client";
@@ -86,7 +86,7 @@ async function validateResetCode(
     }
 
     if (!user.resetCodeExpiresAt) {
-      throw new ValidationError("Reset code expiration date is missing");
+      throw new ValidationError("Le code de réinitialisation a expiré");
     }
 
     if (user.resetCodeExpiresAt < new Date()) {
@@ -122,55 +122,47 @@ async function generateToken(
 }
 
 async function checkAdminSubscription(admin: Admin): Promise<ResetCodeResult> {
-  try {
-    const { hotel } = admin;
-    if (!hotel || !hotel.subscription) {
-      throw new ValidationError("Hotel ou abonnement non trouvé");
-    }
-
-    const { plan, endDate } = hotel.subscription;
-
-    if (plan.name === "FREE") {
-      return await generateUserTokens(admin);
-    } else if (plan.name === "STANDARD" || plan.name === "PREMIUM") {
-      if (endDate < new Date()) {
-        return await createStripeCheckoutSession(plan, hotel.id);
-      } else {
-        return await generateUserTokens(admin);
-      }
-    }
-
-    throw new SubscriptionError("l'état de l'abonnemnt innatendu");
-  } catch (error) {
-    throwAppropriateError(error);
+  const { hotel } = admin;
+  if (!hotel || !hotel.subscription) {
+    throw new ValidationError("Hotel ou abonnement non trouvé");
   }
+
+  const { plan, endDate } = hotel.subscription;
+
+  if (plan.name === "Free") {
+    return await generateUserTokens(admin);
+  } else if (plan.name === "Standard" || plan.name === "Premium") {
+    if (endDate < new Date()) {
+      const redirectUrl = await createStripeCheckoutSession(plan, hotel.id);
+      throw new SubscriptionError("Subscription has expired", { redirectUrl });
+    } else {
+      return await generateUserTokens(admin);
+    }
+  }
+
+  throw new SubscriptionError("État d'abonnement inattendu");
 }
 
 async function checkEmployeeSubscription(
   employee: Employee
 ): Promise<ResetCodeResult> {
-  try {
-    const { hotel } = employee;
-    const subscription = hotel.subscription;
-    const { plan, endDate } = subscription || {};
+  const { hotel } = employee;
+  const subscription = hotel.subscription;
+  const { plan, endDate } = subscription || {};
 
-    if (plan?.name === "FREE") {
+  if (plan?.name === "Free") {
+    return await generateUserTokens(employee);
+  } else if (plan?.name === "Standard" || plan?.name === "Premium") {
+    if ((endDate as Date) < new Date()) {
+      throw new SubscriptionError(
+        "Votre limite d'abonnement est déja atteinte, votre administrateur doit renouveler l'abonnement pour que vous devez continuer",
+      );
+    } else {
       return await generateUserTokens(employee);
-    } else if (plan?.name === "STANDARD" || plan?.name === "PREMIUM") {
-      if ((endDate as Date) < new Date()) {
-        return {
-          employeeMessage:
-            "Votre limite d'abonnement est déja atteinte , votre administrateur doit renouveler l'abonnement pour que vous devez continuer ",
-        };
-      } else {
-        return await generateUserTokens(employee);
-      }
     }
-
-    throw new SubscriptionError("l'état de l'abonnemnt innatendu");
-  } catch (error) {
-    throwAppropriateError(error);
   }
+
+  throw new SubscriptionError("État d'abonnement inattendu");
 }
 
 async function generateUserTokens(user: User): Promise<ResetCodeResult> {
@@ -205,7 +197,7 @@ async function generateUserTokens(user: User): Promise<ResetCodeResult> {
 async function createStripeCheckoutSession(
   plan: Plan,
   hotelId: string
-): Promise<ResetCodeResult> {
+): Promise<string> {
   try {
     const session = await stripe.checkout.sessions.create({
       line_items: [
@@ -225,7 +217,7 @@ async function createStripeCheckoutSession(
       cancel_url: `${process.env.BASE_URL}/subscription/cancel`,
     });
 
-    return { redirectUrl: session.url as string };
+    return  session.url as string ;
   } catch (error) {
     throw new PaymentError("error when we create session");
   }

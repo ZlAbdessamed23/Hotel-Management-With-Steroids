@@ -4,7 +4,7 @@ export interface DecodedToken {
   id: string;
   role: UserRole[];
   endDate: string;
-  planNmae :string;
+  planName :string;
   hotelId: string;
   iat: number;
   exp: number;

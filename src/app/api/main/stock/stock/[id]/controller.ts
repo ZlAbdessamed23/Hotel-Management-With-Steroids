@@ -38,7 +38,7 @@ export async function updateStock(
                     where: { id: StockId, hotelId },
                     data: updateData,
                 });
-                console.log(updatedStock);
+              
                 return { Stock: updatedStock };
             }
 
@@ -76,7 +76,7 @@ export async function getStockById(
         }
 
 
-        console.log(existingStock);
+        
         return { Stock: existingStock };
     } catch (error) {
         throw throwAppropriateError(error);
@@ -100,7 +100,7 @@ export async function deleteStock(
         throw throwAppropriateError(error);
     }
 }
-export function checkAdminRole(roles: UserRole[]) {
+export function checkReceptionMnagerStockManagerAdminRole(roles: UserRole[]) {
     if (
         !roles.includes(UserRole.admin) && !roles.includes(UserRole.stock_Manager) && !roles.includes(UserRole.reception_Manager)
     ) {

@@ -3,8 +3,8 @@ import {
   addTask,
   getAllTasks,
   checkRestaurantManagerReceptionManagerAdminRole,
-} from "./controller";
-import { AddTaskData, requiredTaskFields } from "./types";
+} from "@/app/api/main/task/controller";
+import { AddTaskData, requiredTaskFields } from "@/app/api/main/task/types";
 import { handleError } from "@/lib/error_handler/handleError";
 import { getUser } from "@/lib/token/getUserFromToken";
 
@@ -14,7 +14,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
     checkRestaurantManagerReceptionManagerAdminRole(user.role);
     const data: AddTaskData = await request.json();
     const missingFields = requiredTaskFields.filter((field) => !data[field]);
@@ -44,9 +44,9 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    await checkRestaurantManagerReceptionManagerAdminRole(user.role);
 
-    const tasks = await getAllTasks(user.hotelId);
+    const tasks = await getAllTasks(user.id,user.role,user.hotelId);
     return NextResponse.json(tasks, { status: 200 });
   } catch (error) {
     return handleError(error);

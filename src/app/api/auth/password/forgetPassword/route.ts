@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { forgetPassword } from "./controller";
+import { forgetPassword } from "@/app/api/auth/password/forgetPassword/controller";
 import { handleError } from "@/lib/error_handler/handleError";
-import { ForgetPasswordData, requiredForgetPasswordFields } from "./types";
+import { ForgetPasswordData, requiredForgetPasswordFields } from "@/app/api/auth/password/forgetPassword/types";
 import { ValidationError } from "@/lib/error_handler/customerErrors";
 
 export async function POST(req: NextRequest) {
@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     }
 
     await forgetPassword(data);
-    return NextResponse.json("Un Code a été envoyé à ton boite mail éléctronique", {
+    return NextResponse.json({message:"Un Code a été envoyé à ton boite mail éléctronique"}, {
       status: 200,
     });
   } catch (error) {

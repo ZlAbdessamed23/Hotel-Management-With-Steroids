@@ -2,20 +2,20 @@ import { DaysOfWeek, Prisma, SportsFacilityType } from "@prisma/client";
 
 export type AddSportsFacilityData = {
   name: string;
-  description: string;
+  description?: string;
   capacity: number;
   price?: number | string;
   openingDays?: DaysOfWeek[];
   type: SportsFacilityType;
   location?: string;
-  sportsFacilityCoaches?: {
+  sportsFacilityCoaches: {
     employeeId: string;
   }[];
 };
 
 export const requiredSportsFacilityFields: (keyof AddSportsFacilityData)[] = [
   "name",
-  "description",
+  
   "capacity",
   
   "type",

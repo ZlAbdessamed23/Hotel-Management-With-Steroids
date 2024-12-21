@@ -5,7 +5,7 @@ import {
   deleteStockItem,
   getStockItemById,
   updateStockItem,
-} from "./controller";
+} from "@/app/api/main/stock/item/stockItems/[stockId]/[id]/controller";
 import { handleError } from "@/lib/error_handler/handleError";
 
 export async function GET(
@@ -40,7 +40,7 @@ export async function DELETE(
     
 
     const {stockId,id}=params
-    const deletedItem = await deleteStockItem(id,stockId, user.hotelId,user.id,user.role);
+    const deletedItem = await deleteStockItem(id, user.hotelId);
 
     return NextResponse.json(
       { message: "Article de stock supprimée avec succès" },
@@ -66,7 +66,7 @@ export async function PATCH(
     const updateData = await request.json();
 
     const updatedItem = await updateStockItem(
-      id,stockId, user.hotelId,user.id,user.role,
+      id,stockId, user.hotelId,
       updateData
     );
 

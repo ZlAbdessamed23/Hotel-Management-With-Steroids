@@ -3,7 +3,7 @@ import {
   ClientCardResult,
   ClientReservationData,
   ClientWithReservationResult,
-} from "./types";
+} from "@/app/api/main/client/client_with_reservation/[clientId]/[reservationId]/types";
 import {
   ValidationError,
   NotFoundError,
@@ -20,12 +20,13 @@ export async function updateClientAndReservation(
 ): Promise<ClientWithReservationResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      // Check if client and reservation exist
+      // Check if client and reservation exist with optimized query
       const existingClient = await prisma.client.findUnique({
         where: { id: clientId },
         include: {
           reservations: {
-            include: { room: true }, // Include room details
+            where: { id: reservationId },
+            include: { room: true },
           },
         },
       });
@@ -34,15 +35,11 @@ export async function updateClientAndReservation(
         throw new NotFoundError(`Client non trouvé`);
       }
 
-      const existingReservation = existingClient.reservations.find(
-        (r) => r.id === reservationId
-      );
+      const existingReservation = existingClient.reservations[0];
       if (!existingReservation) {
         throw new NotFoundError(`Reservation non trouvée`);
       }
-      const isStatusChangingToValid =
-        existingReservation.state !== ReservationState.valide &&
-        data.status === ReservationState.valide;
+
       const clientUpdateData: Prisma.ClientUpdateInput = {
         fullName: data.fullName,
         dateOfBirth: data.dateOfBirth,
@@ -56,49 +53,34 @@ export async function updateClientAndReservation(
         gender: data.gender,
       };
 
-      const reservationUpdateData: Prisma.ReservationUpdateInput = {
-        startDate: data.startDate,
-        endDate: data.endDate,
-        totalDays: data.totalDays,
-        state: data.status,
-        source: data.source,
-        discoveryChannel: data.discoveryChannel,
-      };
+      // Handle date changes and total days calculation
+      let newStartDate = data.startDate || existingReservation.startDate;
+      let newEndDate = data.endDate || existingReservation.endDate;
+      let newTotalDays: number | undefined;
+      let newTotalPrice: number | undefined;
+      let newUnitPrice: number | undefined;
 
-      // Remove undefined fields
-      Object.keys(clientUpdateData).forEach((key) => {
-        if (
-          clientUpdateData[key as keyof Prisma.ClientUpdateInput] === undefined
-        ) {
-          delete clientUpdateData[key as keyof Prisma.ClientUpdateInput];
-        }
-      });
-
-      Object.keys(reservationUpdateData).forEach((key) => {
-        if (
-          reservationUpdateData[key as keyof Prisma.ReservationUpdateInput] ===
-          undefined
-        ) {
-          delete reservationUpdateData[
-            key as keyof Prisma.ReservationUpdateInput
-          ];
-        }
-      });
+      // Calculate new total days if dates changed
+      if (data.startDate || data.endDate) {
+        newTotalDays = Math.ceil(
+          (new Date(newEndDate).getTime() - new Date(newStartDate).getTime()) /
+            (1000 * 60 * 60 * 24)
+        );
+      }
 
       // Check if room change is requested and if it's different from the current room
-      const isRoomChangeRequested =
-        data.roomNumber !== undefined || data.roomType !== undefined;
+      const isRoomChangeRequested = data.roomNumber !== undefined || data.roomType !== undefined;
       const isSameRoom =
-        (!data.roomNumber ||
-          data.roomNumber === existingReservation.room.number) &&
+        (!data.roomNumber || data.roomNumber === existingReservation.room.number) &&
         (!data.roomType || data.roomType === existingReservation.room.type);
+
+      let newRoom ;
 
       if (isRoomChangeRequested && !isSameRoom) {
         const newRoomType = data.roomType || existingReservation.room.type;
-        const newRoomNumber =
-          data.roomNumber || existingReservation.room.number;
+        const newRoomNumber = data.roomNumber || existingReservation.room.number;
 
-        const newRoom = await prisma.room.findFirst({
+        newRoom = await prisma.room.findFirst({
           where: {
             hotelId,
             number: newRoomNumber,
@@ -123,10 +105,49 @@ export async function updateClientAndReservation(
           data: { status: RoomStatus.reservee },
         });
 
-        reservationUpdateData.roomNumber = newRoomNumber;
-        reservationUpdateData.roomType = newRoomType;
+        // Get new unit price from the new room
+        newUnitPrice = newRoom.price.toNumber();
+      }
+
+      // Calculate total price based on changes
+      if (newTotalDays || newUnitPrice) {
+        // If we have a new room, use its price, otherwise use existing room's price
+        const finalUnitPrice = newUnitPrice || existingReservation.unitPrice;
+        // If we have new total days, use that, otherwise use existing total days
+        const finalTotalDays = newTotalDays || existingReservation.totalDays;
+        
+        newTotalPrice = finalUnitPrice * finalTotalDays;
+      }
+
+      const reservationUpdateData: Prisma.ReservationUpdateInput = {
+        startDate: data.startDate,
+        endDate: data.endDate,
+        totalDays: newTotalDays,
+        state: data.status,
+        source: data.source,
+        discoveryChannel: data.discoveryChannel,
+        totalPrice: newTotalPrice,
+        unitPrice: newUnitPrice,
+      };
+
+      if (newRoom) {
+        reservationUpdateData.roomNumber = newRoom.number;
+        reservationUpdateData.roomType = newRoom.type;
         reservationUpdateData.room = { connect: { id: newRoom.id } };
       }
+
+      // Remove undefined fields
+      Object.keys(clientUpdateData).forEach((key) => {
+        if (clientUpdateData[key as keyof Prisma.ClientUpdateInput] === undefined) {
+          delete clientUpdateData[key as keyof Prisma.ClientUpdateInput];
+        }
+      });
+
+      Object.keys(reservationUpdateData).forEach((key) => {
+        if (reservationUpdateData[key as keyof Prisma.ReservationUpdateInput] === undefined) {
+          delete reservationUpdateData[key as keyof Prisma.ReservationUpdateInput];
+        }
+      });
 
       // Update client and reservation
       const updatedClient = await prisma.client.update({
@@ -139,56 +160,55 @@ export async function updateClientAndReservation(
               data: reservationUpdateData,
             },
           },
-          
         },
-        select : {
-          fullName : true,
-          address : true,
-          email : true,
-          phoneNumber : true,
-          id : true,
-          identityCardNumber : true,
-          gender : true,
-          dateOfBirth : true ,
-          clientOrigin : true,
-          kidsNumber : true,
-          nationality : true,
-          membersNumber : true,
-          hotelId : true,
-          createdAt : true,
-          reservations : {
-            select : {
-              id:true,
-              roomNumber : true,
-              roomType : true,
-              createdAt : true,
-              totalDays : true,
-              totalPrice : true , 
-              currentOccupancy : true,
-              discoveryChannel : true,
-               source : true,
-               state : true,
-               startDate : true,
-               endDate : true,
-               unitPrice : true
+        select: {
+          fullName: true,
+          address: true,
+          email: true,
+          phoneNumber: true,
+          id: true,
+          identityCardNumber: true,
+          gender: true,
+          dateOfBirth: true,
+          clientOrigin: true,
+          kidsNumber: true,
+          nationality: true,
+          membersNumber: true,
+          hotelId: true,
+          createdAt: true,
+          reservations: {
+            select: {
+              id: true,
+              roomNumber: true,
+              roomType: true,
+              createdAt: true,
+              totalDays: true,
+              totalPrice: true,
+              currentOccupancy: true,
+              discoveryChannel: true,
+              source: true,
+              state: true,
+              startDate: true,
+              endDate: true,
+              unitPrice: true
             }
           }
-          
         }
       });
-       if (isStatusChangingToValid) {
-         await updateClientCheckInStatistics(
-           hotelId,
-           existingClient.gender,
-           data.gender as UserGender,
-           null,
-           existingClient.clientOrigin,
-           data.clientOrigin as ClientOrigin,
-           0,
-           prisma,
-           false
-         );
-       }
+
+      await updateClientCheckInStatistics(
+        hotelId,
+        existingClient.gender,
+        data.gender as UserGender,
+        null,
+        existingClient.clientOrigin,
+        data.clientOrigin as ClientOrigin,
+        existingReservation.totalPrice,
+        newTotalPrice  || existingReservation.totalPrice ,
+        prisma,
+        false
+      );
+
       return { client: updatedClient };
     });
   } catch (error) {
@@ -207,59 +227,62 @@ export async function getClientWithReservations(
         id: clientId,
         hotelId: hotelId,
       },
-      select : {
-        fullName : true,
-        address : true,
-        email : true,
-        phoneNumber : true,
-        id : true,
-        identityCardNumber : true,
-        gender : true,
-        dateOfBirth : true ,
-        clientOrigin : true,
-        kidsNumber : true,
-        nationality : true,
-        membersNumber : true,
-        hotelId : true,
-        createdAt : true,
-        reservations : {
-          select : {
-            id:true,
-            roomNumber : true,
-            roomType : true,
-            createdAt : true,
-            totalDays : true,
-            totalPrice : true , 
-            currentOccupancy : true,
-            discoveryChannel : true,
-             source : true,
-             state : true,
-             startDate : true,
-             endDate : true,
-             unitPrice : true,
-             member : {
-              select : {
-                address : true,
-                id : true , 
-                email : true,
-                phoneNumber : true,
-                dateOfBirth : true,
-                fullName : true,
-                identityCardNumber : true,
-                nationality : true,
-                gender : true,
-              
+      select: {
+        fullName: true,
+        address: true,
+        email: true,
+        phoneNumber: true,
+        id: true,
+        identityCardNumber: true,
+        gender: true,
+        dateOfBirth: true,
+        clientOrigin: true,
+        kidsNumber: true,
+        nationality: true,
+        membersNumber: true,
+        hotelId: true,
+        createdAt: true,
+        reservations: {
+          where: {
+            id: reservationId
+          },
+          select: {
+            id: true,
+            roomNumber: true,
+            roomType: true,
+            createdAt: true,
+            totalDays: true,
+            totalPrice: true,
+            currentOccupancy: true,
+            discoveryChannel: true,
+            source: true,
+            state: true,
+            startDate: true,
+            endDate: true,
+            unitPrice: true,
+            member: {
+              select: {
+                address: true,
+                id: true,
+                email: true,
+                phoneNumber: true,
+                dateOfBirth: true,
+                fullName: true,
+                identityCardNumber: true,
+                nationality: true,
+                gender: true,
               }
-             }
+            }
           }
         }
-        
       }
     });
 
     if (!client) {
-      throw new Error("Client non trouvé");
+      throw new NotFoundError("Client non trouvé");
     }
+
+   
 
     return { client };
   } catch (error) {
@@ -267,7 +290,7 @@ export async function getClientWithReservations(
   }
 }
 // The role-checking functions remain the same
-export function checkReceptionistRole(roles: UserRole[]) {
+export function checkReceptionistReceptionManagerRole(roles: UserRole[]) {
   if (
     !roles.includes(UserRole.receptionist) &&
     !roles.includes(UserRole.reception_Manager)
@@ -278,7 +301,7 @@ export function checkReceptionistRole(roles: UserRole[]) {
   }
 }
 
-export function checkReceptionistAdminRole(roles: UserRole[]) {
+export function checkReceptionistReceptionManagerAdminRole(roles: UserRole[]) {
   if (
     !roles.includes(UserRole.receptionist) &&
     !roles.includes(UserRole.admin) &&

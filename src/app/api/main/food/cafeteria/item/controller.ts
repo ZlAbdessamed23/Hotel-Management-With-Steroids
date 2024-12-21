@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma/prismaClient";
-import { AddCafeteriaMenuItemData, CafeteriaMenuItemResult } from "./types";
+import { AddCafeteriaMenuItemData, CafeteriaMenuItemResult } from "@/app/api/main/food/cafeteria/item/types";
 import {
   NotFoundError,
   UnauthorizedError,
@@ -12,15 +12,7 @@ export async function addCafeteriaMenuItem(
 ): Promise<CafeteriaMenuItemResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      // Check if the cafeteria menu exists
-      const existingCafeteriaMenu = await prisma.cafeteriaMenu.findUnique({
-        where: { id: data.cafeteriaMenuId },
-      });
-
-      if (!existingCafeteriaMenu) {
-        throw new NotFoundError(`Cafeteria menu non trouvée.`);
-      }
-
+      
       // Create the cafeteria menu item
       const cafeteriaMenuItem = await prisma.cafeteriaMenuItem.create({
         data: {

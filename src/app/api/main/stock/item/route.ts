@@ -4,8 +4,8 @@ import {
   addStockItem,
   getAllStockItems,
  
-} from "./controller";
-import { AddStockItemData, requiredStockItemFields } from "./types";
+} from "@/app/api/main/stock/item/controller";
+import { AddStockItemData, requiredStockItemFields } from "@/app/api/main/stock/item/types";
 
 import { handleError } from "@/lib/error_handler/handleError";
 import { getUser } from "@/lib/token/getUserFromToken";
@@ -18,14 +18,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     const data: AddStockItemData = await request.json();
-    console.log(data);
+    
     const missingFields = requiredStockItemFields.filter(
       (field) => !data[field] && data[field]!==0
     );
 
     if (missingFields.length > 0) {
       return NextResponse.json(
-        { message: `${missingFields.join(", ")}: est requis` },
+        { message: `${missingFields.join(", ")}: sont requis` },
         { status: 400 }
       );
     }
@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
 
     // Check if the user is either an admin or a receptionist
     

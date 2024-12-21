@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma/prismaClient";
 import {
   AddClientsHistoriqueData,
   ClientHistorique,
-  ClientsHistorique,
+  
 } from "@/app/api/main/historique/types";
 
 const HISTORIQUE_LIMIT = 150;
@@ -14,28 +14,33 @@ export async function addClientsHistorique(
 ): Promise<ClientHistorique> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      // Get IDs of excess records in a single query
-      const excessRecords = await prisma.clientsHistorique.findMany({
-        where: { hotelId },
-        orderBy: { createdAt: "asc" },
-        take: -HISTORIQUE_LIMIT,
-        select: { id: true },
+      // Count total records for this hotel
+      const totalRecords = await prisma.clientsHistorique.count({
+        where: { hotelId }
       });
 
-      // If we have excess records, delete them
-      if (excessRecords.length > 0) {
+      // If we're at or exceeding the limit, delete oldest records
+      if (totalRecords >= HISTORIQUE_LIMIT) {
+        const recordsToDelete = totalRecords - HISTORIQUE_LIMIT + 1; // +1 to make room for the new record
+        const oldestRecords = await prisma.clientsHistorique.findMany({
+          where: { hotelId },
+          orderBy: { createdAt: 'asc' }, // Get oldest records first
+          take: recordsToDelete,
+          select: { id: true }
+        });
+
         await prisma.clientsHistorique.deleteMany({
           where: {
             id: {
-              in: excessRecords.map((record) => record.id),
-            },
-          },
+              in: oldestRecords.map(record => record.id)
+            }
+          }
         });
       }
 
       // Create the new record
       const createdClientsHistorique = await prisma.clientsHistorique.create({
-        data: { ...data, hotelId },
+        data: { ...data, hotelId }
       });
 
       return { ClientHistorique: createdClientsHistorique };

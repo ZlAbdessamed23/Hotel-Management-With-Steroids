@@ -1,6 +1,6 @@
 // app/api/main/employee/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { addEmployee, checkAdminRole, getAllEmployees } from "./controller";
+import { addEmployee, checkAdminRole, getAllEmployees } from "@/app/api/main/employee/controller";
 import { handleError } from "@/lib/error_handler/handleError";
 import { AddEmployeeData, requiredFields } from "@/app/api/main/employee/types";
 
@@ -12,7 +12,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
     checkAdminRole(user.role);
 
     const data: AddEmployeeData = await request.json();

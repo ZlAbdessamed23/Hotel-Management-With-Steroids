@@ -114,12 +114,12 @@ export async function deleteCafeteria(
         throw throwAppropriateError(error);
     }
 }
-export function checkAdminRole(roles: UserRole[]) {
+export function checkAdminReceptionManagerRestaurantManagerRole(roles: UserRole[]) {
     if (
-      !roles.includes(UserRole.admin) 
+      !roles.includes(UserRole.admin) && !roles.includes(UserRole.reception_Manager) && !roles.includes(UserRole.restaurent_Manager)
     ) {
       throw new UnauthorizedError(
-        "Sauf l'Admin peut faire cette action"
+        "Sauf l'Admin reception manager restaurant manager peut faire cette action"
       );
     }
   }

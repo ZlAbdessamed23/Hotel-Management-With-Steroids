@@ -30,12 +30,30 @@ export type EmployeeWithTasks = {
               title: true;
               description: true;
               deadline: true;
-              status: true;
+              isDone: true;
+              createdByAdmin: {
+                select: {
+                  firstName: true;
+                  lastName: true;
+                };
+              };
+              createdByEmployee: {
+                select: {
+                  firstName: true;
+                  lastName: true;
+                };
+              };
             };
           };
         };
       };
-      note: { select: { title: true; description: true; deadline: true } };
+      note: { 
+        select: { 
+          title: true; 
+          description: true; 
+          deadline: true;
+        };
+      };
     };
   }>;
 };

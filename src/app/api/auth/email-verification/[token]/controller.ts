@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma/prismaClient";
-import { EmailVerificationResult } from "./types";
+import { EmailVerificationResult } from "@/app/api/auth/email-verification/[token]/types";
 import { NextResponse } from "next/server";
 import { VerificationError } from "@/lib/error_handler/customerErrors";
 export async function verifyEmailToken(
@@ -46,11 +46,8 @@ export function handleVerificationResult(
     case "invalid":
       throw new VerificationError("Jeton de vérification invalide", 400);
     case "expired":
-      throw new VerificationError(
-        "Le jeton de vérification a expiré. Veuillez en demander un nouveau.",
-        400
-      );
+      return NextResponse.redirect(new URL("/login", `${process.env.SERVER_URL}`));
     case "success":
-      return NextResponse.redirect(new URL("/login", "http://104.154.75.47"));
+      return NextResponse.redirect(new URL("/login", `${process.env.SERVER_URL}`));
   }
 }

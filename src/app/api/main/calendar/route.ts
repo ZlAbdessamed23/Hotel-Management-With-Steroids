@@ -6,7 +6,7 @@ import {
 } from "@/app/api/main/calendar/types";
 import {
   addCalendar,
-  checkAdminRole,
+  checkAdminReceptionManagerRole,
   getCalendars,
 } from "@/app/api/main/calendar/controller";
 
@@ -19,8 +19,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
-    checkAdminRole(user.role);
+    
+    checkAdminReceptionManagerRole(user.role);
 
     const data: AddCalendarData = await request.json();
     const missingFields = requiredCalendarFields.filter(

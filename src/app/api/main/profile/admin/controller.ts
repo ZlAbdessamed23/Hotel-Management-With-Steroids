@@ -73,7 +73,7 @@ export async function updateProfile(
     if (data.firstName) updateData.firstName = data.firstName;
     if (data.lastName) updateData.lastName = data.lastName;
     if (data.address) updateData.address = data.address;
-    if (data.dateOfBirth) updateData.dateOfBirth = data.dateOfBirth;
+    if (data.dateOfBirth) updateData.dateOfBirth = new Date(data.dateOfBirth);
 
     if (data.phoneNumber) updateData.phoneNumber = data.phoneNumber;
     if (data.gender) updateData.gender = data.gender as UserGender;

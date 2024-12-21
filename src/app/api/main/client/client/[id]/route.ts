@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-  checkReceptionistAdminRole,
-  checkReceptionistRole,
+  checkReceptionistReceptionManagerAdminRole,
+  checkReceptionistReceptionManagerRole,
   deleteClientById,
   getClientById,
   updateClient,
-} from "./controller";
+} from "@/app/api/main/client/client/[id]/controller";
 import { handleError } from "@/lib/error_handler/handleError";
-import { UpdateClientData } from "./types";
+import { UpdateClientData } from "@/app/api/main/client/client/[id]/types";
 import { getUser } from "@/lib/token/getUserFromToken";
 
 /////////////////////// get client with id //////////////////////////////////
@@ -20,8 +20,8 @@ export async function GET(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
-    checkReceptionistAdminRole(user.role);
+    
+    checkReceptionistReceptionManagerAdminRole(user.role);
 
     const clientId = params.id;
     const client = await getClientById(clientId, user.hotelId);
@@ -42,8 +42,8 @@ export async function DELETE(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
-    checkReceptionistRole(user.role);
+    
+    checkReceptionistReceptionManagerRole(user.role);
 
     const clientId = params.id;
     const deletedClient = await deleteClientById(clientId, user.hotelId);
@@ -67,8 +67,8 @@ export async function PATCH(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
-    checkReceptionistRole(user.role);
+    
+    checkReceptionistReceptionManagerRole(user.role);
 
     const clientId = params.id;
     const updateData: UpdateClientData = await request.json();

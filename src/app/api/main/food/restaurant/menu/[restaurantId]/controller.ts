@@ -13,7 +13,7 @@ export async function getAllRestaurantMenus(
   ): Promise<RestaurantMenusResult> {
     try {
         return await prisma.$transaction(async (prisma) => {
-            await checkUserRestaurantAccess(userId,restaurantId,userRole,prisma)
+            
             const RestaurantMenus = await prisma.restaurantMenu.findMany({
             where: { hotelId: hotelId,restaurantId },
             select : {
@@ -39,37 +39,3 @@ export async function getAllRestaurantMenus(
     }
   }
 
-export async function checkUserRestaurantAccess(
-    userId: string,
-    restaurantId: string,
-    userRole: UserRole[],
-    prisma: Omit<
-      PrismaClient,
-      "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
-    >
-  ): Promise<void> {
-    try {
-     
-      if (userRole.includes(UserRole.admin)) {
-        return;
-      }
-  
-      const RestaurantEmployee = await prisma.restaurantEmployee.findUnique({
-        where: {
-          restaurantId_employeeId: {
-            restaurantId,
-            employeeId: userId,
-          },
-        },
-      });
-  
-      
-      if (!RestaurantEmployee) {
-        throw new UnauthorizedError(
-          "L'utilisateur n'est pas autorisé à accéder à ce Restaurant"
-        );
-      }
-    } catch (error) {
-      throwAppropriateError(error);
-    }
-  }

@@ -5,7 +5,7 @@ import {
   updateProfile,
 } from "@/app/api/main/profile/employee/controller";
 import { handleError } from "@/lib/error_handler/handleError";
-import { UpdateEmployeeData } from "./types";
+import { UpdateEmployeeData } from "@/app/api/main/profile/employee/types";
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
@@ -13,7 +13,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+   
 
     const employeeWithTasks = await getEmployeeWithTasks(user.id);
     return NextResponse.json(employeeWithTasks, { status: 200 });
@@ -27,7 +27,7 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+ 
 
     const updateData: UpdateEmployeeData = await request.json();
 

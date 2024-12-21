@@ -59,7 +59,7 @@ async function validateAdminData(
   const [existingAdmin, existingPlan] = await Promise.all([
     prisma.admin.findUnique({ where: { email: data.email } }),
     prisma.plan.findUnique({
-      where: { id: data.planId },
+      where: { name:data.planName },
       select: { name: true },
     }),
   ]);
@@ -73,13 +73,13 @@ async function hashPassword(password: string): Promise<string> {
 
 function getSubscriptionData(planName: string): { endDate?: Date } {
   switch (planName) {
-    case "FREE":
+    case "Free":
       return {
         endDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365 * 50), // 50 years
       };
-    case "PREMIUM":
+    case "Premium":
       return {};
-    case "STANDARD":
+    case "Standard":
       return {
         endDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days
       };
@@ -118,7 +118,7 @@ async function createAdminWithHotel(
           cardNumber: data.cardNumber,
           subscription: {
             create: {
-              plan: { connect: { id: data.planId } },
+              plan: { connect: { name: data.planName } },
               ...subscriptionData,
             },
           },

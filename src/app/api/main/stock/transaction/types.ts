@@ -13,9 +13,25 @@ export const requiredStockTransactionFields: (keyof AddStockTransactionData)[] =
   ["quantity", "type", "stockId", "stockItemId"];
 
 export type TransactionResult = {
-  Transaction: Prisma.TransactionGetPayload<{}>;
+  Transaction: Prisma.TransactionGetPayload<{select:{
+    id:true,
+    transactionAmount:true,
+    type:true,
+    quantity:true,
+    createdAt:true,
+    itemId:true,
+    hotelId:true
+  }}>;
 };
 
 export type TransactionsResult = {
-  Transactions: Prisma.TransactionGetPayload<{}>[];
+  Transactions: Prisma.TransactionGetPayload<{select:{
+    id:true,
+    transactionAmount:true,
+    type:true,
+    quantity:true,
+    createdAt:true,
+    itemId:true,
+    hotelId:true
+  }}>[];
 };

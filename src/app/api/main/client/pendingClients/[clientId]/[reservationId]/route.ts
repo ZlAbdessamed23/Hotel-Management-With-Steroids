@@ -44,7 +44,7 @@ export async function DELETE(
       
   
       const updatedEmployee = await updateClientAndReservation(
-       clientId,reservationId 
+       clientId,reservationId ,user.hotelId
       );
   
       return NextResponse.json(

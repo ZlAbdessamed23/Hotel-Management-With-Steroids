@@ -335,7 +335,7 @@ model Room {
   id                        String                  @id @default(cuid())
   type                      RoomType
   number                    String
-  floorNumber               String
+  floorNumber               String?
   description               String?
   price                     Decimal
   capacity                  Int
@@ -437,9 +437,9 @@ model Member {
   id                String     @id @default(cuid())
   fullName          String
   dateOfBirth       DateTime
-  phoneNumber       String
+  phoneNumber       String?
   email             String?    // This makes it optional in both Prisma and database
-  identityCardNumber String
+  identityCardNumber String?
   address           String
   nationality       String?
   gender            UserGender
@@ -456,7 +456,7 @@ model Member {
 model Note{
   id                                String                             @id @default(cuid())
   title                             String
-  description                       String
+  description                       String?
   deadline                          DateTime
   
   hotel                             Hotel                              @relation(fields: [hotelId], references: [id])
@@ -621,11 +621,12 @@ model Document {
   id                                String                             @id @default(cuid())
   title                             String
   description                       String?
-  content                           String?                              
+  content                           String?
+  creator                           String                              
   createdByEmployee                 Employee?                          @relation( "EmployeeCreatedDocuments",fields: [createdByEmployeeId], references: [id])
   createdByEmployeeId               String?
   createdByAdmin                    Admin?                             @relation("AdminCreatedDocuments", fields: [createdByAdminId], references: [id])
-  createdByAdminId                  String?
+  createdByAdminId                  String?                            
   hotel                             Hotel                              @relation(fields: [hotelId], references: [id])
   hotelId                           String
   documentAccess                    DocumentAccess[]                   @relation("DocumentToAccess")
@@ -650,7 +651,7 @@ model DocumentAccess {
 model Task {
   id                                String                             @id @default(cuid())
   title                             String
-  description                       String
+  description                       String?
   deadline                          DateTime
   isDone                            Boolean                           @default(false)
   createdByEmployeeId               String?

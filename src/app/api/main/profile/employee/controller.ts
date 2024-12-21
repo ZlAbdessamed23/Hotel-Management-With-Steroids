@@ -6,12 +6,11 @@ import {
 } from "@/app/api/main/profile/employee/types";
 import { NotFoundError } from "@/lib/error_handler/customerErrors";
 import {
-  DaysOfWeek,
-  Departements,
+  
   EmployeeState,
   Prisma,
   UserGender,
-  UserRole,
+  
 } from "@prisma/client";
 import { throwAppropriateError } from "@/lib/error_handler/throwError";
 import bcrypt from "bcrypt";
@@ -42,18 +41,54 @@ export async function getEmployeeWithTasks(
                 title: true,
                 description: true,
                 deadline: true,
+                isDone: true,
+                createdByAdmin: {
+                  select: {
+                    firstName: true,
+                    lastName: true,
+                  },
+                },
+                createdByEmployee: {
+                  select: {
+                    firstName: true,
+                    lastName: true,
+                  },
+                },
               },
             },
           },
         },
-        note: { select: { title: true, description: true, deadline: true } },
+        note: { 
+          select: { 
+            title: true, 
+            description: true, 
+            deadline: true 
+          } 
+        },
       },
     });
 
     if (!employee) {
       throw new NotFoundError("Employée non trouvé");
     }
-    return { Employee: employee };
+
+   
+    const employeeWithCreatorInfo = {
+      ...employee,
+      employeeTask: employee.employeeTask.map(({ task }) => ({
+        task: {
+          ...task,
+          status: task.isDone ? 'COMPLETED' : 'PENDING',
+          creator: task.createdByAdmin
+            ? `${task.createdByAdmin.firstName} ${task.createdByAdmin.lastName} (Admin)`
+            : task.createdByEmployee
+            ? `${task.createdByEmployee.firstName} ${task.createdByEmployee.lastName} (Employee)`
+            : 'Unknown Creator'
+        }
+      }))
+    };
+  
+    return { Employee: employeeWithCreatorInfo };
   } catch (error) {
     throwAppropriateError(error);
   }

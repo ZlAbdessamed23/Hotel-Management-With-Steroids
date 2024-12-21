@@ -4,7 +4,7 @@ import {
   addSportsFacility,
   getAllSportsFacility,
   checkReceptionManagerCoachAdminRole,
-  checkReceptionManagerCoachRole,
+  
 } from "@/app/api/main/sports_facility/controller";
 import {
   AddSportsFacilityData,
@@ -20,8 +20,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
-    checkReceptionManagerCoachRole(user.role);
+    
+    checkReceptionManagerCoachAdminRole(user.role);
 
     const data: AddSportsFacilityData = await request.json();
     const missingFields = requiredSportsFacilityFields.filter(
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     );
     if (missingFields.length > 0) {
       return NextResponse.json(
-        { message: `${missingFields.join(", ")}: is requis` },
+        { message: `${missingFields.join(", ")}: sont requis` },
         { status: 400 }
       );
     }
@@ -53,12 +53,12 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
 
     // Check if the user is either an admin or a receptionist
     checkReceptionManagerCoachAdminRole(user.role);
 
-    const sportsFacility = await getAllSportsFacility(user.hotelId);
+    const sportsFacility = await getAllSportsFacility(user.id,user.role,user.hotelId);
     return NextResponse.json(sportsFacility, { status: 200 });
   } catch (error) {
     return handleError(error);

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getUser } from "@/lib/token/getUserFromToken";
-import { deleteNote, getNoteById, updateNote } from "./controller";
+import { deleteNote, getNoteById, updateNote } from "@/app/api/main/note/[id]/controller";
 import { handleError } from "@/lib/error_handler/handleError";
 export async function GET(
   request: NextRequest,

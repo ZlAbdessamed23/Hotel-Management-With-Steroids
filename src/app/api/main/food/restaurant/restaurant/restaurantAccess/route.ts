@@ -9,7 +9,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
 
     const getRestaurants = await getAccessRestaurants(
       user.id,

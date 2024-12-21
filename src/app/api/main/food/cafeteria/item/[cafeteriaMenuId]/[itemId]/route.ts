@@ -5,9 +5,9 @@ import {
   updateCafeteriaMenuItem,
   checkRestaurantManagerChefAdminRole,
   checkRestaurantManagerChefRole,
-} from "./controller";
+} from "@/app/api/main/food/cafeteria/item/[cafeteriaMenuId]/[itemId]/controller";
 import { handleError } from "@/lib/error_handler/handleError";
-import { UpdateCafeteriaMenuItemData } from "./types";
+import { UpdateCafeteriaMenuItemData } from "@/app/api/main/food/cafeteria/item/[cafeteriaMenuId]/[itemId]/types";
 import { getUser } from "@/lib/token/getUserFromToken";
 
 /////////////////////// Get Cafeteria Menu Item //////////////////////////////////////
@@ -20,14 +20,14 @@ export async function GET(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
     checkRestaurantManagerChefAdminRole(user.role);
 
     const { cafeteriaMenuId, itemId } = params;
     const { cafeteriaMenuItem } = await getCafeteriaMenuItemById(
       cafeteriaMenuId,
       itemId,
-      user.hotelId
+      
     );
 
     return NextResponse.json(cafeteriaMenuItem, { status: 200 });
@@ -46,14 +46,14 @@ export async function DELETE(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
     checkRestaurantManagerChefRole(user.role);
 
     const { cafeteriaMenuId, itemId } = params;
     const { cafeteriaMenuItem } = await deleteCafeteriaMenuItem(
-      cafeteriaMenuId,
+      
       itemId,
-      user.hotelId
+      
     );
 
     return NextResponse.json(
@@ -75,16 +75,16 @@ export async function PATCH(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
     checkRestaurantManagerChefRole(user.role);
 
     const { cafeteriaMenuId, itemId } = params;
     const updateData: UpdateCafeteriaMenuItemData = await request.json();
 
     const { cafeteriaMenuItem } = await updateCafeteriaMenuItem(
-      cafeteriaMenuId,
+      
       itemId,
-      user.hotelId,
+     
       updateData
     );
 

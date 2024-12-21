@@ -8,7 +8,7 @@ import prisma from "@/lib/prisma/prismaClient";
 import {
   RestaurantMenuItemResult,
   UpdateRestaurantMenuItemData,
-} from "./types";
+} from "@/app/api/main/food/restaurant/item/[restaurantMenuId]/[itemId]/types";
 ///////////////////// get /////////////////////////////////////
 
 export async function getRestaurantMenuItemById(

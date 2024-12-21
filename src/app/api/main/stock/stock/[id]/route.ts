@@ -1,6 +1,6 @@
 import { getUser } from "@/lib/token/getUserFromToken";
 import { NextRequest, NextResponse } from "next/server";
-import { updateStock, getStockById, deleteStock, checkAdminRole } from "@/app/api/main/stock/stock/[id]/controller";
+import { updateStock, getStockById, deleteStock, checkReceptionMnagerStockManagerAdminRole } from "@/app/api/main/stock/stock/[id]/controller";
 import { UpdateStockData } from "@/app/api/main/stock/stock/[id]/types";
 import { handleError } from "@/lib/error_handler/handleError";
 
@@ -13,8 +13,8 @@ export async function GET(
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    console.log(user);
-    checkAdminRole(user.role)
+    
+    checkReceptionMnagerStockManagerAdminRole(user.role)
 
     const StockId = params.id;
     const Stock = await getStockById(
@@ -38,8 +38,8 @@ export async function DELETE(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
-    checkAdminRole(user.role)
+    
+    checkReceptionMnagerStockManagerAdminRole(user.role)
 
     const StockId = params.id;
     const deletedStock = await deleteStock(
@@ -49,7 +49,7 @@ export async function DELETE(
     );
 
     return NextResponse.json(
-      { message: "Rapport supprimé avec succès" },
+      { message: "Stock supprimé avec succès" },
       { status: 200 }
     );
   } catch (error) {
@@ -66,7 +66,7 @@ export async function PATCH(
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    checkAdminRole(user.role)
+    checkReceptionMnagerStockManagerAdminRole(user.role)
     const StockId = params.id;
     const updateData:UpdateStockData = await request.json();
 
@@ -77,7 +77,7 @@ export async function PATCH(
     );
 
     return NextResponse.json(
-      { message: "Rapport mis à jour avec succès" },
+      { message: "Stock mis à jour avec succès" },
       { status: 200 }
     );
   } catch (error) {

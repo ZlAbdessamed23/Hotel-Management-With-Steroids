@@ -5,13 +5,13 @@ import {
 import { throwAppropriateError } from "@/lib/error_handler/throwError";
 import { Prisma, UserRole } from "@prisma/client";
 import prisma from "@/lib/prisma/prismaClient";
-import { CafeteriaMenuItemResult, UpdateCafeteriaMenuItemData } from "./types";
+import { CafeteriaMenuItemResult, UpdateCafeteriaMenuItemData } from "@/app/api/main/food/cafeteria/item/[cafeteriaMenuId]/[itemId]/types";
 ///////////////////// get /////////////////////////////////////
 
 export async function getCafeteriaMenuItemById(
   cafeteriaMenuId: string,
   itemId: string,
-  hotelId: string
+  
 ): Promise<CafeteriaMenuItemResult> {
   try {
     const existingItem = await prisma.cafeteriaMenuItem.findUnique({
@@ -39,9 +39,9 @@ export async function getCafeteriaMenuItemById(
 ///////////////////////////// delete ///////////////////////////////
 
 export async function deleteCafeteriaMenuItem(
-  cafeteriaMenuId: string,
+  
   itemId: string,
-  hotelId: string
+  
 ): Promise<CafeteriaMenuItemResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
@@ -66,9 +66,9 @@ export async function deleteCafeteriaMenuItem(
 /////////////////////////////// update //////////////////////////////////////////
 
 export async function updateCafeteriaMenuItem(
-  cafeteriaMenuId: string,
+ 
   itemId: string,
-  hotelId: string,
+  
   data: UpdateCafeteriaMenuItemData
 ): Promise<CafeteriaMenuItemResult> {
   try {

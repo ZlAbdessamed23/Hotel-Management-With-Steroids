@@ -11,29 +11,21 @@ export async function getAccessRestaurants(
 ): Promise<RestaurantsResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      if(userRole.includes(UserRole.admin)){
-        const Restaurants = await prisma.restaurant.findMany({
-          where: {
-            hotel: { id: hotelId },
-          },
-          select: { id: true, name: true, description: true },
-        });
-  
-        return { Restaurants: Restaurants };
-      }
       const Restaurants = await prisma.restaurant.findMany({
-        where: {
+        where: userRole.includes(UserRole.admin) ? {
+          hotel: { id: hotelId }
+        } : {
           hotel: { id: hotelId },
           restaurantEmployee: {
             some: {
-              employeeId:userId
-            },
-          },
+              employeeId: userId
+            }
+          }
         },
-        select: { id: true, name: true, description: true },
+        select: { id: true, name: true, description: true }
       });
 
-      return { Restaurants: Restaurants };
+      return { Restaurants };
     });
   } catch (error) {
     throw throwAppropriateError(error);

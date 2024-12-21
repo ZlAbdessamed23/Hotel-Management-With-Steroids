@@ -16,44 +16,41 @@ import { throwAppropriateError } from "@/lib/error_handler/throwError";
 export async function addStockCategory(
   data: AddStockCategoryData,
   hotelId:string,
-  userId:string,
-  userRole:UserRole[]
+  
 ): Promise<CategoryResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      await checkUserStockAccess(userId,data.stockId,userRole,prisma)
-      const stock = await prisma.stock.findUnique({
-        where: { id: data.stockId },
+      
+      // Get hotel with subscription plan and counts
+      const hotel = await prisma.hotel.findUnique({
+        where: { id: hotelId },
         include: {
-          hotel: {
+          subscription: {
+            include: {
+              plan: true,
+            },
+          },
+          _count: {
             select: {
-              subscription: {
-                include: {
-                  plan: true,
-                },
-              },
-              _count: {
-                select: {
-                  stockCategory: {
-                    where: {
-                      stockId: data.stockId,
-                    },
-                  },
-                },
-              },
+              stockItem: true,
+              
             },
           },
         },
       });
+        
 
-      if (!stock || !stock.hotel) throw new NotFoundError("Stock or Hotel not found");
-      if (!stock.hotel.subscription?.plan)
-        throw new SubscriptionError("Hotel doesn't have an active subscription");
+      if (!hotel) throw new NotFoundError("Hotel not trouvée");
+      if (!hotel.subscription?.plan)
+        throw new SubscriptionError("Hotel n'a pas d'abonnement actif");
+      
 
-      const stockCategoryCount = stock.hotel._count.stockCategory;
-      if (stockCategoryCount >= stock.hotel.subscription.plan.maxStockCategory) {
+
+      const itemCount = hotel._count.stockItem;
+
+      if (itemCount >= hotel.subscription.plan.maxStockItem) {
         throw new LimitExceededError(
-          "The maximum number of stock categories for this plan has been reached"
+          "Le nombre Maximum des stock items pour ce plan est déja atteint"
         );
       }
 
@@ -100,37 +97,3 @@ export async function getAllStockCategories(
 
 
 
-export async function checkUserStockAccess(
-  userId: string,
-  stockId: string,
-  userRole: UserRole[],
-  prisma: Omit<
-    PrismaClient,
-    "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
-  >
-): Promise<void> {
-  try {
-   
-    if (userRole.includes(UserRole.admin)) {
-      return;
-    }
-
-    const stockEmployee = await prisma.stockEmployee.findUnique({
-      where: {
-        stockId_employeeId: {
-          stockId,
-          employeeId: userId,
-        },
-      },
-    });
-
-    
-    if (!stockEmployee) {
-      throw new UnauthorizedError(
-        "L'utilisateur n'est pas autorisé à accéder à ce stock"
-      );
-    }
-  } catch (error) {
-    throwAppropriateError(error);
-  }
-}

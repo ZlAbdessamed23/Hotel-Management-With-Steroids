@@ -7,7 +7,7 @@ import {
 export type AddRoomData = {
   type: RoomType;
   number: string;
-  floorNumber: string;
+  floorNumber?: string;
   description?: string;
   price: number;
   capacity: number;
@@ -19,7 +19,7 @@ export type AddRoomData = {
 export const requiredRoomFields: (keyof AddRoomData)[] = [
   "type",
   "number",
-  "floorNumber",
+  
   "price",
   "capacity",
 ];

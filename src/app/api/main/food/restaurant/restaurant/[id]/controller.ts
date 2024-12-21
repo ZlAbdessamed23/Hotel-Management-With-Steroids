@@ -39,7 +39,7 @@ export async function updateRestaurant(
                     where: { id: RestaurantId ,hotelId},
                     data: updateData,
                 });
-                console.log(updatedRestaurant);
+                
                 return { Restaurant: updatedRestaurant };
             }
 
@@ -77,7 +77,7 @@ export async function getRestaurantById(
         }
 
 
-        console.log(existingRestaurant);
+        
         return { Restaurant: existingRestaurant };
     } catch (error) {
         throw throwAppropriateError(error);
@@ -102,12 +102,12 @@ export async function deleteRestaurant(
         throw throwAppropriateError(error);
     }
 }
-export function checkAdminRole(roles: UserRole[]) {
+export function checkAdminReceptionManagerRestaurantManagerRole(roles: UserRole[]) {
     if (
-      !roles.includes(UserRole.admin) 
+      !roles.includes(UserRole.admin) && !roles.includes(UserRole.reception_Manager) && !roles.includes(UserRole.restaurent_Manager)
     ) {
       throw new UnauthorizedError(
-        "Sauf l'Admin peut faire cette action"
+        "Sauf l'Admin reception manaegr restaurant manager peut faire cette action"
       );
     }
   }

@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma/prismaClient";
-import { AddTaskData, TaskResult, TasksResult } from "./types";
+import { AddTaskData, TaskResult, TasksResult } from "@/app/api/main/task/types";
 import {
   LimitExceededError,
   NotFoundError,
@@ -18,7 +18,10 @@ export async function addTask(
 ): Promise<TaskResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      const [hotel, assignedEmployees] = await Promise.all([
+      const isAdmin = userRole.includes(UserRole.admin);
+
+      // Parallel verification of hotel and user
+      const hotel  = await 
         prisma.hotel.findUnique({
           where: { id: hotelId },
           select: {
@@ -31,101 +34,52 @@ export async function addTask(
                 },
               },
             },
+            _count: { select: { task: true } },
             admin: {
               select: { id: true },
             },
-            _count: { select: { task: true } },
           },
-        }),
-        prisma.employee.findMany({
-          where: {
-            id: { in: data.employeeAssignedTask.map((ea) => ea.employeeId) },
-            hotelId: hotelId,
-          },
-          select: {
-            id: true,
-            departement: true,
-          },
-        }),
-      ]);
+        })
+       
+      
 
+      // Verify hotel and subscription
       if (!hotel) throw new NotFoundError("Hotel non trouvé");
       if (!hotel.subscription?.plan)
-        throw new SubscriptionError(
-          "Hotel n'a pas de plan d'abonnement active"
-        );
-
+        throw new SubscriptionError("Hotel n'a pas de plan d'abonnement active");
       if (hotel._count.task >= hotel.subscription.plan.maxTasks) {
         throw new LimitExceededError(
           "Le nombre Maximum des taches pour ce plan est déja atteint"
         );
       }
 
-      const isAdmin = userRole.includes(UserRole.admin);
-      const isReceptionManager = userRole.includes(UserRole.reception_Manager);
-      const isRestaurantManager = userRole.includes(
-        UserRole.restaurent_Manager
+      
+
+      
+
+      // Filter valid employee assignments
+      const validEmployeeAssignments = data.employeeAssignedTask.filter(
+        (ea) => ea.employeeId !== ""
       );
 
-      // Check if user has any required role
-      if (!isAdmin && !isReceptionManager && !isRestaurantManager) {
-        throw new UnauthorizedError(
-          "Utilisateur non authorisé de créer des taches "
-        );
-      }
-
-      if (assignedEmployees.length !== data.employeeAssignedTask.length) {
-        console.log(assignedEmployees, data.employeeAssignedTask);
-        throw new NotFoundError(
-          "Un ou plus d'employées assignés ne sont pas trouvés"
-        );
-      }
-
-      // Handle department validation for non-admin users
-      if (!isAdmin) {
-        // Determine allowed departments based on user roles
-        const allowedDepartments: Departements[] = [];
-        if (isReceptionManager) allowedDepartments.push(Departements.reception);
-        if (isRestaurantManager)
-          allowedDepartments.push(Departements.restauration);
-
-        // Check if any assigned employee's departments intersect with allowed departments
-        const invalidAssignment = assignedEmployees.some((emp) => {
-          const hasValidDepartment = emp.departement.some((dept) =>
-            allowedDepartments.includes(dept)
-          );
-          return !hasValidDepartment;
-        });
-
-        if (invalidAssignment) {
-          throw new UnauthorizedError(
-            "assigner des taches pour des employées dehors ton département n'est pas possible"
-          );
-        }
-      }
-
+      // Create task
       const createdTask = await prisma.task.create({
         data: {
           title: data.title,
           description: data.description,
           deadline: new Date(data.deadline),
-          hotelId: hotelId,
+          
+          hotel: { connect: { id: hotelId } },
           ...(isAdmin
-            ? { createdByAdminId: userId }
-            : { createdByEmployeeId: userId }),
+            ? { createdByAdmin: { connect: { id: userId } } }
+            : { createdByEmployee: { connect: { id: userId } } }),
           assignedEmployees: {
-            create: assignedEmployees.map((emp) => ({
-              employeeId: emp.id,
+            create: validEmployeeAssignments.map((assignment) => ({
+              employee: { connect: { id: assignment.employeeId } },
             })),
           },
         },
-        include: {
-          assignedEmployees: {
-            include: {
-              employee: true,
-            },
-          },
-        },
+        select : {id : true,title : true,description : true,isDone : true,deadline : true,createdAt : true}
       });
 
       await updateTaskStatistics(hotelId, "add", prisma);
@@ -136,24 +90,33 @@ export async function addTask(
   }
 }
 
-export async function getAllTasks(hotelId: string): Promise<TasksResult> {
+export async function getAllTasks(
+  userId: string,
+  
+  userRole: UserRole[],
+  hotelId: string,
+): Promise<TasksResult> {
   try {
+    const isAdmin = userRole.includes(UserRole.admin);
+
     const tasks = await prisma.task.findMany({
-      where: { hotelId: hotelId },
-      include: {
-        assignedEmployees: {
-          include: {
-            employee: {
-              select: {
-                firstName: true,
-                lastName: true,
-                id: true,
-                role: true,
-              },
-            },
-          },
-        },
+      where: {
+        hotelId: hotelId,
+        // Use ternary to set the correct ID field based on role
+        ...(isAdmin 
+          ? { createdByAdminId: userId }
+          : { createdByEmployeeId: userId }
+        ),
       },
+      select :{
+        title :true,
+        description :true,
+        isDone :true,
+        deadline :true,
+        createdAt :true,
+        id :true,
+        assignedEmployees :{select:{employee :{select:{id :true,firstName :true,lastName:true}}}}
+      }
     });
 
     return { Tasks: tasks };
@@ -171,7 +134,7 @@ export function checkRestaurantManagerReceptionManagerAdminRole(
     !roles.includes(UserRole.reception_Manager)
   ) {
     throw new UnauthorizedError(
-      "Sauf restaurant manager, admin, et reception manager peut ajouter des taches"
+      "Sauf restaurant manager, admin, et reception manager peut faire cette action"
     );
   }
 }

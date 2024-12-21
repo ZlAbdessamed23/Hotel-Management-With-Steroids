@@ -13,7 +13,7 @@ import { cookies } from "next/headers";
 
 
 const freePlanRoutes = [
-  "reception/manageclients", "reception/managerooms", "admin/manageemployees", "reception/housekeeping", "managenotes", "/profile"
+  "reception/manageclients", "reception/managerooms", "admin/manageemployees", "reception/housekeeping", "managenotes", "/profile","/main"
 ];
 
 const routeAccess = {
@@ -40,7 +40,7 @@ const handleProfile = (payload: DecodedToken, request: NextRequest) => {
 // Main route checker function
 const checkRouteAccess = (pathname: string, payload: DecodedToken, request: NextRequest) => {
   // Early return for free plan restrictions
-  if (payload.planName !== "PREMIUM" && payload.planName !== "STANDARD") {
+  if (payload.planName !== "Premium" && payload.planName !== "Standard") {
     const isFreePlanRoute = freePlanRoutes.some(route => pathname.includes(route));
     if (!isFreePlanRoute) {
       return NextResponse.redirect(new URL("/main", request.nextUrl));
@@ -104,6 +104,7 @@ async function verifyToken(token: string): Promise<DecodedToken> {
 
 
 export async function middleware(request: NextRequest) {
+ 
   const pathname = request.nextUrl.pathname;
 
   if (pathname.startsWith("/main")) {

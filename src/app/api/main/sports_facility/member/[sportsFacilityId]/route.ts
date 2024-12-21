@@ -17,7 +17,7 @@ export async function GET(
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
 
-    console.log(user);
+    
     checkReceptionManagerCoachAdminRole(user.role);
     const { sportsFacilityId } = params;
     const sportsFacilityMembers = await getAllSportsFacilityMembers(

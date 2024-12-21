@@ -60,7 +60,7 @@ const authBaseUrl = "http://104.154.75.47/api/auth";
 export async function signUp(user: RegistrationInfos) {
   const fullInfos = {
     ...user,
-    planId: "cm4r5hlwb0000avu14delae6h",
+    planName: "Free",
     dateOfBirth: new Date(user.dateOfBirth),
   };
   try {

@@ -5,9 +5,9 @@ import {
   updateRestaurantMenuItem,
   checkRestaurantManagerChefAdminRole,
   checkRestaurantManagerChefRole,
-} from "./controller";
+} from "@/app/api/main/food/restaurant/item/[restaurantMenuId]/[itemId]/controller";
 import { handleError } from "@/lib/error_handler/handleError";
-import { UpdateRestaurantMenuItemData } from "./types";
+import { UpdateRestaurantMenuItemData } from "@/app/api/main/food/restaurant/item/[restaurantMenuId]/[itemId]/types";
 import { getUser } from "@/lib/token/getUserFromToken";
 
 /////////////////////// Get Restaurant Menu Item //////////////////////////////////////
@@ -20,7 +20,7 @@ export async function GET(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
     checkRestaurantManagerChefAdminRole(user.role);
 
     const { restaurantMenuId, itemId } = params;
@@ -46,7 +46,7 @@ export async function DELETE(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
     checkRestaurantManagerChefRole(user.role);
 
     const { restaurantMenuId, itemId } = params;
@@ -75,7 +75,7 @@ export async function PATCH(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
     checkRestaurantManagerChefRole(user.role);
 
     const { restaurantMenuId, itemId } = params;

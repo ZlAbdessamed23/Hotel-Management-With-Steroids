@@ -16,7 +16,7 @@ export type AdminSignupData = {
   hotelPhoneNumber: string;
   hotelEmail: string;
   cardNumber: string;
-  planId: string;
+  planName: string;
 };
 
 export const requiredFields: (keyof AdminSignupData)[] = [
@@ -35,7 +35,7 @@ export const requiredFields: (keyof AdminSignupData)[] = [
   "hotelPhoneNumber",
   "hotelEmail",
   "cardNumber",
-  "planId",
+  "planName",
 ];
 
 

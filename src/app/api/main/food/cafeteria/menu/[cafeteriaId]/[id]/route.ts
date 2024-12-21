@@ -5,9 +5,9 @@ import {
   deleteCafeteriaMenu,
   getCafeteriaMenuById,
   updateCafeteriaMenu,
-} from "./controller";
+} from "@/app/api/main/food/cafeteria/menu/[cafeteriaId]/[id]/controller";
 import { handleError } from "@/lib/error_handler/handleError";
-import { UpdateCafeteriaMenuData } from "./types";
+import { UpdateCafeteriaMenuData } from "@/app/api/main/food/cafeteria/menu/[cafeteriaId]/[id]/types";
 
 export async function GET(
   request: NextRequest,
@@ -18,11 +18,11 @@ export async function GET(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
     
 
     const {id,cafeteriaId} = params;
-    const menu = await getCafeteriaMenuById(id,cafeteriaId, user.hotelId,user.id,user.role);
+    const menu = await getCafeteriaMenuById(id,cafeteriaId, user.hotelId,);
 
     return NextResponse.json(menu, { status: 200 });
   } catch (error) {
@@ -39,11 +39,11 @@ export async function DELETE(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
     
 
     const {id,cafeteriaId} = params;
-    const deletedMenu = await deleteCafeteriaMenu(id,cafeteriaId, user.hotelId,user.id,user.role);
+    const deletedMenu = await deleteCafeteriaMenu(id,cafeteriaId, user.hotelId,);
 
     return NextResponse.json(
       { message: "Cafétéria supprimé avec succès" },
@@ -68,7 +68,7 @@ export async function PATCH(
     const updateData:UpdateCafeteriaMenuData = await request.json();
 
     const updatedMenu = await updateCafeteriaMenu(
-      id,cafeteriaId, user.hotelId,user.id,user.role,
+      id,cafeteriaId, user.hotelId,
       updateData
     );
 

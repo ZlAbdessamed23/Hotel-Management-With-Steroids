@@ -9,7 +9,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    console.log(user);
+    
 
     const employees = await getDepartmentEmployees(user.hotelId, user.role);
     return NextResponse.json(employees, { status: 201 });

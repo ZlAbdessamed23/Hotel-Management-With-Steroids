@@ -3,12 +3,12 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   checkRestaurantManagerChefRole,
   addCafeteriaMenuItem,
-} from "./controller";
+} from "@/app/api/main/food/cafeteria/item/controller";
 import { handleError } from "@/lib/error_handler/handleError";
 import {
   AddCafeteriaMenuItemData,
   requiredRestaurantMenuItemFields,
-} from "./types";
+} from "@/app/api/main/food/cafeteria/item/types";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+  
     checkRestaurantManagerChefRole(user.role);
 
     const data: AddCafeteriaMenuItemData = await request.json();

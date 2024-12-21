@@ -1,6 +1,6 @@
 import {
   NotFoundError,
-  UnauthorizedError,
+  
 } from "@/lib/error_handler/customerErrors";
 import { throwAppropriateError } from "@/lib/error_handler/throwError";
 import { HotelInfo } from "@/app/api/main/bill/types";
@@ -27,16 +27,5 @@ export async function getHotel(hotelId: string): Promise<HotelInfo> {
     return { Hotel: hotel };
   } catch (error) {
     throwAppropriateError(error);
-  }
-}
-export function checkReceptionistReceptionManagerAdminRole(roles: UserRole[]) {
-  if (
-    !roles.includes(UserRole.receptionist) &&
-    !roles.includes(UserRole.reception_Manager) &&
-    !roles.includes(UserRole.admin)
-  ) {
-    throw new UnauthorizedError(
-      "Sauf le réceptiontist, le réceptionist manager et l'administrateur peut faire cette action"
-    );
   }
 }

@@ -32,10 +32,9 @@ export type User = Admin | Employee;
 
 // Define the structure for sign-in result
 export type SignInResult =
-  | {
+   {
     user: User;
       hotelToken: string;
       
     }
-  | { redirectUrl: string }
-  | { employeeMessage: string };
+  

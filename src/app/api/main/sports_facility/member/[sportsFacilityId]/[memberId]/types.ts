@@ -6,5 +6,13 @@ export type UpdateSportsFacilityMemberData = {
   identityCardNumber?: string;
 };
 export type SportsFacilityMemberResult = {
-  sportsFacilityMember: Prisma.SportsFacilityMemberGetPayload<{}>;
+  sportsFacilityMember: Prisma.SportsFacilityMemberGetPayload<{select :{
+    id : true,
+    email : true,
+    phoneNumber : true,
+    clientName:true,
+    gender:true,
+    identityCardNumber : true,
+
+  }}>;
 };

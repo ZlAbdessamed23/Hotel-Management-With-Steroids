@@ -1,6 +1,6 @@
 
 import prisma from "@/lib/prisma/prismaClient";
-import { AddClientData, ClientResult, ClientsResult } from "./types";
+import { AddClientData, ClientResult, ClientsResult } from "@/app/api/main/client/client/types";
 import {
   ValidationError,
   
@@ -104,7 +104,7 @@ export async function getAllClients(hotelId: string): Promise<ClientsResult> {
 
 /////////////////////////////// functions /////////////////////////////////////////
 
-export function checkReceptionistRole(roles: UserRole[]) {
+export function checkReceptionistReceptionManagerRole(roles: UserRole[]) {
   if (
     !roles.includes(UserRole.receptionist) &&
     !roles.includes(UserRole.reception_Manager)
@@ -114,7 +114,7 @@ export function checkReceptionistRole(roles: UserRole[]) {
     );
   }
 }
-export function checkReceptionistAdminRole(roles: UserRole[]) {
+export function checkReceptionistReceptionManagerAdminRole(roles: UserRole[]) {
   if (
     !roles.includes(UserRole.receptionist) &&
     !roles.includes(UserRole.reception_Manager) &&

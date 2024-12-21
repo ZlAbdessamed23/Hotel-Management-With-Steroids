@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   checkRestaurantManagerChefAdminRole,
   getAllCafeteriaMenuItems,
-} from "./controller";
+} from "@/app/api/main/food/cafeteria/item/[cafeteriaMenuId]/controller";
 import { handleError } from "@/lib/error_handler/handleError";
 
 export async function GET(
@@ -15,7 +15,7 @@ export async function GET(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
     checkRestaurantManagerChefAdminRole(user.role);
     const { cafeteriaMenuId } = params;
 

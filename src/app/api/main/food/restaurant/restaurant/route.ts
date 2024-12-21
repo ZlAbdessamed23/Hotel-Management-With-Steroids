@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { AddRestaurantData, requiredRestaurantFields } from "@/app/api/main/food/restaurant/restaurant/types";
-import { addRestaurant, getAllRestaurants,checkAdminRole } from "@/app/api/main/food/restaurant/restaurant/controller";
+import { addRestaurant, getAllRestaurants,checkAdminReceptionManagerRestaurantManagerRole } from "@/app/api/main/food/restaurant/restaurant/controller";
 import { handleError } from "@/lib/error_handler/handleError";
 import { getUser } from "@/lib/token/getUserFromToken";
 
@@ -10,8 +10,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       if (!user) {
         return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
       }
-      console.log(user);
-      checkAdminRole(user.role)
+      
+      checkAdminReceptionManagerRestaurantManagerRole(user.role)
   
       const data: AddRestaurantData = await request.json();
       const missingFields = requiredRestaurantFields.filter(
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       if (!user) {
         return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
       }
-      console.log(user);
+      
   
       const Restaurants = await getAllRestaurants(user.hotelId);
       return NextResponse.json(Restaurants, { status: 200 });

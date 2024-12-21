@@ -6,7 +6,7 @@ import {
 } from "@/app/api/main/calendar/types";
 import {
   UnauthorizedError,
-  NotFoundError,
+  
 } from "@/lib/error_handler/customerErrors"; // Adjust as needed
 import { throwAppropriateError } from "@/lib/error_handler/throwError";
 import { UserRole } from "@prisma/client";
@@ -17,14 +17,9 @@ export async function addCalendar(
 ): Promise<CalendarResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      // Check if the hotel exists and include its events
-      const hotel = await prisma.hotel.findUnique({
-        where: { id: hotelId },
-      });
+      
 
-      if (!hotel) throw new NotFoundError("hotel non trouvé");
-
-      // Create the attendee
+      // Create the calendar
       const createdCalendar = await prisma.calendar.create({
         data: { ...data, hotelId },
         select:{
@@ -48,17 +43,7 @@ export async function getCalendars(
 ): Promise<CalendarsResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      const hotelExists = await prisma.hotel.findUnique({
-        where: {
-          id: hotelId,
-        },
-      });
-
-      if (!hotelExists) {
-        throw new NotFoundError(
-          "hotel non trouvé"
-        );
-      }
+      
 
       const Calendars = await prisma.calendar.findMany({
         where: {
@@ -82,8 +67,8 @@ export async function getCalendars(
     throwAppropriateError(error);
   }
 }
-export function checkAdminRole(roles: UserRole[]) {
-  if (!roles.includes(UserRole.admin)) {
-    throw new UnauthorizedError("Sauf l'administrateur peut faire cet action");
+export function checkAdminReceptionManagerRole(roles: UserRole[]) {
+  if (!roles.includes(UserRole.admin)&&!roles.includes(UserRole.reception_Manager)) {
+    throw new UnauthorizedError("Sauf l'administrateur et reception manager peut faire cet action");
   }
 }

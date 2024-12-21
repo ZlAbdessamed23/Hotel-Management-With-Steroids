@@ -1,8 +1,8 @@
 import { NextResponse, NextRequest } from "next/server";
-import { signIn } from "./controller";
-import { SignInData } from "./types";
+import { signIn } from "@/app/api/auth/signin/controller";
+import { SignInData } from "@/app/api/auth/signin/types";
 import { handleError } from "@/lib/error_handler/handleError";
-import { requiredSignInFields } from "./types";
+import { requiredSignInFields } from "@/app/api/auth/signin/types";
 import { ValidationError } from "@/lib/error_handler/customerErrors";
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
@@ -10,12 +10,12 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const data: SignInData = await req.json();
     const missingField = requiredSignInFields.find((field) => !data[field]);
     if (missingField) {
-      throw new ValidationError(`${missingField} is required`);
+      throw new ValidationError(`${missingField} est requis`);
     }
 
     const result = await signIn(data);
 
-    if ("user" in result) {
+    
       const { user, hotelToken } = result;
       
       const response = NextResponse.json(
@@ -34,13 +34,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       });
 
       return response;
-    } else if ("redirectUrl" in result) {
-      const { redirectUrl } = result;
-      return NextResponse.json({ redirectUrl }, { status: 200 });
-    } else {
-      const { employeeMessage } = result;
-      return NextResponse.json({ employeeMessage }, { status: 200 });
-    }
+    
   } catch (error) {
     return handleError(error);
   }

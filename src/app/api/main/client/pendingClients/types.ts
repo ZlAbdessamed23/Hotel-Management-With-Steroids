@@ -14,7 +14,7 @@ export type PendingClientResults = {
         kidsNumber : true,
         nationality : true,
         membersNumber : true,
-        hotelId : true,
+        
         createdAt : true,
         pendingReservation : {
           select : {

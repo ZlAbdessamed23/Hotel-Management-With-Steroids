@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { AddStockData, requiredStockFields } from "@/app/api/main/stock/stock/types";
-import { addStock, getAllStocks,checkAdminRole } from "@/app/api/main/stock/stock/controller";
+import { addStock, getAllStocks,checkReceptionManagerStockManagerAdminRole } from "@/app/api/main/stock/stock/controller";
 import { handleError } from "@/lib/error_handler/handleError";
 import { getUser } from "@/lib/token/getUserFromToken";
 
@@ -10,7 +10,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       if (!user) {
         return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
       }
-      checkAdminRole(user.role)
+      checkReceptionManagerStockManagerAdminRole(user.role)
   
       const data: AddStockData = await request.json();
       const missingFields = requiredStockFields.filter(

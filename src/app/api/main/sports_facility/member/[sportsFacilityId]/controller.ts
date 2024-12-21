@@ -18,6 +18,15 @@ export async function getAllSportsFacilityMembers(
         where: {
           sportsFacilityId: sportsFacilityId,
         },
+        select :{
+          id : true,
+          email : true,
+          phoneNumber : true,
+          clientName:true,
+          gender:true,
+          identityCardNumber : true,
+      
+        }
         
       });
 

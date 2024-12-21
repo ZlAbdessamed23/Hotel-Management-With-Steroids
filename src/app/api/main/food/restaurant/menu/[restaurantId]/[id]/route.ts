@@ -5,7 +5,7 @@ import {
   deleteRestaurantMenu,
   getRestaurantMenuById,
   updateRestaurantMenu,
-} from "./controller";
+} from "@/app/api/main/food/restaurant/menu/[restaurantId]/[id]/controller";
 import { handleError } from "@/lib/error_handler/handleError";
 
 export async function GET(
@@ -17,11 +17,11 @@ export async function GET(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
     
 
     const {restaurantId,id} = params;
-    const menu = await getRestaurantMenuById(id,restaurantId, user.hotelId,user.id,user.role);
+    const menu = await getRestaurantMenuById(id,restaurantId, user.hotelId);
 
     return NextResponse.json(menu, { status: 200 });
   } catch (error) {
@@ -41,7 +41,7 @@ export async function DELETE(
     
 
     const {restaurantId,id} = params;
-    const menu = await deleteRestaurantMenu(id,restaurantId, user.hotelId,user.id,user.role);
+    const menu = await deleteRestaurantMenu(id,restaurantId, user.hotelId);
 
     return NextResponse.json(
       { message: "Restaurant menu supprimé avec succès" },
@@ -67,7 +67,7 @@ export async function PATCH(
     const updateData = await request.json();
 
     const updatedMenu = await updateRestaurantMenu(
-      id,restaurantId, user.hotelId,user.id,user.role,
+      id,restaurantId, user.hotelId,
       updateData
     );
 

@@ -3,6 +3,7 @@ import { Prisma } from "@prisma/client";
 export type AddDocumentData = {
   title: string;
   description?: string;
+  
 
   employeeAccess: {
     employeeId: string;

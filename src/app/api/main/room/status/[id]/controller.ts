@@ -1,5 +1,5 @@
 import { Prisma, PrismaClient, RoomStatus, UserRole } from "@prisma/client";
-import { RoomResult, UpdateRoomStateData } from "./types";
+import { RoomResult, UpdateRoomStateData } from "@/app/api/main/room/status/[id]/types";
 import {
   ConflictError,
   NotFoundError,
@@ -19,16 +19,17 @@ export async function updateRoomState(
         where: { id: roomId },
         select: { status: true, hotelId: true },
       });
-      if(room?.status === RoomStatus.reservee){
-        throw new ConflictError(
-          "chambre déja réservée"
-        );
-      }
+      
       if (!room || room.hotelId !== hotelId) {
         throw new NotFoundError(
           `la chambre spécifié n'est pas trouvée`
         );
       };
+      if(room.status === RoomStatus.reservee){
+        throw new ConflictError(
+          "chambre déja réservée"
+        );
+      }
 
       if (data.isFixed && room.status==RoomStatus.disponible) {
         throw new ConflictError(
@@ -92,7 +93,7 @@ export async function updateRoomState(
 
 /////////////////////////////// function ////////////////////////////////////
 
-export function checkReceptionistRole(roles: UserRole[]) {
+export function checkReceptionistReceptionManagerRole(roles: UserRole[]) {
   if (!roles.includes(UserRole.receptionist) && !roles.includes(UserRole.reception_Manager) ) {
     throw new ValidationError("Sauf le receptionist et le reception manager peut faire cette action");
   }

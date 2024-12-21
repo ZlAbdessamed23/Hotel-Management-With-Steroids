@@ -1,6 +1,6 @@
 import { getUser } from "@/lib/token/getUserFromToken";
 import { NextRequest, NextResponse } from "next/server";
-import { updateDocument, getDocumentById, deleteDocument } from "./controller";
+import { updateDocument, getDocumentById, deleteDocument } from "@/app/api/main/report/[id]/controller";
 import { handleError } from "@/lib/error_handler/handleError";
 
 export async function GET(
@@ -12,7 +12,7 @@ export async function GET(
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    console.log(user);
+    
 
     const documentId = params.id;
     const document = await getDocumentById(
@@ -37,7 +37,7 @@ export async function DELETE(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
 
     const documentId = params.id;
     const deletedDocument = await deleteDocument(
@@ -70,9 +70,7 @@ export async function PATCH(
 
     const updatedDocument = await updateDocument(
       documentId,
-      user.hotelId,
-      user.id,
-      user.role,
+      
       updateData
     );
 

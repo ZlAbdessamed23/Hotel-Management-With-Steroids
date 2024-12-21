@@ -17,7 +17,7 @@ export async function getStockCategoryById(
 ): Promise<CategoryResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      await checkUserStockAccess(userId, stockId, userRole, prisma)
+      
       const existingCategory = await prisma.category.findUnique({
         where: { id: stockCategoryId, hotelId: hotelId, stockId },select : {
           id : true,
@@ -45,12 +45,11 @@ export async function deleteStockCategory(
   stockId: string,
   stockCategoryId: string,
   hotelId: string,
-  userId: string,
-  userRole: UserRole[]
+ 
 ): Promise<CategoryResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      await checkUserStockAccess(userId, stockId, userRole, prisma)
+      
       const deletedMenu = await prisma.category.delete({
         where: { id: stockCategoryId, hotelId: hotelId, stockId },
         select : {
@@ -74,13 +73,12 @@ export async function updateStockCategory(
   stockCategoryId: string,
   stockId: string,
   hotelId: string,
-  userId: string,
-  userRole: UserRole[],
+  
   data: UpdateStockCategoryData
 ): Promise<CategoryResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      await checkUserStockAccess(userId, stockId, userRole, prisma)
+      
       const updateData: Prisma.CategoryUpdateInput = {
         name: data.name,
         description: data.description,
@@ -117,36 +115,3 @@ export async function updateStockCategory(
 }
 
 
-export async function checkUserStockAccess(
-  userId: string,
-  stockId: string,
-  userRole: UserRole[],
-  prisma: Omit<
-    PrismaClient,
-    "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
-  >
-): Promise<void> {
-  try {
-
-    if (userRole.includes(UserRole.admin)) {
-      return;
-    }
-
-    const stockEmployee = await prisma.stockEmployee.findUnique({
-      where: {
-        stockId_employeeId: {
-          stockId,
-          employeeId: userId,
-        },
-      },
-    });
-
-    if (!stockEmployee) {
-      throw new UnauthorizedError(
-        "L'utilisateur n'est pas autorisé à accéder à ce stock"
-      );
-    }
-  } catch (error) {
-    throwAppropriateError(error);
-  }
-}

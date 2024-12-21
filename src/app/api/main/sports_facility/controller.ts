@@ -20,52 +20,39 @@ export async function addSportsFacility(
 ): Promise<SportsFacilityResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      const [hotel, sportsFacilityCount] = await Promise.all([
-        prisma.hotel.findUnique({
-          where: { id: hotelId },
-          include: {
-            subscription: {
-              include: {
-                plan: true,
+      // Parallel verification of hotel
+      const hotel = await prisma.hotel.findUnique({
+        where: { id: hotelId },
+        select: {
+          subscription: {
+            select: {
+              plan: {
+                select: {
+                  maxSales: true,
+                },
               },
             },
           },
-        }),
-        prisma.sportsFacility.count({ where: { hotelId } }),
-      ]);
+          _count: { select: { sportsFacility: true } },
+        },
+      });
 
+      // Verify hotel and subscription
       if (!hotel) throw new NotFoundError("Hotel non trouvé");
       if (!hotel.subscription?.plan)
-        throw new SubscriptionError("Hotel n'a pas d'abonnement activé");
-
-      if (sportsFacilityCount >= hotel.subscription.plan.maxSales) {
+        throw new SubscriptionError("Hotel n'a pas de plan d'abonnement active");
+      if (hotel._count.sportsFacility >= hotel.subscription.plan.maxSales) {
         throw new LimitExceededError(
           "Le nombre Maximum des salles de sports pour ce plan est déja atteint"
         );
       }
-      if (data.capacity > 100) {
-        throw new ValidationError("Max capacité est 100");
-      }
 
-      // Validate coaches
-      if (data.sportsFacilityCoaches && data.sportsFacilityCoaches.length > 0) {
-        const coachIds = data.sportsFacilityCoaches.map(coach => coach.employeeId);
-        const validCoaches = await prisma.employee.findMany({
-          where: {
-            id: { in: coachIds },
-            hotelId,
-            role: { has: UserRole.entraineur },
-          },
-          select: { id: true },
-        });
+      // Filter valid coach assignments
+      const validCoachAssignments = data.sportsFacilityCoaches?.filter(
+        (coach) => coach.employeeId !== ""
+      ) ;
 
-        if (validCoaches.length !== coachIds.length) {
-          throw new ValidationError(
-            "Un ou plus des entraineurs n'éxiste pas"
-          );
-        }
-      }
-
+      // Create sports facility
       const createdSportFacility = await prisma.sportsFacility.create({
         data: {
           name: data.name,
@@ -76,26 +63,23 @@ export async function addSportsFacility(
           location: data.location,
           type: data.type,
           hotel: { connect: { id: hotelId } },
-          sportFacilityCoaches: data.sportsFacilityCoaches
-            ? {
-                create: data.sportsFacilityCoaches.map((coach) => ({
-                  employee: { connect: { id: coach.employeeId } },
-                })),
-              }
-            : undefined,
+          sportFacilityCoaches: {
+            create: validCoachAssignments.map((coach) => ({
+              employee: { connect: { id: coach.employeeId } },
+            })),
+          },
         },
-        select : {
-          id : true,
-          capacity : true,
-          createdAt : true,
-          description : true,
-          location : true,
-           name : true,
-           price : true,
-           openingDays : true,
-           type : true,
-           
-        }
+        select: {
+          id: true,
+          capacity: true,
+          createdAt: true,
+          description: true,
+          location: true,
+          name: true,
+          price: true,
+          openingDays: true,
+          type: true,
+        },
       });
 
       await updateSportsFacilityStatistics(hotelId, "add", prisma);
@@ -108,22 +92,33 @@ export async function addSportsFacility(
 
 ///////////////////  get all rooms for both receptionist and admin /////////////////////////////
 export async function getAllSportsFacility(
-  hotelId: string
+  userId: string,
+  userRole: UserRole[],
+  hotelId: string,
+  
 ): Promise<SportsFacilitiesResult> {
   try {
     const sportsFacilities = await prisma.sportsFacility.findMany({
-      where: { hotelId: hotelId },
-      select : {
-        id : true,
-        capacity : true,
-        createdAt : true,
-        description : true,
-        location : true,
-         name : true,
-         price : true,
-         openingDays : true,
-         type : true,
-         
+      where: userRole.includes(UserRole.entraineur) 
+        ? {
+            hotelId,
+            sportFacilityCoaches: {
+              some: {
+                employeeId: userId
+              }
+            }
+          }
+        : { hotelId },
+      select: {
+        id: true,
+        capacity: true,
+        createdAt: true,
+        description: true,
+        location: true,
+        name: true,
+        price: true,
+        openingDays: true,
+        type: true,
       }
     });
 
@@ -132,7 +127,6 @@ export async function getAllSportsFacility(
     throwAppropriateError(error);
   }
 }
-
 /////////////////////////////// function /////////////////////////////////////////
 export function checkReceptionManagerCoachAdminRole(roles: UserRole[]) {
   if (
@@ -146,13 +140,4 @@ export function checkReceptionManagerCoachAdminRole(roles: UserRole[]) {
   }
 }
 
-export function checkReceptionManagerCoachRole(roles: UserRole[]) {
-  if (
-    !roles.includes(UserRole.reception_Manager) &&
-    !roles.includes(UserRole.entraineur)
-  ) {
-    throw new UnauthorizedError(
-      "Sauf le reception manager et l'entraineur peut faire cette action"
-    );
-  }
-}
+
