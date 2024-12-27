@@ -31,7 +31,7 @@ export default function DisplayModalStyle1<T1 extends object, T2 extends object>
                 <span className=' text-2xl font-semibold'>{title1}</span>
 
                 {Object.entries(data1).map(([key, value]) => (
-                  <section key={key} className='flex flex-row gap-3 items-center'>
+                  key !== "id" && <section key={key} className='flex flex-row gap-3 items-center'>
                     <span className='text-secondary'>{key}:</span>
                     <span className=' w-60 h-6 overflow-hidden text-ellipsis'>{String(value)}</span>
                   </section>
@@ -41,7 +41,7 @@ export default function DisplayModalStyle1<T1 extends object, T2 extends object>
               <div className='flex flex-col gap-4'>
               <span className=' text-2xl font-semibold'>{title2}</span>
                 {Object.entries(data2).map(([key, value]) => (
-                  <section key={key} className='flex flex-row gap-3 items-center'>
+                  key !== "id" && <section key={key} className='flex flex-row gap-3 items-center'>
                     <span className='text-secondary'>{key}:</span>
                     <span className=' w-60 h-6 overflow-hidden text-ellipsis'>{String(value)}</span>
                   </section>

@@ -65,7 +65,7 @@ export default function BillModal({ resId, props, infos, reservation }: { resId:
         }
     `,
         onAfterPrint: () => {
-            deleteReservation(resId as string).then(() => router.refresh());
+            deleteReservation(resId as string).then(() => router.push("/main/employee/reception/manageclients"));
             incrementBillCounter();
         }
     });

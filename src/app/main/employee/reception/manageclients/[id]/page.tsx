@@ -2,11 +2,11 @@
 
 import { OperationMode } from '@/app/types/constants';
 import { Client, ModalModeProps, Reservation } from '@/app/types/types';
-import { notFound, useRouter } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import { Button, useDisclosure } from '@nextui-org/react';
 import { FaPlus } from 'react-icons/fa6';
-import { deleteReservation, getClientWithReservation, getEventGuestWithReservation } from '@/app/utils/funcs';
+import { getClientWithReservation, getEventGuestWithReservation } from '@/app/utils/funcs';
 import ClientCard from '@/app/main/components/cards/ClientCard';
 import { RefreshMenuProvider } from '@/app/main/components/RefreshTriggerContext';
 import AddEventMemberModal from '@/app/main/components/modals/forms/AddEventMemberModal';
@@ -23,14 +23,13 @@ type ParamsProps = {
 const clientsRoles: Array<string> = ['client', 'eventInvited', 'eventWorker'];
 
 export default function ClientDisplay({ params, searchParams }: ParamsProps) {
-    const router = useRouter();
     const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
     const [clientData, setClientData] = useState<Client>();
     const [reservationData, setReservationData] = useState<Reservation>();
     const [membersData, setMembersData] = useState<Client[]>();
 
     if (!params.id || searchParams.type === undefined || !clientsRoles.includes(searchParams.type)) {
-        notFound()
+        notFound();
     };
 
     const ReservationModal = useDisclosure();

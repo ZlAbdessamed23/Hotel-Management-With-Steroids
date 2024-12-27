@@ -3,19 +3,24 @@ import { deleteEventStage, deleteHotelEventStage, deleteHouseKeepingPlanificatio
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from '@nextui-org/react'
 import React from 'react'
 import toast from 'react-hot-toast';
+import { useEventContext } from '../../EventContextProvider';
 
 export default function DeleteConfirmationModal({ dataType, props, eventId, itemId }: { dataType: "calendar" | "event" | "housekeeping", props: ModalProps, itemId: string, eventId?: string }) {
+    const {setStagesRefreshTrigger} = useEventContext();
 
     async function handleDeleteItem() {
         switch (dataType) {
             case "event":
                 const msg = await deleteEventStage(eventId as string, itemId);
+                setStagesRefreshTrigger((curr) => curr + 1);
                 return msg;
             case "calendar":
                 const message = await deleteHotelEventStage(itemId);
+                setStagesRefreshTrigger((curr) => curr + 1);
                 return message;
             case "housekeeping":
                 const mesg = await deleteHouseKeepingPlanification(itemId);
+                setStagesRefreshTrigger((curr) => curr + 1);
                 return mesg;
         };
     };

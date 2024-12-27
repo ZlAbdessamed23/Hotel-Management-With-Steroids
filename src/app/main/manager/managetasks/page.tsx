@@ -63,7 +63,7 @@ export default function ManageTasks() {
 
     useEffect(() => {
         console.log(refreshTrigger);
-    },[refreshTrigger]);
+    }, [refreshTrigger]);
 
     useEffect(() => {
         searchTasks(searchTerm);
@@ -208,8 +208,9 @@ export default function ManageTasks() {
                             mode={props.mode}
                             initialData={props.initialData}
                         />
+                        <DisplayModalStyle3 data1={displayedItem} title1='Tache' props={displayModalProps} SecondModal={AddTaskModal as React.FC<ModalModeProps<Task | Note>>} dataType='task' />
+
                     </RefreshMenuProvider>
-                    <DisplayModalStyle3 data1={displayedItem} title1='Tache' props={displayModalProps} SecondModal={AddTaskModal as React.FC<ModalModeProps<Task | Note>>} dataType='task' />
                 </div>
             </section>
             <section className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 zl:grid-cols-4 gap-4'>

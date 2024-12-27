@@ -13,14 +13,14 @@ import { cookies } from "next/headers";
 
 
 const freePlanRoutes = [
-  "reception/manageclients", "reception/managerooms", "admin/manageemployees", "reception/housekeeping", "managenotes", "/profile"
+  "reception/manageclients", "reception/managerooms", "admin/manageemployees", "reception/housekeeping", "managenotes", "/profile","/main"
 ];
 
 const routeAccess = {
   admin: ["admin"],
   manager: ["admin", "reception_Manager", "restaurent_Manager"],
   housekeeping: ["admin", "reception_Manager", "gouvernante", "nettoyeur"],
-  restauration: ["admin", "restaurent_Manager"],
+  restauration: ["admin", "restaurent_Manager" , "chef"],
   stock: ["admin", "stock_Manager", "reception_Manager"],
   reception: ["receptionist", "reception_Manager", "admin"],
   gyms: ["entraineur", "receptionist", "reception_Manager", "admin"],
@@ -40,7 +40,7 @@ const handleProfile = (payload: DecodedToken, request: NextRequest) => {
 // Main route checker function
 const checkRouteAccess = (pathname: string, payload: DecodedToken, request: NextRequest) => {
   // Early return for free plan restrictions
-  if (payload.planName !== "PREMIUM" && payload.planName !== "STANDARD") {
+  if (payload.planName !== "Premium" && payload.planName !== "Standard") {
     const isFreePlanRoute = freePlanRoutes.some(route => pathname.includes(route));
     if (!isFreePlanRoute) {
       return NextResponse.redirect(new URL("/main", request.nextUrl));
@@ -50,14 +50,14 @@ const checkRouteAccess = (pathname: string, payload: DecodedToken, request: Next
   // Handle profile redirect
   if (pathname === "/main/profile") {
     return handleProfile(payload, request);
-  }
+  };
 
   // Check path-based permissions
   if (pathname.includes("admin") && !hasAccess(payload.role, routeAccess.admin)) {
     return NextResponse.redirect(new URL("/main", request.nextUrl));
   }
 
-  if (pathname.includes("manager") && !hasAccess(payload.role, routeAccess.manager)) {
+  if ((pathname.includes("manager") && pathname !== "/main/managereports") && !hasAccess(payload.role, routeAccess.manager)) {
     return NextResponse.redirect(new URL("/main", request.nextUrl));
   }
 
@@ -77,8 +77,8 @@ const checkRouteAccess = (pathname: string, payload: DecodedToken, request: Next
     const requiredRoles = pathname.includes("gyms") ? routeAccess.gyms : routeAccess.reception;
     if (!hasAccess(payload.role, requiredRoles)) {
       return NextResponse.redirect(new URL("/main", request.nextUrl));
-    }
-  }
+    };
+  };
 
   return null;
 };
@@ -104,13 +104,14 @@ async function verifyToken(token: string): Promise<DecodedToken> {
 
 
 export async function middleware(request: NextRequest) {
+ 
   const pathname = request.nextUrl.pathname;
 
   if (pathname.startsWith("/main")) {
     const token = cookies().get("hotelToken")?.value;
 
     if (!token) {
-      return NextResponse.redirect(new URL("/main", request.nextUrl));
+      return NextResponse.redirect(new URL("/login", request.nextUrl));
     };
 
     const payload = await verifyToken(token);
@@ -124,7 +125,7 @@ export async function middleware(request: NextRequest) {
 
   if (!token) {
     return handleError(new AuthenticationError("Authentication required"));
-  }
+  };
 
   try {
     const payload = await verifyToken(token);

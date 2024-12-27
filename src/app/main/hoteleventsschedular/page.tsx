@@ -21,14 +21,16 @@ import { parseZonedDateTime } from "@internationalized/date";
 import CustomEventTimeline from '../components/custom/CustomEventTimeline';
 import DeleteConfirmationModal from '../components/modals/forms/DeleteConfirmationModal';
 import { EventStage } from '@/app/types/types';
+import { RefreshMenuContext } from '../components/RefreshTriggerContext';
+import { EventContextProvider } from '../components/EventContextProvider';
 
 function CalendarApp() {
 
   const AddModalProps = useDisclosure();
   const DeleteModalProps = useDisclosure();
-  const [selectedEvent , setSelectedEvent] = useState<EventStage>();
+  const [selectedEvent, setSelectedEvent] = useState<EventStage>();
   const [events, setEvents] = useState<{
-    title : string;
+    title: string;
     id: string;
     start: string;
     end: string;
@@ -43,17 +45,18 @@ function CalendarApp() {
   const month = String(today.getMonth() + 1).padStart(2, '0');
   const day = String(today.getDate()).padStart(2, '0');
   const [value, setValue] = React.useState<DateValue>(parseDate(`${year}-${month}-${day}`));
+  const [refreshTrigger, setRefreshTrigger] = React.useState(0);
 
   function convertToScheduleXFormat(isoString: string): string {
     const zonedDateTime = parseZonedDateTime(isoString);
     const { year, month, day, hour, minute } = zonedDateTime;
     return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')} ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
-  }
+  };
 
   async function getEvents() {
     const data = await getCalendarEventStages();
     const finalData: {
-      title : string;
+      title: string;
       id: string;
       start: string;
       end: string;
@@ -64,7 +67,7 @@ function CalendarApp() {
         description: event.description,
         start: convertToScheduleXFormat(event.start.toString()),
         end: convertToScheduleXFormat(event.end.toString()),
-        title : event.title,
+        title: event.title,
       }
     });
     setEvents(finalData);
@@ -72,8 +75,11 @@ function CalendarApp() {
 
   useEffect(() => {
     setMounted(true);
-    getEvents();
   }, []);
+
+  useEffect(() => {
+    getEvents();
+  }, [refreshTrigger]);
 
 
   const calendarApp = useNextCalendarApp({
@@ -96,7 +102,7 @@ function CalendarApp() {
     //   },
     // },
     selectedDate: '2024-09-24',
-    callbacks : {
+    callbacks: {
       onEventClick(calendarEvent) {
         console.log('onEventClick', calendarEvent);
         setSelectedEvent(calendarEvent as EventStage);
@@ -133,16 +139,17 @@ function CalendarApp() {
           <Button className='bg-secondary ml-3 text-white w-11/12' endContent={<FaPlus className='size-5' />} onClick={AddModalProps.onOpen}>
             Ajouter un evenement
           </Button>
-          <AddEventPlanStageModal props={AddModalProps} type='calendar' />
+          <EventContextProvider eventId='' setStagesRefreshTrigger={setRefreshTrigger} stagesRefreshTrigger={refreshTrigger} clientsRefreshTrigger={refreshTrigger} setClientsRefreshTrigger={setRefreshTrigger}>
+            <AddEventPlanStageModal props={AddModalProps} type='calendar' />
+            <DeleteConfirmationModal dataType='calendar' itemId={selectedEvent?.id as string} props={DeleteModalProps} />
+          </EventContextProvider>
         </div>
         <div>
           <CustomEventTimeline events={events} />
         </div>
       </section>
-
       <section className='overflow-hidden'>
         <ScheduleXCalendar calendarApp={calendarApp} />
-        <DeleteConfirmationModal dataType='calendar' itemId={selectedEvent?.id as string} props={DeleteModalProps}  />
       </section>
     </div>
   )

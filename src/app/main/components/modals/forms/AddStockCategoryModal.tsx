@@ -1,23 +1,21 @@
 "use client";
 
 import { OperationMode } from '@/app/types/constants';
-import { ModalModeProps, ModalProps, StockCategory, StockType } from '@/app/types/types';
+import { ModalModeProps, StockCategory } from '@/app/types/types';
 import { addStockCategory, updateStockCategory } from '@/app/utils/funcs';
 import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Textarea } from '@nextui-org/react';
-import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useStockMenuContext } from '../../StockContextProvider';
 
-const AddStockCategoryModal : React.FC<ModalModeProps<StockCategory>> = (props) => {
-  const router = useRouter();
-  const stockId = useStockMenuContext().stockId;
+const AddStockCategoryModal: React.FC<ModalModeProps<StockCategory>> = (props) => {
+  const { stockId, setRefreshTrigger } = useStockMenuContext();
   const { register, handleSubmit, watch, reset } = useForm<StockCategory>({
     defaultValues: props.initialData || {
       name: "",
       description: "",
-      stockId : stockId ,
+      stockId: stockId,
     }
   });
 
@@ -25,35 +23,35 @@ const AddStockCategoryModal : React.FC<ModalModeProps<StockCategory>> = (props) 
     if (props.mode === OperationMode.update) {
       reset(props.initialData);
     }
-    else{
+    else {
       reset({
         name: "",
         description: "",
-        stockId : stockId
+        stockId: stockId
       });
     };
   }, [props.initialData, reset]);
 
 
-  async function handleAddStockCategory(data : StockCategory) {
-    if(props.mode === OperationMode.add){
+  async function handleAddStockCategory(data: StockCategory) {
+    if (props.mode === OperationMode.add) {
       const response = await addStockCategory(data);
-      router.refresh();
+      setRefreshTrigger((curr) => curr + 1);
       return response;
-    }else {
-      const response = await updateStockCategory(stockId , props.initialData?.id as string , data);
-      router.refresh();
+    } else {
+      const response = await updateStockCategory(stockId, props.initialData?.id as string, data);
+      setRefreshTrigger((curr) => curr + 1);
       return response;
     };
   }
-  const onSubmit : SubmitHandler<StockCategory> = async(data) => {
+  const onSubmit: SubmitHandler<StockCategory> = async (data) => {
     const result = handleAddStockCategory(data);
-      await toast.promise(result, {
-        loading: 'Loading...',
-        success: (data) => `${data}`,
-        error: (err) => `${err.toString()}`,
-      }
-      );
+    await toast.promise(result, {
+      loading: 'Loading...',
+      success: (data) => `${data}`,
+      error: (err) => `${err.toString()}`,
+    }
+    );
   };
 
   return (

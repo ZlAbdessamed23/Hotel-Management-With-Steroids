@@ -13,7 +13,7 @@ export default function CardStyle8({infos , url , Icon} : {infos : SeventhCardIt
       <section className='flex flex-col gap-1 justify-between w-11/12'>
           <p className='text-xl font-bold text-primary-500'>{infos.title}</p>
           <p className='text-medium font-medium text-black dark:text-white ml-3 h-12 w-full text-ellipsis overflow-hidden'>{infos.description}</p>
-          <p className='text-sm font-light text-secondary-500' suppressHydrationWarning>{infos.date.toLocaleString()}</p>
+          <p className='text-sm font-light text-secondary-500'>{new Date(infos.date).toISOString().split('T')[0]}</p>
       </section>
       <section>
           {

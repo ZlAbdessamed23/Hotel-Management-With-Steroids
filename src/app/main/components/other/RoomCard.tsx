@@ -7,8 +7,8 @@ import { IoEllipsisVertical } from "react-icons/io5";
 import { MdDeleteOutline } from "react-icons/md";
 import { FiEdit } from "react-icons/fi";
 import { HiUserAdd } from "react-icons/hi";
-import { OperationMode, TransformedRoomState } from '@/app/types/constants';
-import { deleteRoom } from '@/app/utils/funcs';
+import { OperationMode, RoomState, TransformedRoomState } from '@/app/types/constants';
+import { changeRoomStatus, deleteRoom } from '@/app/utils/funcs';
 import toast from 'react-hot-toast';
 
 
@@ -21,6 +21,7 @@ export default function RoomCard({ infos, DisplayModalOpen, EditModalOpen, AddRe
     };
 
     function OpenAddReservationModal() {
+        console.log(infos);
         setDisplayedRoom(infos);
         AddReservationModalOpen();
     };
@@ -36,8 +37,25 @@ export default function RoomCard({ infos, DisplayModalOpen, EditModalOpen, AddRe
         return response;
     };
 
+    async function handleChangeRoomStatus() {
+        const isFixed = (infos.status === RoomState.outOfOrder || infos.status === RoomState.outOfService) ? true : false; 
+        const response = await changeRoomStatus(isFixed , infos.id as string);
+        setRefreshTrigger((curr) => curr + 1);
+        return response;
+    };
+
     async function deleteTheRoom() {
         const result = handleDeleteRoom();
+        await toast.promise(result, {
+            loading: 'Loading...',
+            success: (data) => `${data}`,
+            error: (err) => `${err.toString()}`,
+        }
+        );
+    };
+
+    async function changeStatus() {
+        const result = handleChangeRoomStatus();
         await toast.promise(result, {
             loading: 'Loading...',
             success: (data) => `${data}`,
@@ -60,8 +78,8 @@ export default function RoomCard({ infos, DisplayModalOpen, EditModalOpen, AddRe
                         <DropdownItem key="view" onClick={OpenDisplayRoomModal}>
                             Voire
                         </DropdownItem>
-                        <DropdownItem key="reset" color='danger' className='text-danger'>
-                            R&eacute;initialiser la chambre
+                        <DropdownItem key="status" color={(infos.status === RoomState.outOfOrder || infos.status === RoomState.outOfService) ? "success" : "danger"} onClick={changeStatus}>
+                            Changer le status de la chambre
                         </DropdownItem>
                     </DropdownMenu>
                 </Dropdown>

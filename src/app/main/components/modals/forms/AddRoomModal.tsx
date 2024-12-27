@@ -11,7 +11,7 @@ import toast from 'react-hot-toast';
 
 const AddRoomModal: React.FC<ModalModeProps<Room>> = (props) => {
   const setRefreshTrigger = useRefreshMenuContext().setFetchTrigger;
-  const States = Object.values(RoomState);
+  const States = props.mode === OperationMode.update ? Object.values(RoomState) : Object.values(RoomState).filter(state => state !== RoomState.reserved);
   const Types = Object.values(RoomType);
   const [isDescShown, setIsDescShown] = useState(false);
 

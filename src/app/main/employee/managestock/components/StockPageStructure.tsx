@@ -1,6 +1,6 @@
 "use client"
 
-import { StockCategory, StockItem, StockTransaction, ThirdCardItemType } from '@/app/types/types'
+import { Stock, StockCategory, StockItem, StockTransaction, ThirdCardItemType } from '@/app/types/types'
 import React, { useEffect, useState } from 'react'
 import StockHeroSection from './StockHeroSection'
 import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Input, Tab, Tabs, useDisclosure } from '@nextui-org/react'
@@ -21,9 +21,10 @@ import { Selection } from "@react-types/shared";
 import AddTransactionModal from '@/app/main/components/modals/forms/AddTransactionModal'
 import { TbLayoutDashboard } from 'react-icons/tb'
 import { StockContextProvider } from '@/app/main/components/StockContextProvider'
-import { deleteStock } from '@/app/utils/funcs'
+import { deleteStock, getStockById } from '@/app/utils/funcs'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
+import AddStockModal from '@/app/main/components/modals/forms/AddStockModal'
 
 
 
@@ -46,11 +47,13 @@ export default function StockPageStructure({ CategoriesFetchFunc, TransactionsFe
   const [transactionDisplayeditem, setTransactionDisplayedItem] = useState<StockTransaction>();
   const [items, setItems] = useState<StockItem[]>([]);
   const [errorItems, setErrorItems] = useState<string | null>(null);
+  const [stock, setStock] = useState<Stock>();
 
   const AddEditModal = useDisclosure();
   const CategoriesDisplayModal = useDisclosure();
   const TransactionsDisplayModal = useDisclosure();
   const AddTransactionProps = useDisclosure();
+  const StockModal = useDisclosure();
   const router = useRouter();
   const Transactions = Object.values(StockTransactionType);
 
@@ -81,7 +84,7 @@ export default function StockPageStructure({ CategoriesFetchFunc, TransactionsFe
     };
 
     fetchCategories();
-  }, [CategoriesFetchFunc]);
+  }, [CategoriesFetchFunc, refreshTrigger]);
 
   useEffect(() => {
     async function fetchTransactions() {
@@ -97,7 +100,7 @@ export default function StockPageStructure({ CategoriesFetchFunc, TransactionsFe
     };
 
     fetchTransactions();
-  }, [TransactionsFetchFunc]);
+  }, [TransactionsFetchFunc, refreshTrigger]);
 
 
   useEffect(() => {
@@ -111,7 +114,7 @@ export default function StockPageStructure({ CategoriesFetchFunc, TransactionsFe
     };
 
     fetchItems();
-  }, [ItemsFetchFunc]);
+  }, [ItemsFetchFunc, refreshTrigger]);
 
   const handleCategorySearch = (value: string) => {
     setCategorySearchTerm(value);
@@ -122,7 +125,7 @@ export default function StockPageStructure({ CategoriesFetchFunc, TransactionsFe
         category.name.toLowerCase().includes(value.toLowerCase())
       );
       setFilteredCategories(filtered);
-    }
+    };
   };
 
   const handleTransactionSearch = (value: string) => {
@@ -238,23 +241,23 @@ export default function StockPageStructure({ CategoriesFetchFunc, TransactionsFe
     ];
   };
 
-  async function handleDeleteEvent() {
-    try{
+  async function handleDeleteStock() {
+    try {
       const res = await deleteStock(stockId as string);
-      if(res){
+      if (res) {
         setTimeout(() => {
           router.push("/main/employee/managestock/customstock");
-        },1000);
+        }, 1000);
       }
       return res;
     }
-    catch(err : any){
+    catch (err: any) {
       throw new Error(err);
     };
   };
 
   async function handleDelete() {
-    const result = handleDeleteEvent();
+    const result = handleDeleteStock();
     await toast.promise(result, {
       loading: 'Loading...',
       success: (data) => `${data}`,
@@ -263,6 +266,15 @@ export default function StockPageStructure({ CategoriesFetchFunc, TransactionsFe
     );
   };
 
+  async function getStock() {
+    const data = await getStockById(stockId);
+    console.log(data.Stock);
+    setStock(data.Stock);
+  };
+
+  useEffect(() => {
+    getStock();
+  }, []);
 
 
   return (
@@ -270,7 +282,8 @@ export default function StockPageStructure({ CategoriesFetchFunc, TransactionsFe
       <StockHeroSection StatisticsFetchFunc={test} />
       <div className='flex items-center justify-center gap-4 w-full'>
         <Button color='danger' onClick={handleDelete}>Supprimer le stock</Button>
-        <Button color='success'>Mise à jour du stock</Button>
+        <Button color='primary' onClick={StockModal.onOpen}>Mise à jour du stock</Button>
+        <AddStockModal mode={OperationMode.update} isOpen={StockModal.isOpen} onOpen={StockModal.onOpen} onOpenChange={StockModal.onOpenChange} initialData={stock} />
       </div>
       <StockContextProvider setRefreshTrigger={setRefreshTrigger} stockId={stockId}>
         <div className='w-[25rem] overflow-auto md:w-full'>
@@ -300,7 +313,6 @@ export default function StockPageStructure({ CategoriesFetchFunc, TransactionsFe
                   {
                     categoryDisplayeditem && <DisplayModalStyle3 data1={categoryDisplayeditem} title1='Voire la Categorie' props={CategoriesDisplayModal} SecondModal={AddStockCategoryModal} dataType='stockItem' />
                   }
-
                 </div>
               </section>
               <section className='grid grid-cols-3 gap-4'>

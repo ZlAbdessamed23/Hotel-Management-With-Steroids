@@ -11,9 +11,11 @@ import BudgetCmp from './components/Budget'
 import Suppliers from './components/Suppliers'
 import { getStockData } from '@/app/utils/funcs'
 import { StockTransactionType } from '@/app/types/constants'
+import { RefreshMenuProvider } from '../../components/RefreshTriggerContext'
 
 export default function ManageCentralStock() {
   const [stockData, setStockData] = useState<StockDashboardData>();
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const mappedBudgets = stockData ? stockData.budgets.map(budget => {
     const matchingStock = stockData.stocks.find(stock => stock.id === budget.stockId);
@@ -37,7 +39,6 @@ export default function ManageCentralStock() {
 
   async function getStockStat() {
     const data = await getStockData();
-    console.log(data);
     setStockData(data.data);
   };
 
@@ -122,7 +123,7 @@ export default function ManageCentralStock() {
       '05': 'Mai', '06': 'Jun', '07': 'Jul', '08': 'Aou',
       '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec',
     };
-  
+
     // When no data is present, return data structure with single "Transactions" column
     if (!stockData || !stockData.transactions.length) {
       return [
@@ -140,26 +141,26 @@ export default function ManageCentralStock() {
         ['Nov', 0],
         ['Dec', 0],
       ];
-    }
-  
+    };
+
     const stockIdToName = stockData.stocks.reduce((acc, stock) => {
       acc[stock.id] = stock.name;
       return acc;
     }, {} as Record<string, string>);
-  
+
     const uniqueStockNames = Array.from(
       new Set(
         stockData.transactions.map((t) => stockIdToName[t.stockId] || t.stockId)
       )
     );
-  
+
     const result: (string | number)[][] = [['Month', ...uniqueStockNames]];
-  
+
     const groupedTransactions = stockData.transactions.reduce((acc, transaction) => {
       const date = new Date(transaction.createdAt);
       const month = (date.getMonth() + 1).toString().padStart(2, '0');
       const stockName = stockIdToName[transaction.stockId] || transaction.stockId;
-  
+
       if (!acc[month]) {
         acc[month] = {};
       }
@@ -169,7 +170,7 @@ export default function ManageCentralStock() {
       acc[month][stockName] += 1;
       return acc;
     }, {} as Record<string, Record<string, number>>);
-  
+
     Object.entries(months).forEach(([monthNum, monthLabel]) => {
       const row: (string | number)[] = [monthLabel];
       uniqueStockNames.forEach((stockName) => {
@@ -177,10 +178,10 @@ export default function ManageCentralStock() {
       });
       result.push(row);
     });
-  
+
     return result;
   };
-  
+
   const transformToBarChartData = (stockData?: StockDashboardData): StockBarChartsDataType[] => {
     if (!stockData) return [];
 
@@ -222,7 +223,7 @@ export default function ManageCentralStock() {
 
   useEffect(() => {
     getStockStat();
-  }, []);
+  }, [refreshTrigger]);
 
   return (
     <div className='flex flex-col gap-8 w-[99%] overflow-x-hidden'>
@@ -252,7 +253,9 @@ export default function ManageCentralStock() {
         </div>
         <div>
           <section className='w-40 mb-12'>
-            <BudgetCmp budgets={mappedBudgets} />
+            <RefreshMenuProvider setFetchTrigger={setRefreshTrigger}>
+              <BudgetCmp budgets={mappedBudgets} />
+            </RefreshMenuProvider>
           </section>
           <section className='w-40'>
             <Suppliers data={uniqueSuppliers} />

@@ -8,8 +8,8 @@ export default function BudgetCmp({ budgets }: { budgets: StockBudget[] }) {
 
   return (
     <div className='w-[374px] rounded-xl shadow-sm p-4 bg-white dark:bg-slate-800 '>
-      <section className='flex items-center justify-between p-2'>
-        <p className='text-3xl font-semibold text-primary'>Editer les Budgets</p>
+      <section className='flex items-center justify-between p-2 mb-4'>
+        <p className='text-2xl font-semibold text-primary'>Editer les Budgets</p>
         <Button size='md' variant='shadow' color='secondary' onClick={modalControl.onOpen}>
           Editer
         </Button>

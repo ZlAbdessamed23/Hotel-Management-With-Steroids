@@ -4,14 +4,14 @@ import React, { useEffect, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, useDisclosure } from '@nextui-org/react';
 import { Client, ModalModeProps, Reservation } from '@/app/types/types';
-import { ClientOrigin, OperationMode,UserGender } from '@/app/types/constants';
-import { addClient,updateClient } from '@/app/utils/funcs';
+import { ClientOrigin, OperationMode, UserGender } from '@/app/types/constants';
+import { addClient, updateClient } from '@/app/utils/funcs';
 import AddReservationModal from './AddReservationModal';
 import { useRefreshMenuContext } from '../../RefreshTriggerContext';
 import toast from 'react-hot-toast';
 
-
 const AddClientModal: React.FC<ModalModeProps<Client>> = (props) => {
+
   const setRefreshTrigger = useRefreshMenuContext().setFetchTrigger;
   const Genders = Object.values(UserGender);
   const Origins = Object.values(ClientOrigin);
@@ -43,7 +43,7 @@ const AddClientModal: React.FC<ModalModeProps<Client>> = (props) => {
 
   useEffect(() => {
     if (props.mode === OperationMode.update) {
-      reset({...props.initialData , dateOfBirth : props.initialData?.dateOfBirth ? new Date(props.initialData.dateOfBirth).toISOString().split('T')[0] : ""});
+      reset({ ...props.initialData, dateOfBirth: props.initialData?.dateOfBirth ? new Date(props.initialData.dateOfBirth).toISOString().split('T')[0] : "" });
     }
     else {
       reset({
@@ -89,9 +89,12 @@ const AddClientModal: React.FC<ModalModeProps<Client>> = (props) => {
   }
 
   function passToSecondModal(onClose: () => void) {
-    onClose();
     onOpen();
   };
+
+  useEffect(() => {
+    console.log(client);
+  }, [client]);
 
   return (
     <div>

@@ -61,53 +61,6 @@ export default function WaitingList() {
 
     const data = transformPendingClientsToPending(waitingClients);
 
-    const test: Pending[] = [
-        {
-            id: "aiziaiz",
-            address: "awswas",
-            clientId: "awssssss",
-            clientOrigin: ClientOrigin.local,
-            dateOfBirth: new Date(),
-            endDate: new Date(),
-            fullName: "sawsa",
-            gender: UserGender.male,
-            identityCardNumber: "awsssssss",
-            kidsNumber: 1,
-            membersNumber: 2,
-            nationality: "ass",
-            phoneNumber: "1826172712",
-            roomNumber: "ae",
-            roomType: RoomType.double,
-            startDate: new Date(),
-            state: ReservationState.enAttente,
-            totalDays: 3,
-            totalPrice: 1000,
-            reservationId: "res-001",
-        },
-        {
-            id: "aizi312aiz",
-            address: "awswé2as",
-            clientId: "aws33sssss",
-            clientOrigin: ClientOrigin.local,
-            dateOfBirth: new Date(),
-            endDate: new Date(),
-            fullName: "sawaSsa",
-            gender: UserGender.male,
-            identityCardNumber: "awsSAssssss",
-            kidsNumber: 1,
-            membersNumber: 2,
-            nationality: "asASs",
-            phoneNumber: "182622172712",
-            roomNumber: "aerrt",
-            roomType: RoomType.double,
-            startDate: new Date(),
-            state: ReservationState.enAttente,
-            totalDays: 3,
-            totalPrice: 1000,
-            reservationId: "res-002",
-        },
-    ];
-
     return (
         <div>
             <section className='relative w-full h-64 p-6 grid grid-cols-[75%,25%] bg-gradient-to-r from-blue-900 to-blue-600 rounded-xl mb-12'>
@@ -138,9 +91,9 @@ export default function WaitingList() {
                 >
                     Mise à jour d&apos;une r&eacute;servation
                 </Button>
-                <UpdateReservationState props={UpdateModal} data={test} />
+                <UpdateReservationState props={UpdateModal} data={data} />
                 <section className='lg:w-[71rem] lg:overflow-hidden w-full overflow-x-scroll'>
-                    <GenericDisplayTable columns={columns} data={test} />
+                    <GenericDisplayTable columns={columns} data={data} />
                 </section>
             </section>
         </div>

@@ -35,7 +35,9 @@ export default function DisplayModalStyle3<T1 extends { id?: string }>({
     onOpen();
   };
   const { cafeteriaMenuId, setFetchTrigger } = useCafeteriaMenuContext();
-  const stockId = useStockMenuContext().stockId;
+  const stockContx = useStockMenuContext();
+  const stockId = stockContx.stockId;
+  const stockRefresh = stockContx.setRefreshTrigger;
   async function handleDelete() {
     switch (dataType) {
       case "cafetriaItem":
@@ -56,7 +58,7 @@ export default function DisplayModalStyle3<T1 extends { id?: string }>({
         return "Task Deleted";
       case "stockItem":
         await deleteStockCategory(stockId, data1.id as string);
-        setRefreshTrigger((prev) => prev + 1);
+        stockRefresh((prev) => prev + 1);
         return "Stock Item Deleted";
     }
   };

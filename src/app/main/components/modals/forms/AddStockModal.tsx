@@ -12,7 +12,6 @@ import { useRefreshMenuContext } from '../../RefreshTriggerContext';
 
 const AddStockModal: React.FC<ModalModeProps<Stock>> = (props) => {
   const setRefreshTrigger = useRefreshMenuContext().setFetchTrigger;
-  const router = useRouter();
   const [employees, setEmployees] = useState<{ id: string, firstName: string, lastName: string, role: UserRole | string }[]>([]);
   const [selectedKeys, setSelectedKeys] = useState<Selection>();
 
@@ -32,7 +31,7 @@ const AddStockModal: React.FC<ModalModeProps<Stock>> = (props) => {
 
   useEffect(() => {
     if (props.mode === OperationMode.update) {
-      const assignedEmpls = (props.initialData?.stockEmployee as Array<{ employeeId: string, firstName: string, lastName: string, role: string }>).map((employee) => employee.employeeId);
+      const assignedEmpls = (props.initialData?.stockEmployee as Array<{ employeeId: string, firstName: string, lastName: string, role: string }>)?.map((employee) => employee.employeeId);
       const initialData: Stock = {
         name: props.initialData?.name || "",
         location: props.initialData?.location || "",
@@ -87,7 +86,7 @@ const AddStockModal: React.FC<ModalModeProps<Stock>> = (props) => {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">{props.mode === OperationMode.add  ? "Ajouter" : "Editer"} un Stock</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">{props.mode === OperationMode.add ? "Ajouter" : "Editer"} un Stock</ModalHeader>
               <ModalBody>
                 <form className='flex flex-col gap-1 items-start' >
                   <Input variant='bordered' color='secondary' type='text' label="Nom du Stock" {...register('name')} />

@@ -42,7 +42,7 @@ export default function ForgotPasswordForm() {
   };
 
   return (
-    <div className='glass-effect w-96 p-6 pt-8 pb-4 font-sans flex flex-col gap-6 absolute right-[2%] top-[20%] md:right-[5%] md:top-[25%] z-50 '>
+    <div className='glass-effect w-96 p-6 pt-8 pb-4 font-sans flex flex-col gap-6 absolute left-[5%] top-[85%] sm:top-[80%] sm:left-1/4 md:left-[17%] md:top-[80%] xl:right-[10%] xl:top-[15%] xl:left-auto z-50 '>
       <div>
         <h1 className='text-3xl font-semibold'>Mot de Passe Oubli&eacute;e</h1>
         <p className='text-base font-light opacity-80'>Entrer votre email pour recevoire le code de v&eacute;rification</p>

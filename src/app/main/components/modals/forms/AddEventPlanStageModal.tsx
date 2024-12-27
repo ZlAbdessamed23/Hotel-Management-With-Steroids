@@ -5,7 +5,6 @@ import React from 'react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { parseZonedDateTime, now , toZoned , getLocalTimeZone } from "@internationalized/date";
 import { useEventContext } from '../../EventContextProvider';
-import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 
 
@@ -14,7 +13,6 @@ export default function AddEventPlanStageModal({ props , type }: { props: ModalP
 
   const localTimeZone = getLocalTimeZone();
   const {eventId , setStagesRefreshTrigger} = useEventContext();
-  const router = useRouter();
   const { register, handleSubmit , control , watch } = useForm<EventStage>({
     defaultValues: {
       title: "",
@@ -33,7 +31,7 @@ export default function AddEventPlanStageModal({ props , type }: { props: ModalP
     }
     else if(type === "calendar") {
       const response = await addCalendarEventStage(data);
-      router.refresh();
+      setStagesRefreshTrigger((prev) => prev + 1);
       return response;
     }
     else{

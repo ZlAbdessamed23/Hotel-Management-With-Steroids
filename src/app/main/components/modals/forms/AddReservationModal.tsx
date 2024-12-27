@@ -1,8 +1,8 @@
 "use client";
 
 import { DiscoveredWay, OperationMode, ReservationSource, ReservationState, RoomState, RoomType } from '@/app/types/constants';
-import { Client, ModalModeProps, Reservation, ReservedRoom } from '@/app/types/types';
-import { addClientWithReservation, addReservation, getRoom, updateClientWithReservation } from '@/app/utils/funcs';
+import { Client, ModalModeProps, Reservation } from '@/app/types/types';
+import { addClientWithReservation, getRoom, updateClientWithReservation } from '@/app/utils/funcs';
 import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem } from '@nextui-org/react';
 import React, { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -20,7 +20,7 @@ const AddReservationModal: React.FC<ReservationModalProps> = ({ props, client })
   const ReservationSources = Object.values(ReservationSource);
   const DiscoveredWays = Object.values(DiscoveredWay);
   const ReservationStates = Object.values(ReservationState);
-  const [gottenRoom , setGottenRoom] = useState<Reservation>();
+  const [gottenRoom, setGottenRoom] = useState<Reservation>();
   const { register, handleSubmit, reset } = useForm<Reservation>({
     defaultValues: {
       roomNumber: "",
@@ -36,7 +36,7 @@ const AddReservationModal: React.FC<ReservationModalProps> = ({ props, client })
   });
 
   async function handleAddClientWithReservation(data: Reservation) {
-    if(props.mode === OperationMode.add){
+    if (props.mode === OperationMode.add) {
       const response = await addClientWithReservation({
         client: client,
         reservation: data
@@ -44,18 +44,18 @@ const AddReservationModal: React.FC<ReservationModalProps> = ({ props, client })
       setRefreshTrigger((prev) => prev + 1);
       return response;
     }
-    else{
+    else {
       const response = await updateClientWithReservation({
         client: client,
         reservation: data
-      } , props.initialData?.clientId as string , props.initialData?.id as string);
+      }, props.initialData?.clientId as string, props.initialData?.id as string);
       setRefreshTrigger((prev) => prev + 1);
       return response;
     }
   };
 
 
-  const onSubmit : SubmitHandler<Reservation> = async(data) => {
+  const onSubmit: SubmitHandler<Reservation> = async (data) => {
     const result = handleAddClientWithReservation(data);
     await toast.promise(result, {
       loading: 'Loading...',
@@ -66,17 +66,19 @@ const AddReservationModal: React.FC<ReservationModalProps> = ({ props, client })
   };
 
   async function getRoomReservation() {
-    if(client.reservations){
+    console.log(client);
+    if (client.reservations) {
+      console.log("yeah");
       const data = await getRoom(client?.reservations[0].id as string);
       setGottenRoom(data.room);
     };
   };
 
   useEffect(() => {
-  },[client]);
+  }, [client]);
 
   useEffect(() => {
-    if(props.mode === OperationMode.add){
+    if (props.mode === OperationMode.add) {
       reset({
         roomNumber: "",
         roomType: RoomType.single,
@@ -89,29 +91,28 @@ const AddReservationModal: React.FC<ReservationModalProps> = ({ props, client })
         discoverChannel: DiscoveredWay.facebook,
       });
     }
-    else{
-      async() => await getRoomReservation();
-      if(client.reservations && client.reservations.length > 0){
-        const data : Reservation = {
-          roomNumber : gottenRoom?.roomNumber as string,
-          roomType : gottenRoom?.roomType as RoomType,
-          startDate : gottenRoom?.startDate as Date,
-          endDate : gottenRoom?.endDate as Date,
-          state : gottenRoom?.state as ReservationState ,
-          totalPrice : gottenRoom?.totalPrice as number,
-          reservationSource : gottenRoom?.reservationSource as ReservationSource,
-          source : gottenRoom?.source,
-          discoverChannel : gottenRoom?.discoverChannel,
-          clientId : client.id as string,
-          totalDays : gottenRoom?.totalDays as number,
-          id : client?.reservations[0].id as string,
+    else {
+      getRoomReservation();
+      if (client.reservations && client.reservations.length > 0) {
+        const data: Reservation = {
+          roomNumber: gottenRoom?.roomNumber as string,
+          roomType: gottenRoom?.roomType as RoomType,
+          startDate: gottenRoom?.startDate as Date,
+          endDate: gottenRoom?.endDate as Date,
+          state: gottenRoom?.state as ReservationState,
+          totalPrice: gottenRoom?.totalPrice as number,
+          reservationSource: gottenRoom?.reservationSource as ReservationSource,
+          source: gottenRoom?.source,
+          discoverChannel: gottenRoom?.discoverChannel,
+          clientId: client.id as string,
+          totalDays: gottenRoom?.totalDays as number,
+          id: client?.reservations[0].id as string,
         };
         reset(data);
       }
     };
-  },[client]);
+  }, [client]);
 
-  
 
   return (
     <div>

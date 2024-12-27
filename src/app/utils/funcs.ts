@@ -57,12 +57,13 @@ const authBaseUrl = "http://104.154.75.47/api/auth";
 
 
 //AUTH
-export async function signUp(user: RegistrationInfos) {
+export async function signUp(user: RegistrationInfos , planName : string) {
   const fullInfos = {
     ...user,
-    planId: "cm4r5hlwb0000avu14delae6h",
+    planName,
     dateOfBirth: new Date(user.dateOfBirth),
   };
+  console.log(fullInfos);
   try {
     return await axios.post(`${authBaseUrl}/signup`, fullInfos).then((res) => {
       return res.data.message;
@@ -872,9 +873,8 @@ export async function addStock(stock: Stock): Promise<string> {
 
 
 export async function updateStock(stock: Stock, id: string) {
-  await axios.post(`${mainBaseUrl}`, stock);
   try {
-    return await axios.patch(`${mainBaseUrl}`, stock)
+    return await axios.patch(`${mainBaseUrl}/stock/stock/${id}`, stock)
       .then((res) => {
         return res.data.message;
       });
@@ -1070,6 +1070,16 @@ export async function getStockTransactions(
     { cache: "no-cache" }
   );
   return infos.json();
+};
+
+export async function getStockById(
+  stockId: string
+): Promise<{Stock : Stock}> {
+  const infos = await fetch(
+    `${mainBaseUrl}/stock/stock/${stockId}`,
+    { cache: "no-cache" }
+  );
+  return infos.json();
 }
 
 //Budget
@@ -1226,7 +1236,19 @@ export async function updateRoom(id: string, room: Room) {
   } catch (err: any) {
     throw new Error(err.response.data.message);
   }
-}
+};
+
+export async function chanegRoomStatus(isFixed : boolean , roomId : string) {
+  try {
+    return await axios
+      .patch(`${mainBaseUrl}/room/status/${roomId}`, isFixed)
+      .then((res) => {
+        return res.data.message;
+      });
+  } catch (err: any) {
+    throw new Error(err.response.data.message);
+  }
+};
 
 export async function getAllRooms(): Promise<{ rooms: Array<ReservedRoom> }> {
   const infos = await fetch(`${mainBaseUrl}/room`, { cache: "no-store" });
@@ -1430,6 +1452,7 @@ export async function addMember(client: Client, resId: string) {
     dateOfBirth: new Date(client.dateOfBirth),
     reservationId: resId,
   };
+  console.log(fullInfos);
   try {
     return await axios
       .post(`${mainBaseUrl}/client/member`, fullInfos)
@@ -1470,7 +1493,7 @@ export async function getGymCoaches(
 }
 
 export async function getAllGymCoaches(id: string): Promise<{
-  coaches: Array<{ employee: Coach }>;
+  coaches: Array<{ employee: Coach , sportFacilityId : string }>;
   SportFacilityCoachesCount: number;
 }> {
   const infos = await fetch(`${mainBaseUrl}/sports_facility/coach/${id}`, {
@@ -2129,7 +2152,7 @@ export async function getWaitingList(): Promise<{ pendingClients: PendingClients
 export async function updateReservationState(clientId: string, reservationId: string) {
   try {
     return await axios
-      .post(
+      .patch(
         `${mainBaseUrl}/client/pendingClients/${clientId}/${reservationId}`
       )
       .then((res) => {

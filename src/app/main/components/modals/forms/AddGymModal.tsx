@@ -15,8 +15,8 @@ const AddGymModal: React.FC<ModalModeProps<SportHall>> = (props) => {
   const [coaches, setCoaches] = useState<{ id: string, firstName: string, lastName: string }[]>([]);
   const [selectedWorkingDays, setSelectedWorkingDays] = useState<Selection>(props.initialData?.openingDays ? new Set([...(props.initialData.openingDays as DaysOfWeek[])]) : new Set([]));
 
-  const { register, handleSubmit, reset } = useForm<SportHall>({
-    defaultValues: {
+  const { register, handleSubmit, reset , watch } = useForm<SportHall>({
+    defaultValues: props.initialData || {
       name: "",
       description: "",
       location: undefined,
@@ -72,7 +72,6 @@ const AddGymModal: React.FC<ModalModeProps<SportHall>> = (props) => {
     }
     else {
       if (props.initialData) {
-        console.log(props.initialData);
         const data: SportHall | undefined = props.initialData ? {
           ...props.initialData, openingDays: props.initialData.openingDays && (props.initialData?.openingDays as DaysOfWeek[]).join(','), coaches: props.initialData.coaches && (props.initialData?.coaches as string[]).join(',')
         } : undefined;
@@ -105,7 +104,7 @@ const AddGymModal: React.FC<ModalModeProps<SportHall>> = (props) => {
                     </SelectItem>
                   ))}
                 </Select>
-                <Select selectedKeys={selectedWorkingDays} color='secondary' label="Les Jours de travail" className="w-full" {...register('openingDays')} selectionMode='multiple'>
+                <Select selectedKeys={selectedWorkingDays} color='secondary' label="Les Jours de travail" className="w-full" {...register('openingDays')} onSelectionChange={setSelectedWorkingDays} selectionMode='multiple'>
                   {WeekDays.map((day) => (
                     <SelectItem key={day} value={day}>
                       {day}

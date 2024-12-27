@@ -26,6 +26,7 @@ export default function Gym({ params }: {
   const [gym, setGym] = useState<SportHall>();
   const [coaches, setCoaches] = useState<Coach[]>([]);
   const [coachesCount, setCoachesCount] = useState<number>(0);
+  const [currentGymCoaches, setCurrentGymCoaches] = useState<Coach[]>([]);
   const [members, setMembers] = useState<SportHallClient[]>([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const columns = [
@@ -50,6 +51,7 @@ export default function Gym({ params }: {
     const data = await getAllGymCoaches(params.id);
     setCoaches(data.coaches.map((coach) => coach.employee));
     setCoachesCount(data.SportFacilityCoachesCount);
+    setCurrentGymCoaches(data.coaches.filter((coach) => coach.sportFacilityId === params.id).map((entr) => entr.employee));
   };
 
   async function getMembers() {
@@ -91,7 +93,6 @@ export default function Gym({ params }: {
     );
   };
 
-  const currentGymCoaches = coaches.filter((coach) => coach.id === params.id);
   const maleMembers = members.filter((member) => member.gender === UserGender.male).length;
   const item: ThirdCardItemType = {
     icon: FaPerson,
@@ -121,13 +122,16 @@ export default function Gym({ params }: {
   };
 
   const fields = {
-    coach: "samidou",
+    coach: currentGymCoaches[0]?.firstName || "",
     price: gym?.price?.toString() || "",
     capacity: gym?.capacity?.toString() || "",
   };
 
   const UpdateGymModalProps = useDisclosure();
 
+  useEffect(() => {
+    console.log(coaches);
+  },[coaches]);
 
   return (
     <div className='flex flex-col gap-8'>
@@ -139,7 +143,7 @@ export default function Gym({ params }: {
       <section className='flex items-center justify-end xl:mr-14'>
         <div className='flex items-center justify-between w-96'>
           <Button color='danger' onClick={handleDelete}>Supprimer la salle</Button>
-          <Button color='success' onClick={UpdateGymModalProps.onOpen}>Mise à jour de salle</Button>
+          <Button color='primary' onClick={UpdateGymModalProps.onOpen}>Mise à jour de salle</Button>
         </div>
         <AddGymModal isOpen={UpdateGymModalProps.isOpen} mode={OperationMode.update} onOpen={UpdateGymModalProps.onOpen} onOpenChange={UpdateGymModalProps.onOpenChange} initialData={gym} />
       </section>

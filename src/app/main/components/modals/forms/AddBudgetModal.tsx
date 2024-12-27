@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
 import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import { useRefreshMenuContext } from '../../RefreshTriggerContext';
 
 export default function AddBudgetModal({
   props,
@@ -22,7 +23,7 @@ export default function AddBudgetModal({
   initialData: StockBudget[];
 }) {
   const router = useRouter();
-
+  const { setFetchTrigger } = useRefreshMenuContext();
   const { register, handleSubmit, reset, control } = useForm<{ stocks: StockBudget[] }>({
     defaultValues: { stocks: initialData || [] },
   });
@@ -34,7 +35,7 @@ export default function AddBudgetModal({
 
   async function handleAdd(data: { stocks: StockBudget[] }) {
     const message = await editBudget(data.stocks);
-    router.refresh();
+    setFetchTrigger((curr) => curr + 1);
     return message;
   };
 
