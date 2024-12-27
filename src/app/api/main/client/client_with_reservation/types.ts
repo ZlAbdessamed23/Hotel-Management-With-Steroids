@@ -25,7 +25,7 @@ export type ClientReservationData = {
   roomType: RoomType;
   startDate: Date;
   endDate: Date;
-  totalDays: number;
+  
   state: ReservationState;
   source?: ReservationSource;
   discoveryChannel?: DiscoveryChannel;
@@ -45,7 +45,7 @@ export const requiredFields: (keyof ClientReservationData)[] = [
   "roomType",
   "startDate",
   "endDate",
-  "totalDays",
+  
 
   "state",
 ];
@@ -68,7 +68,7 @@ export type ClientsWithReservations = {
     kidsNumber : true,
     nationality : true,
     membersNumber : true,
-    hotelId : true,
+    
     createdAt : true,
     reservations : {
       select : {

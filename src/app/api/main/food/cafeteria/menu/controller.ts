@@ -22,8 +22,8 @@ export async function addCafeteriaMenu(
 ): Promise<CafeteriaMenuResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      await checkUserCafeteriaAccess(userId,data.cafeteriaId,userRole,prisma)
-      const [hotel, cafeteriaMenuCount,cafeteria] = await Promise.all([
+      
+      const [hotel, cafeteriaMenuCount] = await Promise.all([
         prisma.hotel.findUnique({
           where: { id: hotelId },
           include: {
@@ -35,7 +35,7 @@ export async function addCafeteriaMenu(
           },
         }),
         prisma.cafeteriaMenu.count({ where: { hotelId } }),
-        prisma.cafeteria.count({ where: { id : data.cafeteriaId } }),
+        
       ]);
 
       if (!hotel) throw new NotFoundError("Hotel non Trouvee");
@@ -47,9 +47,7 @@ export async function addCafeteriaMenu(
           "Le nombre Maximum des cafeteria menues pour ce plan est déja atteint"
         );
       }
-      if(!cafeteria){
-        throw new NotFoundError("cafeteria non trouvee")
-      }
+      
 
       const createdCafeteriaMenu = await prisma.cafeteriaMenu.create({
         data: { ...data, hotelId },
@@ -98,37 +96,3 @@ export async function getAllCafeteriaMenus(
   }
 }
 
-export async function checkUserCafeteriaAccess(
-  userId: string,
-  cafeteriaId: string,
-  userRole: UserRole[],
-  prisma: Omit<
-    PrismaClient,
-    "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
-  >
-): Promise<void> {
-  try {
-   
-    if (userRole.includes(UserRole.admin)) {
-      return;
-    }
-
-    const cafeteriaEmployee = await prisma.cafeteriaEmployee.findUnique({
-      where: {
-        cafeteriaId_employeeId: {
-          cafeteriaId,
-          employeeId: userId,
-        },
-      },
-    });
-
-    
-    if (!cafeteriaEmployee) {
-      throw new UnauthorizedError(
-        "L'utilisateur n'est pas autorisé à accéder à ce cafeteria"
-      );
-    }
-  } catch (error) {
-    throwAppropriateError(error);
-  }
-}

@@ -1,12 +1,12 @@
 import { getUser } from "@/lib/token/getUserFromToken";
 import { NextRequest, NextResponse } from "next/server";
 import {
-  checkReceptionistManagerCoachRole,
+  
   checkReceptionManagerCoachAdminRole,
   deleteSportsFacility,
   getSportsFacilityById,
   updateSportsFacility,
-} from "./controller";
+} from "@/app/api/main/sports_facility/[id]/controller";
 import { handleError } from "@/lib/error_handler/handleError";
 export async function GET(
   request: NextRequest,
@@ -17,7 +17,7 @@ export async function GET(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
     checkReceptionManagerCoachAdminRole(user.role);
 
     const roomId = params.id;
@@ -38,8 +38,8 @@ export async function DELETE(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
-    checkReceptionistManagerCoachRole(user.role);
+    
+    checkReceptionManagerCoachAdminRole(user.role);
 
     const employeeId = params.id;
     const deletedEmployee = await deleteSportsFacility(
@@ -67,7 +67,7 @@ export async function PATCH(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    checkReceptionistManagerCoachRole(user.role);
+    checkReceptionManagerCoachAdminRole(user.role);
     const sportsFacilityId = params.id;
     const updateData = await request.json();
 

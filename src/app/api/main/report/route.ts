@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { addDocument, getAllDocuments } from "./controller";
-import { AddDocumentData, requiredDocumentFields } from "./types";
+import { addDocument, getAllDocuments } from "@/app/api/main/report/controller";
+import { AddDocumentData, requiredDocumentFields } from "@/app/api/main/report/types";
 import { handleError } from "@/lib/error_handler/handleError";
 import { getUser } from "@/lib/token/getUserFromToken";
 
@@ -10,7 +10,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
 
     const data: AddDocumentData = await request.json();
     const missingFields = requiredDocumentFields.filter(
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
 
     const documents = await getAllDocuments(user.hotelId);
     return NextResponse.json(documents, { status: 200 });

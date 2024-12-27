@@ -18,7 +18,7 @@ import {
   User,
   Admin,
   Employee,
-  requiredSignInFields,
+
 } from "@/app/api/auth/signin/types";
 import { throwAppropriateError } from "@/lib/error_handler/throwError";
 import { UserRole, PrismaClient, Plan } from "@prisma/client";
@@ -53,11 +53,7 @@ async function validateSignInData(
     "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
   >
 ): Promise<{ existingUser: User }> {
-  for (const field of requiredSignInFields) {
-    if (!data[field]) {
-      throw new ValidationError(`Champ obligatoire manquant : ${field}`);
-    }
-  }
+
 
   let existingUser: User | null = null;
   if (data.collection === "admin") {
@@ -112,7 +108,7 @@ async function checkUserActivation(
 async function createVerificationToken(
   token: string,
   userId: string,
-  
+
   collection: string
 ): Promise<void> {
   await prisma.emailVerificationToken.create({
@@ -160,10 +156,10 @@ async function generateToken(
   hotelId: string,
   role: UserRole[],
   endDate: Date,
-  planName :string
+  planName: string
 ): Promise<string> {
   const secret = new TextEncoder().encode(process.env.JWT_HOTEL_SECRET);
-  const token = await new SignJWT({ id: userId, hotelId, role, endDate,planName })
+  const token = await new SignJWT({ id: userId, hotelId, role, endDate, planName })
     .setProtectedHeader({ alg: "HS256" })
     .setExpirationTime("7d")
     .sign(secret);
@@ -178,11 +174,12 @@ async function checkAdminSubscription(admin: Admin): Promise<SignInResult> {
 
   const { plan, endDate } = hotel.subscription;
 
-  if (plan.name === "FREE") {
+  if (plan.name === "Free") {
     return await generateUserTokens(admin);
-  } else if (plan.name === "STANDARD" || plan.name === "PREMIUM") {
+  } else if (plan.name === "Standard" || plan.name === "Premium") {
     if (endDate < new Date()) {
-      return await createStripeCheckoutSession(plan, hotel.id);
+      const redirectUrl = await createStripeCheckoutSession(plan, hotel.id);
+      throw new SubscriptionError("Subscription has expired", { redirectUrl });
     } else {
       return await generateUserTokens(admin);
     }
@@ -198,14 +195,13 @@ async function checkEmployeeSubscription(
   const subscription = hotel.subscription;
   const { plan, endDate } = subscription || {};
 
-  if (plan?.name === "FREE") {
+  if (plan?.name === "Free") {
     return await generateUserTokens(employee);
-  } else if (plan?.name === "STANDARD" || plan?.name === "PREMIUM") {
+  } else if (plan?.name === "Standard" || plan?.name === "Premium") {
     if ((endDate as Date) < new Date()) {
-      return {
-        employeeMessage:
-          "Votre limite d'abonnement est déja atteinte , votre administrateur doit renouveler l'abonnement pour que vous devez continuer ",
-      };
+      throw new SubscriptionError(
+        "Votre limite d'abonnement est déja atteinte, votre administrateur doit renouveler l'abonnement pour que vous devez continuer",
+      );
     } else {
       return await generateUserTokens(employee);
     }
@@ -240,7 +236,7 @@ async function generateUserTokens(user: User): Promise<SignInResult> {
 async function createStripeCheckoutSession(
   plan: Plan,
   hotelId: string
-): Promise<SignInResult> {
+): Promise<string> {
   try {
     const session = await stripe.checkout.sessions.create({
       line_items: [
@@ -260,7 +256,7 @@ async function createStripeCheckoutSession(
       cancel_url: `https://www.google.com/`,
     });
 
-    return { redirectUrl: session.url as string };
+    return  session.url as string ;
   } catch (error) {
     throw new PaymentError("Failed to create checkout session");
   }

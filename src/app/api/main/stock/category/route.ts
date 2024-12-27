@@ -5,8 +5,8 @@ import {
   getAllStockCategories,
   
   
-} from "./controller";
-import { AddStockCategoryData, requiredStockCategoryFields } from "./types";
+} from "@/app/api/main/stock/category/controller";
+import { AddStockCategoryData, requiredStockCategoryFields } from "@/app/api/main/stock/category/types";
 
 import { handleError } from "@/lib/error_handler/handleError";
 import { getUser } from "@/lib/token/getUserFromToken";
@@ -17,7 +17,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
     
 
     const data: AddStockCategoryData = await request.json();
@@ -26,12 +26,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     );
     if (missingFields.length > 0) {
       return NextResponse.json(
-        { message: `Missing required fields: ${missingFields.join(", ")}` },
+        { message: ` ${missingFields.join(", ")}: sont requis` },
         { status: 400 }
       );
     }
 
-    const newStockCategory = await addStockCategory(data, user.hotelId,user.id,user.role);
+    const newStockCategory = await addStockCategory(data, user.hotelId);
 
     return NextResponse.json(
       { message: "Category de stock crée avec succès" },
@@ -48,13 +48,13 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
 
     // Check if the user is either an admin or a receptionist
     
 
     const StockCategories = await getAllStockCategories(user.hotelId);
-    return NextResponse.json(StockCategories, { status: 200 });
+    return NextResponse.json({message:"Article de stock crée avec succès"}, { status: 200 });
   } catch (error) {
     return handleError(error);
   }

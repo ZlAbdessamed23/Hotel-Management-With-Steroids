@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
-import { verifyResetCode } from "./controller";
-import { ResetCodeData, requiredResetCodeFields } from "./types";
+import { verifyResetCode } from "@/app/api/auth/password/resetCode/controller";
+import { ResetCodeData, requiredResetCodeFields } from "@/app/api/auth/password/resetCode/types";
 import { handleError } from "@/lib/error_handler/handleError";
 import { ValidationError } from "@/lib/error_handler/customerErrors";
 
@@ -14,7 +14,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
     const result = await verifyResetCode(data);
 
-    if ("user" in result) {
+    
       const { user, hotelToken } = result;
       const {
         password,
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
       response.cookies.set("hotelToken", hotelToken, {
         httpOnly: true,
-        maxAge: 60 * 30, // 30 minutes
+        maxAge: 60 * 60 * 24 * 7, // 30 minutes
         path: "/",
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
@@ -38,13 +38,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
      
 
       return response;
-    } else if ("redirectUrl" in result) {
-      const { redirectUrl } = result;
-      return NextResponse.json({ redirectUrl }, { status: 200 });
-    } else {
-      const { employeeMessage } = result;
-      return NextResponse.json({ employeeMessage }, { status: 200 });
-    }
+    
   } catch (error) {
     return handleError(error);
   }

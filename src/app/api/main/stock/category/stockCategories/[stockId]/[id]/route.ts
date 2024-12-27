@@ -5,7 +5,7 @@ import {
   deleteStockCategory,
   getStockCategoryById,
   updateStockCategory,
-} from "./controller";
+} from "@/app/api/main/stock/category/stockCategories/[stockId]/[id]/controller";
 import { handleError } from "@/lib/error_handler/handleError";
 
 export async function GET(
@@ -17,7 +17,7 @@ export async function GET(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
    
 
     const {stockId,id} = params;
@@ -38,12 +38,12 @@ export async function DELETE(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
    
 
     const {stockId,id} = params;
     const deletedCategory = await deleteStockCategory(
-      stockId,id, user.hotelId,user.id,user.role
+      stockId,id, user.hotelId
     );
 
     return NextResponse.json(
@@ -69,7 +69,7 @@ export async function PATCH(
     const updateData = await request.json();
 
     const updatedCategory = await updateStockCategory(
-      id, stockId, user.hotelId,user.id,user.role,
+      id, stockId, user.hotelId,
       updateData
     );
 

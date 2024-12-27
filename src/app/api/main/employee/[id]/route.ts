@@ -5,9 +5,9 @@ import {
   getEmployeeById,
   deleteEmployeeById,
   updateEmployee,
-} from "./controller";
+} from "@/app/api/main/employee/[id]/controller";
 import { handleError } from "@/lib/error_handler/handleError";
-import { UpdateEmployeeData } from "./types";
+import { UpdateEmployeeData } from "@/app/api/main/employee/[id]/types";
 
 import { getUser } from "@/lib/token/getUserFromToken";
 
@@ -23,7 +23,7 @@ export async function GET(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
     checkAdminRole(user.role);
 
     const employeeId = params.id;
@@ -45,7 +45,7 @@ export async function DELETE(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
     checkAdminRole(user.role);
 
     const employeeId = params.id;
@@ -69,7 +69,7 @@ export async function PATCH(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
     checkAdminRole(user.role);
 
     const employeeId = params.id;

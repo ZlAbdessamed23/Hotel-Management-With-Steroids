@@ -11,7 +11,7 @@ export type RestaurantMenusResult = {
        dinnerStartTime : true,
        dinnerEndTime : true,
        restaurantId : true,
-       hotelId:true
+       
         
   
     }}>[];

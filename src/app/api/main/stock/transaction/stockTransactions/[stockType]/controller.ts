@@ -13,14 +13,14 @@ export async function getStockTransactions(
 ): Promise<StockTransactionsResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      await checkUserStockAccess(userId,stockId,userRole,prisma)
+     
       const stockTransactions = await prisma.transaction.findMany({
       where: {
         hotelId: hotelId,
         stockId
       },
     });
-
+  console.log(stockTransactions)
     return { Transactions: stockTransactions };})
     
   } catch (error) {
@@ -28,37 +28,4 @@ export async function getStockTransactions(
   }
 }
 
-export async function checkUserStockAccess(
-  userId: string,
-  stockId: string,
-  userRole: UserRole[],
-  prisma: Omit<
-    PrismaClient,
-    "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
-  >
-): Promise<void> {
-  try {
-   
-    if (userRole.includes(UserRole.admin)) {
-      return;
-    }
 
-    const stockEmployee = await prisma.stockEmployee.findUnique({
-      where: {
-        stockId_employeeId: {
-          stockId,
-          employeeId: userId,
-        },
-      },
-    });
-
-    
-    if (!stockEmployee) {
-      throw new UnauthorizedError(
-        "L'utilisateur n'est pas autorisé à accéder à ce stock"
-      );
-    }
-  } catch (error) {
-    throwAppropriateError(error);
-  }
-}

@@ -5,8 +5,8 @@ import {
   checkReceptionistAdminRole,
   checkReceptionistRole,
   getAllRooms,
-} from "./controller";
-import { AddRoomData, requiredRoomFields } from "./types";
+} from "@/app/api/main/room/controller";
+import { AddRoomData, requiredRoomFields } from "@/app/api/main/room/types";
 
 import { handleError } from "@/lib/error_handler/handleError";
 import { getUser } from "@/lib/token/getUserFromToken";
@@ -17,14 +17,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
     checkReceptionistRole(user.role);
 
     const data: AddRoomData = await request.json();
     const missingFields = requiredRoomFields.filter((field) => !data[field]);
     if (missingFields.length > 0) {
       return NextResponse.json(
-        { message: `${missingFields.join(", ")}: Missing required fields` },
+        { message: `${missingFields.join(", ")}: sont requis` },
         { status: 400 }
       );
     }
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
 
     // Check if the user is either an admin or a receptionist
     checkReceptionistAdminRole(user.role);

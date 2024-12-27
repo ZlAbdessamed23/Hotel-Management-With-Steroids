@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { handleError } from "@/lib/error_handler/handleError";
-import { verifyEmailToken, handleVerificationResult } from "./controller";
+import { verifyEmailToken, handleVerificationResult } from "@/app/api/auth/email-verification/[token]/controller";
 
 export async function GET(
   req: NextRequest,

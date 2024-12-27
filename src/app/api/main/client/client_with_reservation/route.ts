@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   addClientWithReservation,
-  checkReceptionistAdminRole,
-  checkReceptionistRole,
+  checkReceptionistReceptionManagerAdminRole,
+  checkReceptionistReceptionManagerRole,
   getClientsWithReservations,
-} from "./controller";
-import { ClientReservationData, requiredFields } from "./types";
+} from "@/app/api/main/client/client_with_reservation/controller";
+import { ClientReservationData, requiredFields } from "@/app/api/main/client/client_with_reservation/types";
 import { handleError } from "@/lib/error_handler/handleError";
 import { getUser } from "@/lib/token/getUserFromToken";
 
@@ -15,13 +15,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    checkReceptionistRole(user.role);
+    checkReceptionistReceptionManagerRole(user.role);
 
     const data: ClientReservationData = await request.json();
     const missingFields = requiredFields.filter((field) => !data[field]);
     if (missingFields.length > 0) {
       return NextResponse.json(
-        { message: `: ${missingFields.join(", ")} est requis` },
+        { message: `: ${missingFields.join(", ")} sont requis` },
         { status: 400 }
       );
     }
@@ -47,10 +47,10 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+  
 
-    // Check if the user is either an admin or a receptionist
-    checkReceptionistAdminRole(user.role);
+    // Check if the user is either an admin or a receptionistReceptionManager
+    checkReceptionistReceptionManagerAdminRole(user.role);
 
     const clientsWithReservations = await getClientsWithReservations(
       user.hotelId

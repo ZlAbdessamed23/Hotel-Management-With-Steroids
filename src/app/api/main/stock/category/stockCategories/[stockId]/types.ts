@@ -5,7 +5,7 @@ export type StockCategoriesResult = {
     id : true,
     description : true,
     createdAt  : true,
-    stockId : true,
+    
     name : true,
     
   }}>[];

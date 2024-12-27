@@ -1,12 +1,12 @@
 import {
-  ConflictError,
+ 
   NotFoundError,
   ValidationError,
 } from "@/lib/error_handler/customerErrors";
 import { throwAppropriateError } from "@/lib/error_handler/throwError";
 import prisma from "@/lib/prisma/prismaClient";
 import {
-  Client,
+  
   UserRole,
   UserGender,
   Prisma,
@@ -219,6 +219,7 @@ export async function updateClient(
           existingClient.clientOrigin,
           data.clientOrigin as ClientOrigin,
           0,
+          0,
           prisma,
           false
         );
@@ -231,7 +232,7 @@ export async function updateClient(
   }
 }
 
-export function checkReceptionistAdminRole(roles: UserRole[]) {
+export function checkReceptionistReceptionManagerAdminRole(roles: UserRole[]) {
   if (
     !roles.includes(UserRole.receptionist) &&
     !roles.includes(UserRole.admin) &&
@@ -243,7 +244,7 @@ export function checkReceptionistAdminRole(roles: UserRole[]) {
   }
 }
 
-export function checkReceptionistRole(roles: UserRole[]) {
+export function checkReceptionistReceptionManagerRole(roles: UserRole[]) {
   if (
     !roles.includes(UserRole.receptionist) &&
     !roles.includes(UserRole.reception_Manager)

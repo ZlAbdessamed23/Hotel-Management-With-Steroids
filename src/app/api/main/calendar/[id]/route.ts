@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-  checkAdminRole,
+  checkAdminReceptionManagerRole,
   deleteCalendar,
   getCalendarById,
   updateCalendar,
@@ -19,7 +19,7 @@ export async function GET(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
 
     const { id } = params;
     const Calendar = await getCalendarById(id, user.hotelId);
@@ -40,8 +40,8 @@ export async function DELETE(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
-    checkAdminRole(user.role);
+    
+    checkAdminReceptionManagerRole(user.role);
 
     const { id } = params;
     const Calendar = await deleteCalendar(id, user.hotelId);
@@ -65,8 +65,8 @@ export async function PATCH(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
-    checkAdminRole(user.role);
+    
+    checkAdminReceptionManagerRole(user.role);
 
     const { id } = params;
     const updateData: UpdateCalendarData = await request.json();

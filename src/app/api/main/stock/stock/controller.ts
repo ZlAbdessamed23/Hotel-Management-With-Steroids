@@ -91,7 +91,7 @@ export async function addStock(
       throwAppropriateError(error);
     }
   }
-  export function checkAdminRole(roles: UserRole[]) {
+  export function checkReceptionManagerStockManagerAdminRole(roles: UserRole[]) {
     if (
       !roles.includes(UserRole.admin) && !roles.includes(UserRole.stock_Manager) && !roles.includes(UserRole.reception_Manager)
     ) {

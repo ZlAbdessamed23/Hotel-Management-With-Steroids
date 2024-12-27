@@ -1,6 +1,6 @@
 import { getUser } from "@/lib/token/getUserFromToken";
 import { NextRequest, NextResponse } from "next/server";
-import { updateCafeteria, getCafeteriaById, deleteCafeteria, checkAdminRole } from "@/app/api/main/food/cafeteria/cafeteria/[id]/controller";
+import { updateCafeteria, getCafeteriaById, deleteCafeteria, checkAdminReceptionManagerRestaurantManagerRole } from "@/app/api/main/food/cafeteria/cafeteria/[id]/controller";
 import { UpdateCafeteriaData } from "@/app/api/main/food/cafeteria/cafeteria/[id]/types";
 import { handleError } from "@/lib/error_handler/handleError";
 
@@ -13,8 +13,8 @@ export async function GET(
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    console.log(user);
-    checkAdminRole(user.role)
+    
+    checkAdminReceptionManagerRestaurantManagerRole(user.role)
 
     const CafeteriaId = params.id;
     const Cafeteria = await getCafeteriaById(
@@ -38,8 +38,8 @@ export async function DELETE(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
-    checkAdminRole(user.role)
+    
+    checkAdminReceptionManagerRestaurantManagerRole(user.role)
 
     const CafeteriaId = params.id;
     const deletedCafeteria = await deleteCafeteria(
@@ -66,7 +66,7 @@ export async function PATCH(
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    checkAdminRole(user.role)
+    checkAdminReceptionManagerRestaurantManagerRole(user.role)
     const CafeteriaId = params.id;
     const updateData:UpdateCafeteriaData = await request.json();
 

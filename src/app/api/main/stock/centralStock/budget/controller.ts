@@ -62,8 +62,8 @@ export async function getAllBudgets(
   }
 }
 //////////////// check admin role ///////////////
-export function checkAdminRole(roles: UserRole[]) {
-  if (!roles.includes(UserRole.admin)) {
-    throw new UnauthorizedError("Sauf l'Administrateur peut faire cette action");
+export function checkAdminReceptionManagerStockManagerRole(roles: UserRole[]) {
+  if (!roles.includes(UserRole.admin)&&!roles.includes(UserRole.reception_Manager)&&!roles.includes(UserRole.stock_Manager)) {
+    throw new UnauthorizedError("Sauf l'Administrateur et reception manager et stock manager peut faire cette action");
   }
 }

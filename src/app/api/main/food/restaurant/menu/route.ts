@@ -4,8 +4,8 @@ import {
   addRestaurantMenu,
   getAllRestaurantMenus,
  
-} from "./controller";
-import { AddRestaurantMenuData, requiredRestaurantMenuFields } from "./types";
+} from "@/app/api/main/food/restaurant/menu/controller";
+import { AddRestaurantMenuData, requiredRestaurantMenuFields } from "@/app/api/main/food/restaurant/menu/types";
 
 import { handleError } from "@/lib/error_handler/handleError";
 import { getUser } from "@/lib/token/getUserFromToken";
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+   
     
 
     const data: AddRestaurantMenuData = await request.json();
@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+   
 
     
 

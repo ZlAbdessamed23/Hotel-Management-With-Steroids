@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   addOrUpdateBudgets,
-  checkAdminRole,
+  checkAdminReceptionManagerStockManagerRole,
   getAllBudgets,
 } from "@/app/api/main/stock/centralStock/budget/controller";
 import {
@@ -17,7 +17,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    checkAdminRole(user.role);
+    checkAdminReceptionManagerStockManagerRole(user.role);
     const data: AddMultipleBudgetsData = await request.json();
     
     const newBudget = await addOrUpdateBudgets(data, user.hotelId);

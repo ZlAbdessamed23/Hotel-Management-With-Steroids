@@ -2,7 +2,7 @@ import { NotFoundError } from "@/lib/error_handler/customerErrors";
 import { throwAppropriateError } from "@/lib/error_handler/throwError";
 import { UserRole, Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma/prismaClient";
-import { DocumentsResult } from "./types";
+import { DocumentsResult } from "@/app/api/main/report/getAccessReport/types";
 
 export async function getAccessDocuments(
   userId: string,

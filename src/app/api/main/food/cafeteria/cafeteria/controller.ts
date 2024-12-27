@@ -62,7 +62,8 @@ export async function addCafeteria(
               ],
             },
           },
-        });
+          select: { id: true, name: true, description: true , createdAt : true },
+        })
   
         
         return { Cafeteria: createdCafeteria };
@@ -85,12 +86,12 @@ export async function addCafeteria(
       throwAppropriateError(error);
     }
   }
-  export function checkAdminRole(roles: UserRole[]) {
+  export function checkAdminReceptionManagerRestaurantMnagerRole(roles: UserRole[]) {
     if (
-      !roles.includes(UserRole.admin) 
+      !roles.includes(UserRole.admin)  &&!roles.includes(UserRole.reception_Manager) &&!roles.includes(UserRole.restaurent_Manager)
     ) {
       throw new UnauthorizedError(
-        "Sauf l'Admin peut faire cette action"
+        "Sauf l'Admin reception manager restaurant manager peut faire cette action"
       );
     }
   }

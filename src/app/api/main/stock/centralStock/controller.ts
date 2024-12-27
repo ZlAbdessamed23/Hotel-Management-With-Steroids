@@ -1,6 +1,6 @@
 import { throwAppropriateError } from "@/lib/error_handler/throwError";
 import prisma from "@/lib/prisma/prismaClient";
-import { StockDashboardResult, StockDashboardData } from "./types";
+import { StockDashboardResult, StockDashboardData } from "@/app/api/main/stock/centralStock/types";
 import { UserRole } from "@prisma/client";
 import { ForbiddenError } from "@/lib/error_handler/customerErrors";
 
@@ -61,15 +61,15 @@ export async function getStockData(
       stocks : stocks
     };
 
-    console.log("Stock dashboard data fetched:", dashboardData);
+    
 
     return { data: dashboardData };
   } catch (error) {
     throwAppropriateError(error);
   }
 }
-export function checkAdminRole(roles: UserRole[]) {
-  if (!roles.includes(UserRole.admin)) {
-    throw new ForbiddenError("Sauf l'Administrateur peut faire cette action");
+export function checkReceptionManagerStockManagerAdminRole(roles: UserRole[]) {
+  if (!roles.includes(UserRole.admin)&&!roles.includes(UserRole.reception_Manager)&&!roles.includes(UserRole.stock_Manager)) {
+    throw new ForbiddenError("Sauf l'Administrateur et reception manager et stock manager peut faire cette action");
   }
 }

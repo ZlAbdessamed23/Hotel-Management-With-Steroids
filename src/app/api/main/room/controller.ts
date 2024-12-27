@@ -49,31 +49,31 @@ export async function addRoom(
       const createdRoom = await prisma.room.create({
         data: { ...data, hotelId },
         select : {
-      id : true,
-      capacity : true,
-      description : true,
-      floorNumber : true,
-      number : true,
-      outOfServiceDescription : true,
-      price : true,
-      status : true,
-      type : true,
-      
-    
-      reservation: {
-        select: {
-          startDate: true,
-          endDate: true,
-          client: {
+          id : true,
+          capacity : true,
+          description : true,
+          floorNumber : true,
+          number : true,
+          outOfServiceDescription : true,
+          price : true,
+          status : true,
+          type : true,
+          
+        
+          reservation: {
             select: {
-              id: true,
-              fullName: true,
+              startDate: true,
+              endDate: true,
+              client: {
+                select: {
+                  id: true,
+                  fullName: true,
+                },
+              },
             },
           },
-        },
-      },
-    } 
-      });
+        }
+      })
       
       await updateRoomStatistics(hotelId, "add", prisma);
 

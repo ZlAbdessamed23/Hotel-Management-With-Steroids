@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma/prismaClient";
-import { RestaurantMenuItemsResult } from "./types";
+import { RestaurantMenuItemsResult } from "@/app/api/main/food/restaurant/item/[restaurantMenuId]/types";
 import {
   NotFoundError,
   UnauthorizedError,

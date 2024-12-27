@@ -30,7 +30,7 @@ export async function getAllClientsHistorique(
   }
 }
 
-export function checkAdminRole(roles: UserRole[]) {
+export function checkAdminReceptionManagerRole(roles: UserRole[]) {
   if (!roles.includes(UserRole.admin)) {
     throw new UnauthorizedError(
       "Sauf l'Administrateur peut faire cette action"

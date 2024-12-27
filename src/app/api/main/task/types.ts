@@ -2,7 +2,7 @@ import { Prisma } from "@prisma/client";
 
 export type AddTaskData = {
   title: string;
-  description: string;
+  description?: string;
   deadline: Date;
 
   employeeAssignedTask: {
@@ -12,7 +12,7 @@ export type AddTaskData = {
 
 export const requiredTaskFields: (keyof AddTaskData)[] = [
   "title",
-  "description",
+  
   "deadline",
   "employeeAssignedTask",
 ];
@@ -22,5 +22,13 @@ export type TaskResult = {
 };
 
 export type TasksResult = {
-  Tasks: Prisma.TaskGetPayload<{select : {id : true,title : true,description : true,isDone : true,deadline : true,createdAt : true}}>[];
+  Tasks: Prisma.TaskGetPayload<{select :{
+    title :true,
+    description :true,
+    isDone :true,
+    deadline :true,
+    createdAt :true,
+    id :true,
+    assignedEmployees :{select:{employee :{select:{id :true,firstName :true,lastName:true}}}}
+  }}>[];
 };

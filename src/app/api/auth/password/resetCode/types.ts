@@ -32,5 +32,4 @@ export type ResetCodeResult =
       user: User;
       hotelToken : string
     }
-  | { redirectUrl: string }
-  | { employeeMessage: string };
+  

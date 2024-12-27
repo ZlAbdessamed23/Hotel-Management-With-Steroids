@@ -21,7 +21,7 @@ export async function getStockItemById(
 ): Promise<ItemResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      await checkUserStockAccess(userId,stockId,userRole,prisma)
+      
       const existingItem = await prisma.item.findUnique({
       where: { id: itemId, hotelId: hotelId,stockId },
       select : {id : true,name : true ,supplierAddress : true,supplierEmail : true,supplierName : true,supplierPhone : true,sku : true,minimumQuantity : true,
@@ -41,14 +41,13 @@ export async function getStockItemById(
 
 export async function deleteStockItem(
   itemId: string,
-  stockId : string,
+  
   hotelId: string,
-  userId : string,
-  userRole : UserRole[],
+ 
 ): Promise<ItemResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      await checkUserStockAccess(userId,stockId,userRole,prisma)
+      
       
 
       const deletedItem = await prisma.item.delete({
@@ -68,13 +67,12 @@ export async function updateStockItem(
   itemId: string,
   stockId : string,
   hotelId: string,
-  userId : string,
-  userRole : UserRole[],
+  
   data: UpdateStockItemData
 ): Promise<ItemResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      await checkUserStockAccess(userId,stockId,userRole,prisma)
+      
       
 
       const updateData: Prisma.ItemUpdateInput = {
@@ -86,6 +84,8 @@ export async function updateStockItem(
         minimumQuantity: data.minimumQuantity,
         supplierName: data.supplierName,
         supplierPhone: data.supplierPhone,
+        supplierEmail: data.supplierEmail,
+        supplierAddress: data.supplierAddress,
         category: data.stockCategoryId
           ? { connect: { id: data.stockCategoryId } }
           : undefined,
@@ -113,37 +113,3 @@ export async function updateStockItem(
 };
 
 
-export async function checkUserStockAccess(
-  userId: string,
-  stockId: string,
-  userRole: UserRole[],
-  prisma: Omit<
-    PrismaClient,
-    "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
-  >
-): Promise<void> {
-  try {
-   
-    if (userRole.includes(UserRole.admin)) {
-      return;
-    }
-
-    const stockEmployee = await prisma.stockEmployee.findUnique({
-      where: {
-        stockId_employeeId: {
-          stockId,
-          employeeId: userId,
-        },
-      },
-    });
-
-    
-    if (!stockEmployee) {
-      throw new UnauthorizedError(
-        "L'utilisateur n'est pas autorisé à accéder à ce stock"
-      );
-    }
-  } catch (error) {
-    throwAppropriateError(error);
-  }
-}

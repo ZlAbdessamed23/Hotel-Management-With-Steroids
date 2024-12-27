@@ -1,7 +1,7 @@
 import { getUser } from "@/lib/token/getUserFromToken";
 import { NextRequest, NextResponse } from "next/server";
 import {
-  checkAdminRole,
+  checkReceptionManagerStockManagerAdminRole,
   getStockData,
 } from "@/app/api/main/stock/centralStock/controller";
 import { handleError } from "@/lib/error_handler/handleError";
@@ -12,8 +12,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
-    checkAdminRole(user.role);
+    
+    checkReceptionManagerStockManagerAdminRole(user.role);
     const Statistics = await getStockData(user.hotelId);
     return NextResponse.json(Statistics, { status: 201 });
   } catch (error) {

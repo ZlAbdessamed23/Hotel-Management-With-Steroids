@@ -17,7 +17,7 @@ export const requiredCafeteriaFields: (keyof AddCafeteriaData)[] = [
 ];
 
 export type CafeteriaResult = {
-  Cafeteria: Prisma.CafeteriaGetPayload<{}>;
+  Cafeteria: Prisma.CafeteriaGetPayload<{select: { id: true; name: true; description: true , createdAt : true }}>;
 };
 
 export type CafeteriasResult = {

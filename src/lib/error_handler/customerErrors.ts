@@ -82,23 +82,7 @@ export class RateLimitError extends CustomError {
   }
 }
 
-export class BadGatewayError extends CustomError {
-  constructor(message: string) {
-    super(message, 502, "BAD_GATEWAY");
-  }
-}
 
-export class ServiceUnavailableError extends CustomError {
-  constructor(message: string) {
-    super(message, 503, "SERVICE_UNAVAILABLE");
-  }
-}
-
-export class TimeoutError extends CustomError {
-  constructor(message: string) {
-    super(message, 504, "GATEWAY_TIMEOUT");
-  }
-}
 
 export class AuthenticationError extends CustomError {
   constructor(message: string) {

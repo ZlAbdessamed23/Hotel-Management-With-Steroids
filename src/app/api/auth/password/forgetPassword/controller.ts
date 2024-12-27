@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma/prismaClient";
-import { ForgetPasswordData, User } from "./types";
+import { ForgetPasswordData, User } from "@/app/api/auth/password/forgetPassword/types";
 import {
   ValidationError,
   NotFoundError,

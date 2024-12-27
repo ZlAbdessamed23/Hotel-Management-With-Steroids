@@ -7,7 +7,7 @@ import {
   checkReceptionManagerCoachRole,
 } from "@/app/api/main/sports_facility/member/[sportsFacilityId]/[memberId]/controller";
 import { handleError } from "@/lib/error_handler/handleError";
-import { UpdateSportsFacilityMemberData } from "./types";
+import { UpdateSportsFacilityMemberData } from "@/app/api/main/sports_facility/member/[sportsFacilityId]/[memberId]/types";
 import { getUser } from "@/lib/token/getUserFromToken";
 
 /////////////////////// get sports facility member with id //////////////////////////////////
@@ -20,7 +20,7 @@ export async function GET(
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    console.log(user);
+    
     checkReceptionManagerCoachAdminRole(user.role);
 
     const { sportsFacilityId, memberId } = params;
@@ -46,7 +46,7 @@ export async function DELETE(
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    console.log(user);
+    
     checkReceptionManagerCoachRole(user.role);
 
     const { sportsFacilityId, memberId } = params;
@@ -77,7 +77,7 @@ export async function PATCH(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
     checkReceptionManagerCoachRole(user.role);
 
     const { sportsFacilityId, memberId } = params;

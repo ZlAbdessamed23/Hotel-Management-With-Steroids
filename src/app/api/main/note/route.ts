@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { addNote, getAllNotes } from "./controller";
-import { AddNoteData, requiredNoteFields } from "./types";
+import { addNote, getAllNotes } from "@/app/api/main/note/controller";
+import { AddNoteData, requiredNoteFields } from "@/app/api/main/note/types";
 import { handleError } from "@/lib/error_handler/handleError";
 import { getUser } from "@/lib/token/getUserFromToken";
 

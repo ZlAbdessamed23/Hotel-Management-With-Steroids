@@ -1,6 +1,6 @@
 import { getUser } from "@/lib/token/getUserFromToken";
 import { NextRequest, NextResponse } from "next/server";
-import { updateTask, getTaskById, deleteTask } from "./controller";
+import { updateTask, getTaskById, deleteTask } from "@/app/api/main/task/[id]/controller";
 import { handleError } from "@/lib/error_handler/handleError";
 
 export async function GET(
@@ -31,14 +31,14 @@ export async function DELETE(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
 
     const taskId = params.id;
     const deletedTask = await deleteTask(
       taskId,
       user.id,
       user.hotelId,
-      user.role
+      
     );
 
     return NextResponse.json(
@@ -66,9 +66,7 @@ export async function PATCH(
 
     const updatedTask = await updateTask(
       taskId,
-      user.hotelId,
-      user.id,
-      user.role,
+      
       updateData
     );
 

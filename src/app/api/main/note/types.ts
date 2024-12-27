@@ -2,14 +2,14 @@ import { Prisma } from "@prisma/client";
 
 export type AddNoteData = {
   title: string;
-  description: string;
+  description?: string;
   deadline: Date;
   
 };
 
 export const requiredNoteFields: (keyof AddNoteData)[] = [
   "title",
-  "description",
+  
   "deadline",
 ];
 

@@ -1,6 +1,6 @@
 import { getUser } from "@/lib/token/getUserFromToken";
 import { NextRequest, NextResponse } from "next/server";
-import { getAccessCafeterias } from "./controller";
+import { getAccessCafeterias } from "@/app/api/main/food/cafeteria/cafeteria/cafeteriaAccess/controller";
 import { handleError } from "@/lib/error_handler/handleError";
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
@@ -9,7 +9,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+  
 
     const getCafeterias = await getAccessCafeterias(
       user.id,

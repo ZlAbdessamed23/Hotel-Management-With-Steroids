@@ -13,12 +13,11 @@ export async function getCafeteriaMenuById(
   cafeteriaMenuId: string,
   cafeteriaId:string,
   hotelId: string,
-  userId:string,
-  userRole:UserRole[]
+
 ): Promise<CafeteriaMenuResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      await checkUserCafeteriaAccess(userId,cafeteriaId,userRole,prisma)
+      
       const existingMenu = await prisma.cafeteriaMenu.findUnique({
       where: { id: cafeteriaMenuId, hotelId: hotelId ,cafeteriaId},select : {
         id : true,
@@ -47,12 +46,11 @@ export async function deleteCafeteriaMenu(
   cafeteriaMenuId: string,
   cafeteriaId:string,
   hotelId: string,
-  userId:string,
-  userRole:UserRole[],
+
 ): Promise<CafeteriaMenuResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      await checkUserCafeteriaAccess(userId,cafeteriaId,userRole,prisma)
+      
       const deletedMenu = await prisma.cafeteriaMenu.delete({
         where: { id: cafeteriaMenuId, hotelId: hotelId,cafeteriaId },select : {
           id : true,
@@ -77,13 +75,12 @@ export async function updateCafeteriaMenu(
   cafeteriaMenuId: string,
   cafeteriaId:string,
   hotelId: string,
-  userId:string,
-  userRole:UserRole[],
+  
   data: UpdateCafeteriaMenuData
 ): Promise<CafeteriaMenuResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      await checkUserCafeteriaAccess(userId,cafeteriaId,userRole,prisma)
+      
       const updateData: Prisma.CafeteriaMenuUpdateInput = {
         name: data.name,
         description: data.description,
@@ -114,37 +111,3 @@ export async function updateCafeteriaMenu(
 
 
 
-export async function checkUserCafeteriaAccess(
-  userId: string,
-  cafeteriaId: string,
-  userRole: UserRole[],
-  prisma: Omit<
-    PrismaClient,
-    "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
-  >
-): Promise<void> {
-  try {
-   
-    if (userRole.includes(UserRole.admin)) {
-      return;
-    }
-
-    const cafeteriaEmployee = await prisma.cafeteriaEmployee.findUnique({
-      where: {
-        cafeteriaId_employeeId: {
-          cafeteriaId,
-          employeeId: userId,
-        },
-      },
-    });
-
-    
-    if (!cafeteriaEmployee) {
-      throw new UnauthorizedError(
-        "L'utilisateur n'est pas autorisé à accéder à ce cafeteria"
-      );
-    }
-  } catch (error) {
-    throwAppropriateError(error);
-  }
-}

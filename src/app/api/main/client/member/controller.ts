@@ -1,9 +1,9 @@
 import { Member, Room, Reservation, UserRole, Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma/prismaClient";
-import { AddMemberData, MemberResult, MembersResult } from "./types";
+import { AddMemberData, MemberResult, MembersResult } from "@/app/api/main/client/member/types";
 import {
   ValidationError,
-  ConflictError,
+  
   LimitExceededError,
   NotFoundError,
 } from "@/lib/error_handler/customerErrors";
@@ -65,6 +65,18 @@ export async function getAllMembers(hotelId: string): Promise<MembersResult> {
   try {
     const members = await prisma.member.findMany({
       where: { hotelId: hotelId },
+      select:{
+        id:true,
+        email :true,
+        address:true,
+        fullName:true,
+        gender:true,
+        identityCardNumber:true,
+        phoneNumber:true,
+        dateOfBirth:true,
+        nationality:true
+
+      }
     });
 
     return { members };
@@ -73,10 +85,10 @@ export async function getAllMembers(hotelId: string): Promise<MembersResult> {
   }
 }
 
-export function checkReceptionistAdminRole(roles: UserRole[]) {
+export function checkReceptionistReceptionManagerAdminRole(roles: UserRole[]) {
   if (
     !roles.includes(UserRole.receptionist) &&
-    !roles.includes(UserRole.admin)
+    !roles.includes(UserRole.admin)&&!roles.includes(UserRole.reception_Manager)
   ) {
     throw new ValidationError(
       "Sauf le réceptiontist, le réceptionist manager et l'administrateur peut faire cette action"
@@ -84,8 +96,8 @@ export function checkReceptionistAdminRole(roles: UserRole[]) {
   }
 }
 
-export function checkReceptionistRole(roles: UserRole[]) {
-  if (!roles.includes(UserRole.receptionist)) {
+export function checkReceptionistReceptionManagerRole(roles: UserRole[]) {
+  if (!roles.includes(UserRole.receptionist)&&!roles.includes(UserRole.reception_Manager)) {
     throw new ValidationError("Sauf le réceptiontist et le réceptionist manager peut faire cette action");
   }
 }

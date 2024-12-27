@@ -21,7 +21,7 @@ export async function GET(
 
     
 
-    const stockCategories = await getStockCategories(user.hotelId, stockId,user.id,user.role);
+    const stockCategories = await getStockCategories(user.hotelId, stockId);
     return NextResponse.json(stockCategories, { status: 200 });
   } catch (error) {
     return handleError(error);

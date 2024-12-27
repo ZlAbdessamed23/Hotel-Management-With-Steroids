@@ -3,7 +3,7 @@ import {
   AddRestaurantMenuData,
   RestaurantMenuResult,
   RestaurantMenusResult,
-} from "./types";
+} from "@/app/api/main/food/restaurant/menu/types";
 import {
   LimitExceededError,
   UnauthorizedError,
@@ -21,7 +21,7 @@ export async function addRestaurantMenu(
 ): Promise<RestaurantMenuResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      await checkUserRestaurantAccess(userId,data.restaurantId,userRole,prisma)
+      
       const [hotel, restaurantMenuCount] = await Promise.all([
         prisma.hotel.findUnique({
           where: { id: hotelId },
@@ -58,7 +58,7 @@ export async function addRestaurantMenu(
            dinnerStartTime : true,
            dinnerEndTime : true,
            restaurantId : true,
-           hotelId:true
+        
             
       
         }
@@ -76,7 +76,20 @@ export async function getAllRestaurantMenus(
 ): Promise<RestaurantMenusResult> {
   try {
     const restaurantMenus = await prisma.restaurantMenu.findMany({
-      where: { hotelId: hotelId },
+      where: { hotelId: hotelId },select : {
+        id : true,
+        name  :true,
+        createdAt : true,
+        description : true,
+        lunchStartTime : true,
+         lunchEndTime : true,
+         dinnerStartTime : true,
+         dinnerEndTime : true,
+         restaurantId : true,
+      
+          
+    
+      }
     });
 
     return { RestaurantMenus: restaurantMenus };
@@ -86,37 +99,3 @@ export async function getAllRestaurantMenus(
 }
 
 
-export async function checkUserRestaurantAccess(
-  userId: string,
-  restaurantId: string,
-  userRole: UserRole[],
-  prisma: Omit<
-    PrismaClient,
-    "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
-  >
-): Promise<void> {
-  try {
-   
-    if (userRole.includes(UserRole.admin)) {
-      return;
-    }
-
-    const RestaurantEmployee = await prisma.restaurantEmployee.findUnique({
-      where: {
-        restaurantId_employeeId: {
-          restaurantId,
-          employeeId: userId,
-        },
-      },
-    });
-
-    
-    if (!RestaurantEmployee) {
-      throw new UnauthorizedError(
-        "L'utilisateur n'est pas autorisé à accéder à ce Restaurant"
-      );
-    }
-  } catch (error) {
-    throwAppropriateError(error);
-  }
-}

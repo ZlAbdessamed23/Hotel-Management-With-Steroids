@@ -3,9 +3,9 @@ import { Prisma, UserGender } from "@prisma/client";
 export type AddMemberData = {
   fullName: string;
   dateOfBirth: Date;
-  phoneNumber: string;
+  phoneNumber?:string;
   email?: string;
-  identityCardNumber: string;
+  identityCardNumber?:string;
   address: string;
   nationality?: string;
   gender: UserGender;
@@ -15,9 +15,9 @@ export type AddMemberData = {
 export const requiredMemberFields: (keyof AddMemberData)[] = [
   "fullName",
   "dateOfBirth",
-  "phoneNumber",
+  
 
-  "identityCardNumber",
+ 
   "address",
 
   "gender",
@@ -38,5 +38,16 @@ export type MemberResult = {
   }}>;
 };
 export type MembersResult = {
-  members: Prisma.MemberGetPayload<{}>[];
+  members: Prisma.MemberGetPayload<{select : {
+    address : true,
+    id : true , 
+    email : true,
+    phoneNumber : true,
+    dateOfBirth : true,
+    fullName : true,
+    identityCardNumber : true,
+    nationality : true,
+    gender : true,
+  
+  }}>[];
 };

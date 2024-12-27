@@ -7,7 +7,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     const response = NextResponse.json(
       {
         message: "Déconnexion réussie",
-        redirectUrl: "http://localhost:3000/login",
+        redirectUrl: `${process.env.SERVER_URL}/login`,
       },
       { status: 200 }
     );

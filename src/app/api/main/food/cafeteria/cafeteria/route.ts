@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { AddCafeteriaData, requiredCafeteriaFields } from "@/app/api/main/food/cafeteria/cafeteria/types";
-import { addCafeteria, getAllCafeterias,checkAdminRole } from "@/app/api/main/food/cafeteria/cafeteria/controller";
+import { addCafeteria, getAllCafeterias,checkAdminReceptionManagerRestaurantMnagerRole } from "@/app/api/main/food/cafeteria/cafeteria/controller";
 import { handleError } from "@/lib/error_handler/handleError";
 import { getUser } from "@/lib/token/getUserFromToken";
 
@@ -10,8 +10,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       if (!user) {
         return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
       }
-      console.log(user);
-      checkAdminRole(user.role)
+      
+      checkAdminReceptionManagerRestaurantMnagerRole(user.role)
   
       const data: AddCafeteriaData = await request.json();
       const missingFields = requiredCafeteriaFields.filter(
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       if (!user) {
         return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
       }
-      console.log(user);
+      
   
       const Cafeterias = await getAllCafeterias(user.hotelId);
       return NextResponse.json(Cafeterias, { status: 200 });

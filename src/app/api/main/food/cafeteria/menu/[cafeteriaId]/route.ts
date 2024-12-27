@@ -1,7 +1,7 @@
 import { handleError } from "@/lib/error_handler/handleError";
 import { getUser } from "@/lib/token/getUserFromToken";
 import { NextRequest, NextResponse } from "next/server";
-import { getAllCafeteriaMenus } from "./controller";
+import { getAllCafeteriaMenus } from "@/app/api/main/food/cafeteria/menu/[cafeteriaId]/controller";
 
 export async function GET(request: NextRequest,{ params }: { params: { cafeteriaId:string } }) {
     try {
@@ -9,7 +9,7 @@ export async function GET(request: NextRequest,{ params }: { params: { cafeteria
       if (!user) {
         return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
       }
-      console.log(user);
+     
   
       const {cafeteriaId}=params
   

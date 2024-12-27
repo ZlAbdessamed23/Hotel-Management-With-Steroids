@@ -6,7 +6,7 @@ import {
   updateProfile,
 } from "@/app/api/main/profile/admin/controller";
 import { handleError } from "@/lib/error_handler/handleError";
-import { UpdateAdminData } from "./types";
+import { UpdateAdminData } from "@/app/api/main/profile/admin/types";
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    console.log(user);
+    
 
     checkAdminRole(user.role);
 
@@ -31,7 +31,7 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
 
     const updateData: UpdateAdminData = await request.json();
 

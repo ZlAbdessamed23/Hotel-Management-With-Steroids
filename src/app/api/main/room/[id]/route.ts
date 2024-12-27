@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-  checkReceptionistAdminRole,
-  checkReceptionistRole,
+  checkReceptionistReceptionManagerAdminRole,
+  checkReceptionistReceptionManagerRole,
   deleteRoomById,
   getRoomById,
   updateRoom,
-} from "./controller";
+} from "@/app/api/main/room/[id]/controller";
 import { handleError } from "@/lib/error_handler/handleError";
-import { UpdateRoomData } from "./types";
+import { UpdateRoomData } from "@/app/api/main/room/[id]/types";
 
 import { getUser } from "@/lib/token/getUserFromToken";
 /////////////////////// get room with id //////////////////////////////////
@@ -20,8 +20,8 @@ export async function GET(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
-    checkReceptionistAdminRole(user.role);
+    
+    checkReceptionistReceptionManagerAdminRole(user.role);
 
     const roomId = params.id;
     const room = await getRoomById(roomId, user.hotelId);
@@ -41,8 +41,8 @@ export async function DELETE(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
-    checkReceptionistRole(user.role);
+    
+    checkReceptionistReceptionManagerRole(user.role);
 
     const employeeId = params.id;
     const deletedEmployee = await deleteRoomById(employeeId, user.hotelId);
@@ -65,8 +65,8 @@ export async function PATCH(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
-    checkReceptionistRole(user.role);
+    
+    checkReceptionistReceptionManagerRole(user.role);
 
     const roomId = params.id;
     const updateData: UpdateRoomData = await request.json();

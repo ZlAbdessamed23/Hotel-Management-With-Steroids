@@ -1,9 +1,9 @@
 import { Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma/prismaClient";
-import { AddNoteData, NoteResult, NotesResult } from "./types";
+import { AddNoteData, NoteResult, NotesResult } from "@/app/api/main/note/types";
 import {
   ValidationError,
-  ConflictError,
+  
   LimitExceededError,
 } from "@/lib/error_handler/customerErrors";
 import { UserRole } from "@prisma/client";

@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   addMember,
-  checkReceptionistAdminRole,
-  checkReceptionistRole,
+  checkReceptionistReceptionManagerAdminRole,
+  checkReceptionistReceptionManagerRole,
   getAllMembers,
-} from "./controller";
-import { AddMemberData, requiredMemberFields } from "./types";
+} from "@/app/api/main/client/member/controller";
+import { AddMemberData, requiredMemberFields } from "@/app/api/main/client/member/types";
 import { handleError } from "@/lib/error_handler/handleError";
 import { getUser } from "@/lib/token/getUserFromToken";
 
@@ -15,8 +15,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
-    checkReceptionistRole(user.role);
+    
+    checkReceptionistReceptionManagerRole(user.role);
 
     const data: AddMemberData = await request.json();
     const missingField = requiredMemberFields.find((field) => !data[field]);
@@ -45,10 +45,10 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
 
-    // Check if the user is either an admin or a receptionist
-    checkReceptionistAdminRole(user.role);
+    // Check if the user is either an admin or a receptionistReceptionManager
+    checkReceptionistReceptionManagerAdminRole(user.role);
 
     const members = await getAllMembers(user.hotelId);
     return NextResponse.json(members, { status: 200 });

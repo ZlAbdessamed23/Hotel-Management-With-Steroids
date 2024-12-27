@@ -1,6 +1,6 @@
 import { getUser } from "@/lib/token/getUserFromToken";
 import { NextRequest, NextResponse } from "next/server";
-import { updateRestaurant, getRestaurantById, deleteRestaurant, checkAdminRole } from "@/app/api/main/food/restaurant/restaurant/[id]/controller";
+import { updateRestaurant, getRestaurantById, deleteRestaurant, checkAdminReceptionManagerRestaurantManagerRole } from "@/app/api/main/food/restaurant/restaurant/[id]/controller";
 import { UpdateRestaurantData } from "@/app/api/main/food/restaurant/restaurant/[id]/types";
 import { handleError } from "@/lib/error_handler/handleError";
 
@@ -13,8 +13,8 @@ export async function GET(
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    console.log(user);
-    checkAdminRole(user.role)
+    
+    checkAdminReceptionManagerRestaurantManagerRole(user.role)
 
     const RestaurantId = params.id;
     const Restaurant = await getRestaurantById(
@@ -38,8 +38,8 @@ export async function DELETE(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
-    checkAdminRole(user.role)
+    
+    checkAdminReceptionManagerRestaurantManagerRole(user.role)
 
     const RestaurantId = params.id;
     const deletedRestaurant = await deleteRestaurant(
@@ -66,7 +66,7 @@ export async function PATCH(
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    checkAdminRole(user.role)
+    checkAdminReceptionManagerRestaurantManagerRole(user.role)
     const RestaurantId = params.id;
     const updateData:UpdateRestaurantData = await request.json();
 

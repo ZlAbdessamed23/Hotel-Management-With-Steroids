@@ -4,11 +4,11 @@ import { handleError } from "@/lib/error_handler/handleError";
 
 import {
   updateClientAndReservation,
-  checkReceptionistRole,
-  checkReceptionistAdminRole,
+  checkReceptionistReceptionManagerRole,
+  checkReceptionistReceptionManagerAdminRole,
   getClientWithReservations,
-} from "./controller";
-import { ClientReservationData } from "./types";
+} from "@/app/api/main/client/client_with_reservation/[clientId]/[reservationId]/controller";
+import { ClientReservationData } from "@/app/api/main/client/client_with_reservation/[clientId]/[reservationId]/types";
 
 export async function PATCH(
   request: NextRequest,
@@ -19,8 +19,8 @@ export async function PATCH(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
-    checkReceptionistRole(user.role);
+    
+    checkReceptionistReceptionManagerRole(user.role);
 
     const { clientId, reservationId } = params;
     const updateData: ClientReservationData = await request.json();
@@ -50,8 +50,8 @@ export async function GET(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
-    checkReceptionistAdminRole(user.role);
+    
+    checkReceptionistReceptionManagerAdminRole(user.role);
 
     const { clientId, reservationId } = params;
 

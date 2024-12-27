@@ -13,12 +13,13 @@ import {
   ValidationError,
   LimitExceededError,
   NotFoundError,
+  ConflictError,
 } from "@/lib/error_handler/customerErrors";
 import { throwAppropriateError } from "@/lib/error_handler/throwError";
 import { updateClientCheckInStatistics } from "@/app/api/main/statistics/statistics";
 
 
-const prisma = new PrismaClient();
+import prisma from "@/lib/prisma/prismaClient";
 
 export async function addClientWithReservation(
   data: ClientReservationData,
@@ -56,16 +57,24 @@ export async function addClientWithReservation(
           hotelId,
           number: data.roomNumber,
           type: data.roomType,
-          status: RoomStatus.disponible
+          
         },
         
       });
  
       if (!room) {
-        throw new NotFoundError("Chambre non trouvée ou déja réservée ou elle est en panne ou hors service");
+        throw new NotFoundError("Chambre non trouvée e");
       }
- 
-      const totalPrice = data.totalDays * room.price.toNumber();
+      if (room.status !== RoomStatus.disponible) {
+        throw new ConflictError("La chambre est déjà réservée, en panne ou hors service. Veuillez choisir une autre chambre.");
+      }
+      
+      const totalDays = Math.ceil((new Date(data.endDate).getTime() - new Date(data.startDate).getTime()) / (1000 * 60 * 60 * 24));
+      if (totalDays < 0) {
+        throw new ValidationError("La durée de réservation est invalide. La date de fin doit être supérieure à la date de début.");
+      }
+      
+      const totalPrice = totalDays * room.price.toNumber();
  
       const clientData = {
         fullName: data.fullName,
@@ -88,7 +97,7 @@ export async function addClientWithReservation(
         roomType: data.roomType,
         startDate: data.startDate,
         endDate: data.endDate,
-        totalDays: data.totalDays,
+        totalDays:totalDays,
         totalPrice,
         unitPrice: room.price.toNumber(),
         state: data.state,
@@ -134,12 +143,13 @@ export async function addClientWithReservation(
           new Date(data.dateOfBirth),
           null,
           data.clientOrigin,
+          0,
           totalPrice,
           prisma,
           true
         );
       }
- 
+      
       return { client: createdClient };
     });
  
@@ -148,53 +158,72 @@ export async function addClientWithReservation(
   }
  }
 
-export async function getClientsWithReservations(
+ export async function getClientsWithReservations(
   hotelId: string
 ): Promise<ClientsWithReservations> {
   try {
     const clients = await prisma.client.findMany({
       where: { hotelId: hotelId },
-      select : {
-        fullName : true,
-        address : true,
-        email : true,
-        phoneNumber : true,
-        id : true,
-        identityCardNumber : true,
-        gender : true,
-        dateOfBirth : true ,
-        clientOrigin : true,
-        kidsNumber : true,
-        nationality : true,
-        membersNumber : true,
-        hotelId : true,
-        createdAt : true,
-        reservations : {
-          select : {
-            id:true,
-            roomNumber : true,
-            roomType : true,
-            createdAt : true,
-            totalDays : true,
-            totalPrice : true , 
-            currentOccupancy : true,
-            discoveryChannel : true,
-             source : true,
-             state : true,
-             startDate : true,
-             endDate : true,
-             unitPrice : true
+      select: {
+        fullName: true,
+        address: true,
+        email: true,
+        phoneNumber: true,
+        id: true,
+        identityCardNumber: true,
+        gender: true,
+        dateOfBirth: true,
+        clientOrigin: true,
+        kidsNumber: true,
+        nationality: true,
+        membersNumber: true,
+        createdAt: true,
+        reservations: {
+          select: {
+            id: true,
+            roomNumber: true,
+            roomType: true,
+            createdAt: true,
+            totalDays: true,
+            totalPrice: true,
+            currentOccupancy: true,
+            discoveryChannel: true,
+            source: true,
+            state: true,
+            startDate: true,
+            endDate: true,
+            unitPrice: true
           }
-        }
-        
+        },
+        pendingReservation: true // Add this to check pending reservations
       }
     });
-    return { clients };
+
+    // Filter out clients with only pending reservations
+    const filteredClients = clients.filter(client => {
+      // If client has no pending reservations, keep them
+      if (client.pendingReservation.length === 0) {
+        return true;
+      }
+      
+      // If client has pending reservations but also has regular reservations, keep them
+      if (client.pendingReservation.length > 0 && client.reservations.length > 0) {
+        return true;
+      }
+      
+      // Otherwise (has only pending reservations), filter them out
+      return false;
+    });
+
+    // Remove pendingReservation field from the response to match the type
+    const finalClients = filteredClients.map(({ pendingReservation, ...client }) => client);
+
+    return { clients: finalClients };
   } catch (error) {
     throwAppropriateError(error);
   }
 }
-export function checkReceptionistRole(roles: UserRole[]) {
+export function checkReceptionistReceptionManagerRole(roles: UserRole[]) {
   if (
     !roles.includes(UserRole.receptionist) &&
     !roles.includes(UserRole.reception_Manager)
@@ -205,7 +234,7 @@ export function checkReceptionistRole(roles: UserRole[]) {
   }
 }
 
-export function checkReceptionistAdminRole(roles: UserRole[]) {
+export function checkReceptionistReceptionManagerAdminRole(roles: UserRole[]) {
   if (
     !roles.includes(UserRole.receptionist) &&
     !roles.includes(UserRole.admin) &&

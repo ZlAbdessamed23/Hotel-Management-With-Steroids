@@ -9,6 +9,8 @@ export type UpdateStockItemData = {
   minimumQuantity?: number;
   supplierName?: string;
   supplierPhone?: string;
+  supplierEmail?: string;
+  supplierAddress?: string;
 
   stockCategoryId?: string;
 };

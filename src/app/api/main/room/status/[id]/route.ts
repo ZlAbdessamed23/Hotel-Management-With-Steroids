@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   
-  checkReceptionistRole,
+  checkReceptionistReceptionManagerRole,
   
   updateRoomState,
-} from "./controller";
+} from "@/app/api/main/room/status/[id]/controller";
 import { handleError } from "@/lib/error_handler/handleError";
-import { UpdateRoomStateData } from "./types";
+import { UpdateRoomStateData } from "@/app/api/main/room/status/[id]/types";
 
 import { getUser } from "@/lib/token/getUserFromToken";
 export async function PATCH(
@@ -18,8 +18,8 @@ export async function PATCH(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
-    checkReceptionistRole(user.role);
+    
+    checkReceptionistReceptionManagerRole(user.role);
 
     const roomId = params.id;
     const updateStateData: UpdateRoomStateData = await request.json();

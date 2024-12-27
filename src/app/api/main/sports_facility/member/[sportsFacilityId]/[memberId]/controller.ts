@@ -41,17 +41,7 @@ export async function deleteSportsFacilityMemberById(
 ): Promise<SportsFacilityMemberResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      // First check if member exists
-      const member = await prisma.sportsFacilityMember.findUnique({
-        where: {
-          id: memberId,
-          sportsFacilityId: sportsFacilityId,
-        },
-      });
-
-      if (!member) {
-        throw new NotFoundError("Sports facility member not found");
-      }
+      
 
       // Then delete the member
       const deletedMember = await prisma.sportsFacilityMember.delete({

@@ -5,7 +5,7 @@ import {
 } from "@/lib/error_handler/customerErrors";
 import { throwAppropriateError } from "@/lib/error_handler/throwError";
 import prisma from "@/lib/prisma/prismaClient";
-import { Prisma,  UserRole } from "@prisma/client";
+import { Prisma,  RoomStatus,  UserRole } from "@prisma/client";
 import { RoomResult, UpdateRoomData,getRoomResult } from "@/app/api/main/room/[id]/types";
 import { updateRoomStatistics } from "@/app/api/main/statistics/statistics";
 
@@ -134,6 +134,25 @@ export async function updateRoom(
   try {
     return await prisma.$transaction(async (prisma) => {
       // Combine room fetch and number conflict check
+      const room = await prisma.room.findUnique({
+        where: { id: roomId },
+        select: { 
+          status: true, 
+          hotelId: true 
+        },
+      });
+
+      // Check if room exists and belongs to the hotel
+      if (!room || room.hotelId !== hotelId) {
+        throw new NotFoundError(
+          `la chambre spécifié n'est pas trouvée`
+        );
+      }
+
+      // Prevent updates to reserved rooms
+      if (room.status === RoomStatus.reservee) {
+        throw new ConflictError("Impossible de modifier une chambre réservée");
+      }
       const numberConflict = data.number
         ? await prisma.room.findFirst({
             where: {
@@ -176,7 +195,7 @@ export async function updateRoom(
         where: { id: roomId },
         data: updateData,
       });
-      console.log(data.outOfServiceDescription)
+      
 
       return { room: updatedRoom };
     });
@@ -185,17 +204,17 @@ export async function updateRoom(
   }
 }
 //////////////////////////////// functions ////////////////////////////////////
-export function checkReceptionistRole(roles: UserRole[]) {
+export function checkReceptionistReceptionManagerRole(roles: UserRole[]) {
   if (
     !roles.includes(UserRole.receptionist) &&
-    !roles.includes(UserRole.admin)
+    !roles.includes(UserRole.reception_Manager)
   ) {
     throw new ValidationError(
       "Sauf le receptionist et le receptionist manager peut faire cette action"
     );
   }
 }
-export function checkReceptionistAdminRole(roles: UserRole[]) {
+export function checkReceptionistReceptionManagerAdminRole(roles: UserRole[]) {
   if (
     !roles.includes(UserRole.receptionist) &&
     !roles.includes(UserRole.reception_Manager) &&

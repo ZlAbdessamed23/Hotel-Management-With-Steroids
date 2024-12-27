@@ -5,14 +5,12 @@ import {
 import { throwAppropriateError } from "@/lib/error_handler/throwError";
 import { Prisma, UserRole } from "@prisma/client";
 import prisma from "@/lib/prisma/prismaClient";
-import { DocumentResult, AddDocumentData } from "./types";
+import { DocumentResult, AddDocumentData } from "@/app/api/main/report/[id]/types";
 import { updateReportStatistics } from "@/app/api/main/statistics/statistics";
 
 export async function updateDocument(
   documentId: string,
-  hotelId: string,
-  userId: string,
-  userRole: UserRole[],
+  
   data: AddDocumentData
 ): Promise<{ Document: any }> {
   try {
@@ -25,7 +23,9 @@ export async function updateDocument(
       if (data.content !== undefined) updateData.content = data.content;
 
       if (Array.isArray(data.employeeAccess)) {
-        const newEmployeeIds = data.employeeAccess.map((ea) => ea.employeeId);
+        const newEmployeeIds = data.employeeAccess
+          .filter(ea => ea.employeeId !== "") // Filter out empty employee IDs
+          .map(ea => ea.employeeId);
 
         updateData.documentAccess = {
           deleteMany: {
@@ -39,13 +39,14 @@ export async function updateDocument(
           }),
         };
       }
-
+          
       if (Object.keys(updateData).length > 0) {
         const updatedDocument = await prisma.document.update({
           where: { id: documentId },
           data: updateData,
         });
-        console.log(updatedDocument);
+        
+      
         return { Document: updatedDocument };
       }
 
@@ -94,7 +95,7 @@ export async function getDocumentById(
         "Vous n'êtes pas autorisé à consulter ce document"
       );
     }
-    console.log(existingDocument);
+    
     return { Document: existingDocument };
   } catch (error) {
     throw throwAppropriateError(error);
@@ -125,10 +126,13 @@ export async function deleteDocument(
       const isCreator =
         existingDocument.createdByEmployeeId === userId ||
         existingDocument.createdByAdminId === userId;
+      
+      const isAdmin = userRole.includes(UserRole.admin);
 
-      if (!isCreator) {
+      // Allow deletion if user is either the creator OR an admin
+      if (!isCreator && !isAdmin) {
         throw new UnauthorizedError(
-          "Vous n'êtes pas autorisé à supprimer ce document. Seul le créateur peut le supprimer"
+          "Vous n'êtes pas autorisé à supprimer ce document. Seul le créateur ou un administrateur peut le supprimer"
         );
       }
 

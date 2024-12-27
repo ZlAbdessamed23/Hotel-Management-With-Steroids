@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
 
-    console.log(user);
+
     checkReceptionistManagerCoachRole(user.role);
     const data: AddSportsFacilityMemberData = await request.json();
     const missingFields = requiredSportsFacilityFields.filter(
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     );
     if (missingFields.length > 0) {
       return NextResponse.json(
-        { message: `${missingFields.join(", ")}:est requis ` },
+        { message: `${missingFields.join(", ")}:sont requis ` },
         { status: 400 }
       );
     }

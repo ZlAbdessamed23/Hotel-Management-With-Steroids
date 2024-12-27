@@ -2,7 +2,7 @@
 CREATE TYPE "UserGender" AS ENUM ('homme', 'femme');
 
 -- CreateEnum
-CREATE TYPE "UserRole" AS ENUM ('admin', 'receptionist', 'chef', 'nettoyeur', 'restaurent_Manager', 'reception_Manager', 'stock_Manager', 'entraineur', 'gouvernement', 'entretien_Menager');
+CREATE TYPE "UserRole" AS ENUM ('admin', 'receptionist', 'chef', 'nettoyeur', 'restaurent_Manager', 'reception_Manager', 'stock_Manager', 'entraineur', 'gouvernante', 'valet_de_chambre');
 
 -- CreateEnum
 CREATE TYPE "DaysOfWeek" AS ENUM ('Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi');
@@ -178,7 +178,7 @@ CREATE TABLE "Room" (
     "id" TEXT NOT NULL,
     "type" "RoomType" NOT NULL,
     "number" TEXT NOT NULL,
-    "floorNumber" TEXT NOT NULL,
+    "floorNumber" TEXT,
     "description" TEXT,
     "price" DECIMAL(65,30) NOT NULL,
     "capacity" INTEGER NOT NULL,

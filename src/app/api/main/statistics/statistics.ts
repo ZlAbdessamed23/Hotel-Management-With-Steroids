@@ -253,7 +253,8 @@ export async function updateClientCheckInStatistics(
   dateOfBirth: Date | null,
   oldIsLocal: ClientOrigin | null,
   newIsLocal: ClientOrigin,
-  totalPrice: number,
+  oldTotalPrice: number | null,
+  newTotalPrice: number,
   prisma: Omit<
     PrismaClient,
     "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
@@ -262,8 +263,24 @@ export async function updateClientCheckInStatistics(
 ): Promise<any> {
   const dailyStats = await getOrCreateDailyStatistics(hotelId, prisma);
   const updateData: StatisticsUpdateData = {
-    ClientPrice: { increment: totalPrice },
+    
   };
+   // Handle price updates
+   if (isNewClient) {
+    // For new clients, simply increment with the new total price
+    updateData.ClientPrice = { increment: newTotalPrice };
+  } else {
+    // For existing clients, calculate the difference
+    if (oldTotalPrice !== null) {
+      const priceDifference = newTotalPrice - oldTotalPrice;
+      // This works correctly even if priceDifference is negative
+      // If new price is less than old price, it will effectively decrease the total
+      updateData.ClientPrice = { increment: priceDifference };
+    } else {
+      // If somehow oldTotalPrice is null for existing client, just increment new price
+      updateData.ClientPrice = { increment: newTotalPrice };
+    }
+  }
 
   // Only store age for new clients
   if (isNewClient && dateOfBirth) {

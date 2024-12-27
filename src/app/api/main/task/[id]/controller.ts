@@ -1,147 +1,69 @@
 import prisma from "@/lib/prisma/prismaClient";
-import { TaskResult, UpdateTaskData } from "./types";
+import { TaskResult, UpdateTaskData } from "@/app/api/main/task/[id]/types";
 import {
   NotFoundError,
   UnauthorizedError,
 } from "@/lib/error_handler/customerErrors";
 
-import { UserRole, Departements, Prisma } from "@prisma/client";
+import { UserRole,  Prisma } from "@prisma/client";
 import { throwAppropriateError } from "@/lib/error_handler/throwError";
 import { updateTaskStatistics } from "@/app/api/main/statistics/statistics";
 export async function updateTask(
   taskId: string,
-  hotelId: string,
-  userId: string,
-  userRole: UserRole[],
   data: UpdateTaskData
 ): Promise<TaskResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      // Fetch only necessary fields
-      const existingTask = await prisma.task.findUnique({
-        where: { id: taskId },
-        select: {
-          createdByEmployeeId: true,
-          createdByAdminId: true,
-          assignedEmployees: {
-            select: { id: true, employeeId: true },
-          },
-        },
-      });
-
-      if (!existingTask) {
-        throw new NotFoundError(`Tache non trouvée`);
-      }
-
-      // Check authorization
-      if (
-        existingTask.createdByEmployeeId !== userId &&
-        existingTask.createdByAdminId !== userId
-      ) {
-        throw new UnauthorizedError(
-          "Non Authorisé"
-        );
-      }
-
-      // Prepare update data
       const updateData: Prisma.TaskUpdateInput = {};
+     
+
+      // Basic fields update
       if (data.title !== undefined) updateData.title = data.title;
-      if (data.description !== undefined)
-        updateData.description = data.description;
-      if (data.deadline !== undefined) updateData.deadline = data.deadline;
+      if (data.description !== undefined) updateData.description = data.description;
+      if (data.deadline !== undefined) updateData.deadline = new Date(data.deadline);
       if (data.isDone !== undefined) updateData.isDone = data.isDone;
 
-      // Handle employee assignments
-      if (data.employeeAssignedTask?.length) {
-        const newEmployeeIds = new Set(
-          data.employeeAssignedTask.map((ea) => ea.employeeId)
-        );
-        const existingEmployeeIds = new Set(
-          existingTask.assignedEmployees.map((ae) => ae.employeeId)
-        );
-
-        // Check department validity if not admin
-        if (!userRole.includes(UserRole.admin)) {
-          const newAssignedEmployees = await prisma.employee.findMany({
-            where: {
-              id: { in: Array.from(newEmployeeIds) },
-              hotelId: hotelId,
-            },
-            select: { id: true, departement: true },
-          });
-
-          if (newAssignedEmployees.length !== newEmployeeIds.size) {
-            throw new NotFoundError("Un ou plus des employées non trouvés");
-          }
-
-          // Determine allowed departments based on user roles
-          const allowedDepartments: Departements[] = [];
-          if (userRole.includes(UserRole.reception_Manager)) {
-            allowedDepartments.push(Departements.reception);
-          }
-          if (userRole.includes(UserRole.restaurent_Manager)) {
-            allowedDepartments.push(Departements.restauration);
-          }
-
-          // Check if any new employee is outside of allowed departments
-          const invalidAssignment = newAssignedEmployees.some((emp) => {
-            const hasValidDepartment = emp.departement.some(dept => 
-              allowedDepartments.includes(dept)
-            );
-            return !hasValidDepartment;
-          });
-
-          if (invalidAssignment) {
-            throw new UnauthorizedError(
-              "Les employées séléctionnés n'appartiennent pas à votre département"
-            );
-          }
-        }
+      // Handle employee assignments if provided
+      if (Array.isArray(data.employeeAssignedTask)) {
+        const newEmployeeIds = data.employeeAssignedTask
+          .filter(ea => ea.employeeId !== "") // Filter out empty employee IDs
+          .map(ea => ea.employeeId);
 
         updateData.assignedEmployees = {
           deleteMany: {
-            employeeId: { notIn: Array.from(newEmployeeIds) },
+            taskId,
           },
-          create: Array.from(newEmployeeIds)
-            .filter((id) => !existingEmployeeIds.has(id))
-            .map((employeeId) => ({ employeeId })),
+          ...(newEmployeeIds.length > 0 && {
+            create: newEmployeeIds.map((employeeId) => ({
+              employee: { connect: { id: employeeId } },
+            })),
+          }),
         };
       }
 
-      // Update the task if there are changes
+      // Update task if there are changes
       if (Object.keys(updateData).length > 0) {
         const updatedTask = await prisma.task.update({
           where: { id: taskId },
           data: updateData,
-          include: {
-            assignedEmployees: {
-              include: {
-                employee: true,
-              },
-            },
-          },
+          
         });
-
         return { Task: updatedTask };
-      } else {
-        // If no changes, fetch full task details
-        const fullTask = await prisma.task.findUnique({
-          where: { id: taskId },
-          include: {
-            assignedEmployees: {
-              include: {
-                employee: true,
-              },
-            },
-          },
-        });
-        return { Task: fullTask };
       }
+
+      // If no changes, return existing task
+      const existingTask = await prisma.task.findUnique({
+        where: { id: taskId },
+        
+      });
+      return { Task: existingTask };
     });
   } catch (error) {
     throwAppropriateError(error);
   }
 }
+
+
 //////////////////////// get task by id ///////////////////////////////
 export async function getTaskById(
   taskId: string,
@@ -190,7 +112,7 @@ export async function deleteTask(
   taskId: string,
   userId: string,
   hotelId: string,
-  userRole: UserRole[]
+ 
 ): Promise<TaskResult> {
   try {
     return await prisma.$transaction(async (prisma) => {

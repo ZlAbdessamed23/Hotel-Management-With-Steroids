@@ -3,52 +3,64 @@ import {
   AddStockTransactionData,
   TransactionResult,
   TransactionsResult,
-} from "./types";
+} from "@/app/api/main/stock/transaction/types";
 import {
-  ConflictError,
+ 
   ForbiddenError,
-  LimitExceededError,
+  
   NotFoundError,
-  SubscriptionError,
-  UnauthorizedError,
+  
 } from "@/lib/error_handler/customerErrors";
-import { PrismaClient, TransactionOperationType, UserRole } from "@prisma/client";
+import {TransactionOperationType, UserRole } from "@prisma/client";
 import { throwAppropriateError } from "@/lib/error_handler/throwError";
-import { updateStockTransactionsStatistics } from "../../statistics/statistics";
+import { updateStockTransactionsStatistics } from "@/app/api/main/statistics/statistics";
+
+const TRANSACTION_HISTORY_LIMIT = 30;
 
 export async function addStockTransaction(
   data: AddStockTransactionData,
- 
   hotelId: string,
-  userId:string,
-  userRole:UserRole[]
+  userId: string,
+  userRole: UserRole[]
 ): Promise<TransactionResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      await checkUserStockAccess(userId,data.stockId,userRole,prisma)
-      const [hotel, item] = await Promise.all([
-        prisma.hotel.findUnique({
-          where: { id: hotelId },
-          include: {
-            subscription: {
-              include: {
-                plan: true,
-              },
-            },
-          },
-        }),
+      // First get the total count of transactions
+      const [item, transactionCount] = await Promise.all([
         prisma.item.findUnique({
-          where: { id: data.stockItemId ,stockId:data.stockId},
+          where: { id: data.stockItemId, stockId: data.stockId },
         }),
+        prisma.transaction.count({
+          where: { hotelId }
+        })
       ]);
 
-      if (!hotel) throw new NotFoundError("Hotel not trouvee");
-      if (!hotel.subscription?.plan)
-        throw new SubscriptionError("Hotel has no active subscription plan");
       if (!item) throw new NotFoundError("Stock item not trouvee");
-      
 
-      // Check if the transaction quantity is greater than the item quantity
+      // Only delete if we're about to exceed the limit
+      if (transactionCount >= TRANSACTION_HISTORY_LIMIT) {
+        // Calculate how many records to delete
+        const deleteCount = transactionCount - TRANSACTION_HISTORY_LIMIT + 1;
+        
+        // Get the oldest records that need to be deleted
+        const recordsToDelete = await prisma.transaction.findMany({
+          where: { hotelId },
+          orderBy: { createdAt: 'asc' },
+          take: deleteCount,
+          select: { id: true },
+        });
+
+        // Delete the oldest records
+        await prisma.transaction.deleteMany({
+          where: {
+            id: {
+              in: recordsToDelete.map((record) => record.id),
+            },
+          },
+        });
+      }
+
+      // Check if the transaction quantity is valid
       if (data.type === TransactionOperationType.transferer && data.quantity > item.quantity) {
         throw new ForbiddenError(
           "Transaction quantity exceeds available item quantity"
@@ -71,17 +83,29 @@ export async function addStockTransaction(
       });
 
       const { stockItemId, ...transactionData } = data;
-      const transactionAmount = data.quantity * (item.unitPrice  || 0);
+      const transactionAmount = data.quantity * (item.unitPrice || 0);
+      
       const createdStockTransaction = await prisma.transaction.create({
         data: {
           ...transactionData,
-          ...(data.type == TransactionOperationType.acheter ? {transactionAmount : transactionAmount}:{transactionAmount:0}),
+          ...(data.type == TransactionOperationType.acheter 
+            ? { transactionAmount }
+            : { transactionAmount: 0 }),
           hotelId,
-          itemId: stockItemId, // Use ItemId instead of stockItemId
+          itemId: stockItemId,
         },
+        select: {
+          id: true,
+          transactionAmount: true,
+          type: true,
+          quantity: true,
+          createdAt: true,
+          itemId: true,
+          hotelId: true
+        }
       });
+
       if (data.type === TransactionOperationType.acheter) {
-        
         await updateStockTransactionsStatistics(
           hotelId,
           transactionAmount,
@@ -94,7 +118,7 @@ export async function addStockTransaction(
       };
     });
   } catch (error) {
-    throwAppropriateError(error);
+    throw throwAppropriateError(error);
   }
 }
 
@@ -104,6 +128,15 @@ export async function getAllStockTransactions(
   try {
     const stockTransactions = await prisma.transaction.findMany({
       where: { hotelId: hotelId },
+      select:{
+        id:true,
+        transactionAmount:true,
+        type:true,
+        quantity:true,
+        createdAt:true,
+        itemId:true,
+        hotelId:true
+      }
     });
 
     return { Transactions: stockTransactions };
@@ -112,37 +145,4 @@ export async function getAllStockTransactions(
   }
 }
 
-export async function checkUserStockAccess(
-  userId: string,
-  stockId: string,
-  userRole: UserRole[],
-  prisma: Omit<
-    PrismaClient,
-    "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
-  >
-): Promise<void> {
-  try {
-   
-    if (userRole.includes(UserRole.admin)) {
-      return;
-    }
 
-    const stockEmployee = await prisma.stockEmployee.findUnique({
-      where: {
-        stockId_employeeId: {
-          stockId,
-          employeeId: userId,
-        },
-      },
-    });
-
-    
-    if (!stockEmployee) {
-      throw new UnauthorizedError(
-        "L'utilisateur n'est pas autorisé à accéder à ce stock"
-      );
-    }
-  } catch (error) {
-    throwAppropriateError(error);
-  }
-}

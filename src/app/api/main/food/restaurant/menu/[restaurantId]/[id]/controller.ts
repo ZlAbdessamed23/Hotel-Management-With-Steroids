@@ -6,19 +6,18 @@ import {
 import { throwAppropriateError } from "@/lib/error_handler/throwError";
 import { Prisma, PrismaClient, UserRole } from "@prisma/client";
 import prisma from "@/lib/prisma/prismaClient";
-import { RestaurantMenuResult, UpdateRestaurantMenuData } from "./types";
+import { RestaurantMenuResult, UpdateRestaurantMenuData } from "@/app/api/main/food/restaurant/menu/[restaurantId]/[id]/types";
 
 export async function getRestaurantMenuById(
   restaurantMenuId: string,
   restaurantId:string,
   hotelId: string,
-  userId:string,
-  userRole:UserRole[]
+ 
 ): Promise<RestaurantMenuResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
 
-      await checkUserRestaurantAccess(userId,restaurantId,userRole,prisma)
+      
       const existingMenu = await prisma.restaurantMenu.findUnique({
         where: { id: restaurantMenuId, hotelId: hotelId,restaurantId },
         select : {
@@ -31,13 +30,13 @@ export async function getRestaurantMenuById(
            dinnerStartTime : true,
            dinnerEndTime : true,
            restaurantId : true,
-           hotelId:true
+           
             
       
         }
       });
   
-      if (!existingMenu || existingMenu.hotelId !== hotelId) {
+      if (!existingMenu ) {
         throw new NotFoundError(`Restaurant menu non trouvée`);
       }
   
@@ -53,12 +52,11 @@ export async function deleteRestaurantMenu(
   restaurantMenuId: string,
   restaurantId:string,
   hotelId: string,
-  userId:string,
-  userRole:UserRole[]
+ 
 ): Promise<RestaurantMenuResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      await checkUserRestaurantAccess(userId,restaurantId,userRole,prisma)
+      
       const deletedMenu = await prisma.restaurantMenu.delete({
         where: { id: restaurantMenuId, hotelId: hotelId,restaurantId },
         select : {
@@ -71,7 +69,7 @@ export async function deleteRestaurantMenu(
            dinnerStartTime : true,
            dinnerEndTime : true,
            restaurantId : true,
-           hotelId:true
+           
             
       
         }
@@ -88,13 +86,12 @@ export async function updateRestaurantMenu(
   restaurantMenuId: string,
   restaurantId:string,
   hotelId: string,
-  userId:string,
-  userRole:UserRole[],
+  
   data: UpdateRestaurantMenuData
 ): Promise<RestaurantMenuResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      await checkUserRestaurantAccess(userId,restaurantId,userRole,prisma)
+      
       const updateData: Prisma.RestaurantMenuUpdateInput = {
         name: data.name,
         description: data.description,
@@ -127,7 +124,7 @@ export async function updateRestaurantMenu(
            dinnerStartTime : true,
            dinnerEndTime : true,
            restaurantId : true,
-           hotelId:true
+           
             
       
         }

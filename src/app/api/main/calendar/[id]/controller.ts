@@ -49,7 +49,7 @@ export async function deleteCalendar(
      
 
       const deletedSeance = await prisma.calendar.delete({
-        where: { id },
+        where: { id,hotelId },
         select:{
           id : true,
           end: true,
@@ -93,7 +93,7 @@ export async function updateCalendar(
       });
 
       const updatedSeance = await prisma.calendar.update({
-        where: { id: id },
+        where: { id: id,hotelId },
         data: updateData,
         select:{
           id : true,
@@ -113,7 +113,7 @@ export async function updateCalendar(
 }
 
 // Role check functions (you may need to adjust these based on your specific requirements)
-export function checkAdminRole(roles: UserRole[]) {
+export function checkAdminReceptionManagerRole(roles: UserRole[]) {
   if (!roles.includes(UserRole.admin)) {
     throw new UnauthorizedError("Sauf l'administrateur peut faire cet action");
   }

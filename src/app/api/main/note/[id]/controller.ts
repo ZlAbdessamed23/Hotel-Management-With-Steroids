@@ -2,7 +2,7 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from "@/lib/error_handler/customerErrors";
-import { NoteResult, UpdateNoteData } from "./types";
+import { NoteResult, UpdateNoteData } from "@/app/api/main/note/[id]/types";
 import prisma from "@/lib/prisma/prismaClient";
 import { Prisma, UserRole } from "@prisma/client";
 import { throwAppropriateError } from "@/lib/error_handler/throwError";
