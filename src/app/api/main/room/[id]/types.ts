@@ -21,7 +21,7 @@ export type getRoomResult = {
     description : true,
     floorNumber : true,
     number : true,
-    outOfServiceDescription : true,
+    
     price : true,
     status : true,
     type : true,
@@ -29,6 +29,7 @@ export type getRoomResult = {
   
     reservation: {
       select: {
+        id:true;
         startDate: true;
         endDate: true;
         

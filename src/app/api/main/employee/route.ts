@@ -5,6 +5,8 @@ import { handleError } from "@/lib/error_handler/handleError";
 import { AddEmployeeData, requiredFields } from "@/app/api/main/employee/types";
 
 import { getUser } from "@/lib/token/getUserFromToken";
+import { TranslateObjKeysFromEngToFr } from "@/app/utils/translation";
+
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
@@ -16,11 +18,18 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     checkAdminRole(user.role);
 
     const data: AddEmployeeData = await request.json();
-    console.log(data);
-    const missingField = requiredFields.find((field) => !data[field]);
-    if (missingField) {
+    
+    const missingFields = requiredFields.filter(
+      (field) => !data[field]
+    );
+
+    if (missingFields.length > 0) {
+      const translatedFields = missingFields.map(field => 
+        TranslateObjKeysFromEngToFr(field)
+      );
+
       return NextResponse.json(
-        { message: `${missingField} est requis` },
+        { message: `${translatedFields.join(", ")}: sont requis` },
         { status: 400 }
       );
     }

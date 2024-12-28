@@ -8,8 +8,9 @@ import { handleError } from "@/lib/error_handler/handleError";
 import { getUser } from "@/lib/token/getUserFromToken";
 import {
   AddSportsFacilityMemberData,
-  requiredSportsFacilityFields,
+  requiredSportsFacilityMemberFields,
 } from "@/app/api/main/sports_facility/member/types";
+import { TranslateObjKeysFromEngToFr } from "@/app/utils/translation";
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,15 +22,20 @@ export async function POST(request: NextRequest) {
 
     checkReceptionistManagerCoachRole(user.role);
     const data: AddSportsFacilityMemberData = await request.json();
-    const missingFields = requiredSportsFacilityFields.filter(
-      (field) => !data[field]
-    );
-    if (missingFields.length > 0) {
-      return NextResponse.json(
-        { message: `${missingFields.join(", ")}:sont requis ` },
-        { status: 400 }
-      );
-    }
+    const missingFields = requiredSportsFacilityMemberFields.filter(
+          (field) => !data[field]
+        );
+    
+        if (missingFields.length > 0) {
+          const translatedFields = missingFields.map(field => 
+            TranslateObjKeysFromEngToFr(field)
+          );
+    
+          return NextResponse.json(
+            { message: `${translatedFields.join(", ")}: sont requis` },
+            { status: 400 }
+          );
+        }
 
     const sportsFacilityMembers = await addSportsFacilityMember(data);
     return NextResponse.json(

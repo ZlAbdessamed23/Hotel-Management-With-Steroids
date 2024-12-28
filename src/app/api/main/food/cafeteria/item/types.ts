@@ -7,7 +7,7 @@ export type AddCafeteriaMenuItemData = {
   cafeteriaMenuId: string;
 };
 
-export const requiredRestaurantMenuItemFields: (keyof AddCafeteriaMenuItemData)[] =
+export const requiredCafeteriaMenuItemFields: (keyof AddCafeteriaMenuItemData)[] =
   ["name", "cafeteriaMenuId", "category"];
 
 export type CafeteriaMenuItemResult = {

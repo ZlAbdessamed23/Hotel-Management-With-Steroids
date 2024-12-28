@@ -10,6 +10,7 @@ import { AddRoomData, requiredRoomFields } from "@/app/api/main/room/types";
 
 import { handleError } from "@/lib/error_handler/handleError";
 import { getUser } from "@/lib/token/getUserFromToken";
+import { TranslateObjKeysFromEngToFr } from "@/app/utils/translation";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
@@ -21,13 +22,20 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     checkReceptionistRole(user.role);
 
     const data: AddRoomData = await request.json();
-    const missingFields = requiredRoomFields.filter((field) => !data[field]);
-    if (missingFields.length > 0) {
-      return NextResponse.json(
-        { message: `${missingFields.join(", ")}: sont requis` },
-        { status: 400 }
-      );
-    }
+    const missingFields = requiredRoomFields.filter(
+          (field) => !data[field]
+        );
+    
+        if (missingFields.length > 0) {
+          const translatedFields = missingFields.map(field => 
+            TranslateObjKeysFromEngToFr(field)
+          );
+    
+          return NextResponse.json(
+            { message: `${translatedFields.join(", ")}: sont requis` },
+            { status: 400 }
+          );
+        }
 
     const newRoom = await addRoom(data, user.hotelId);
 

@@ -20,9 +20,10 @@ export async function PATCH(
     }
     
     checkReceptionistReceptionManagerRole(user.role);
-
+    console.log(await request.json())
     const roomId = params.id;
     const updateStateData: UpdateRoomStateData = await request.json();
+    
 
     const updatedRoom = await updateRoomState(
       updateStateData,roomId,

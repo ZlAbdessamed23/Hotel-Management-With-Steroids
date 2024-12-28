@@ -12,13 +12,14 @@ export async function updateStock(
     StockId: string,
     hotelId: string,
     data: UpdateStockData
-): Promise<{ Stock: any }> {
+): Promise<StockResult> {
     try {
         return await prisma.$transaction(async (prisma) => {
             const updateData: Prisma.StockUpdateInput = {};
 
             if (data.name !== undefined) updateData.name = data.name;
             if (data.description !== undefined) updateData.description = data.description;
+            if (data.location !== undefined) updateData.location = data.location;
 
             if (Array.isArray(data.stockEmployee)) {
                 const validStockEmployee = data.stockEmployee.filter((ea) => ea.employeeId !== "");
@@ -105,7 +106,7 @@ export function checkReceptionMnagerStockManagerAdminRole(roles: UserRole[]) {
         !roles.includes(UserRole.admin) && !roles.includes(UserRole.stock_Manager) && !roles.includes(UserRole.reception_Manager)
     ) {
         throw new UnauthorizedError(
-            "Sauf l'Admin peut faire cette action"
+            "Sauf l'Admin reception manager stock manager peut faire cette action"
         );
     }
 };

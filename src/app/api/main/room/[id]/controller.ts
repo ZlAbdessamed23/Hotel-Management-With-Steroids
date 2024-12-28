@@ -35,6 +35,7 @@ export async function getRoomById(
       
         reservation: {
           select: {
+            id:true,
             startDate: true,
             endDate: true,
             client: {
@@ -84,6 +85,7 @@ export async function deleteRoomById(
         
           reservation: {
             select: {
+              id:true,
               startDate: true,
               endDate: true,
               client: {

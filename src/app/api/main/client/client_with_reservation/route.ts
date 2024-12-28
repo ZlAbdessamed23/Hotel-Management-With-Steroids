@@ -8,6 +8,7 @@ import {
 import { ClientReservationData, requiredFields } from "@/app/api/main/client/client_with_reservation/types";
 import { handleError } from "@/lib/error_handler/handleError";
 import { getUser } from "@/lib/token/getUserFromToken";
+import { TranslateObjKeysFromEngToFr } from "@/app/utils/translation";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
@@ -18,13 +19,20 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     checkReceptionistReceptionManagerRole(user.role);
 
     const data: ClientReservationData = await request.json();
-    const missingFields = requiredFields.filter((field) => !data[field]);
-    if (missingFields.length > 0) {
-      return NextResponse.json(
-        { message: `: ${missingFields.join(", ")} sont requis` },
-        { status: 400 }
-      );
-    }
+    const missingFields = requiredFields.filter(
+          (field) => !data[field]
+        );
+    
+        if (missingFields.length > 0) {
+          const translatedFields = missingFields.map(field => 
+            TranslateObjKeysFromEngToFr(field)
+          );
+    
+          return NextResponse.json(
+            { message: `${translatedFields.join(", ")}: sont requis` },
+            { status: 400 }
+          );
+        }
 
     const newClientReservation = await addClientWithReservation(
       data,

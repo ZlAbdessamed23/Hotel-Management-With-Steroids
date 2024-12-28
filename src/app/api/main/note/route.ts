@@ -3,6 +3,7 @@ import { addNote, getAllNotes } from "@/app/api/main/note/controller";
 import { AddNoteData, requiredNoteFields } from "@/app/api/main/note/types";
 import { handleError } from "@/lib/error_handler/handleError";
 import { getUser } from "@/lib/token/getUserFromToken";
+import { TranslateObjKeysFromEngToFr } from "@/app/utils/translation";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
@@ -12,14 +13,20 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     const data: AddNoteData = await request.json();
-    const missingFields = requiredNoteFields.filter((field) => !data[field]);
-    if (missingFields.length > 0) {
-      return NextResponse.json(
-        { message: `${missingFields.join(", ")}: sont requis ` },
-        { status: 400 }
-      );
-    }
-
+    const missingFields = requiredNoteFields.filter(
+          (field) => !data[field]
+        );
+    
+        if (missingFields.length > 0) {
+          const translatedFields = missingFields.map(field => 
+            TranslateObjKeysFromEngToFr(field)
+          );
+    
+          return NextResponse.json(
+            { message: `${translatedFields.join(", ")}: sont requis` },
+            { status: 400 }
+          );
+        }
     const newNote = await addNote(data, user.hotelId, user.id, user.role);
 
     return NextResponse.json({

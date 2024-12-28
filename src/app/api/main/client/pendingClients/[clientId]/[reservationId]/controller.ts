@@ -24,9 +24,9 @@ export async function updateClientAndReservation(
         },
       });
 
-      if (!existingClient || !existingClient.pendingReservation.length) {
+      if (!existingClient || existingClient.pendingReservation.length === 0) {
         throw new NotFoundError(
-          "Client or corresponding pending reservation not found"
+          "Client ou réservation en attente correspondante introuvable."
         );
       }
 

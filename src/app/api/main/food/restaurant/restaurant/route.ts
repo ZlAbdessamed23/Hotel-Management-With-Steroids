@@ -3,6 +3,7 @@ import { AddRestaurantData, requiredRestaurantFields } from "@/app/api/main/food
 import { addRestaurant, getAllRestaurants,checkAdminReceptionManagerRestaurantManagerRole } from "@/app/api/main/food/restaurant/restaurant/controller";
 import { handleError } from "@/lib/error_handler/handleError";
 import { getUser } from "@/lib/token/getUserFromToken";
+import { TranslateObjKeysFromEngToFr } from "@/app/utils/translation";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
     try {
@@ -15,14 +16,19 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   
       const data: AddRestaurantData = await request.json();
       const missingFields = requiredRestaurantFields.filter(
-        (field) => !data[field]
-      );
-      if (missingFields.length > 0) {
-        return NextResponse.json(
-          { message: `${missingFields.join(", ")}: sont requis ` },
-          { status: 400 }
-        );
-      }
+            (field) => !data[field]
+          );
+      
+          if (missingFields.length > 0) {
+            const translatedFields = missingFields.map(field => 
+              TranslateObjKeysFromEngToFr(field)
+            );
+      
+            return NextResponse.json(
+              { message: `${translatedFields.join(", ")}: sont requis` },
+              { status: 400 }
+            );
+          }
   
       const newRestaurant = await addRestaurant(
         data,

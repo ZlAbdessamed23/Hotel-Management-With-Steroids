@@ -38,6 +38,7 @@ export type RoomResult = {
   
     reservation: {
       select: {
+        id:true;
         startDate: true;
         endDate: true;
         client: {
@@ -66,6 +67,7 @@ export type RoomsResult = {
     
       reservation: {
         select: {
+          id:true;
           startDate: true;
           endDate: true;
           client: {
