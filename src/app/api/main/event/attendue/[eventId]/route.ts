@@ -18,7 +18,7 @@ export async function GET(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
     checkReceptionManagerReceptionistAdminRole(user.role);
     const { eventId } = params;
 

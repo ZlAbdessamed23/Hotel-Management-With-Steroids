@@ -29,30 +29,30 @@ export async function addMember(
         throw new LimitExceededError("la chambre est déja complète");
       }
 
-      const newMember = await prisma.member.create({
-        data: {
-          ...data,
-          hotelId,
-          employeeId,
-        },
-        select : {
-          address : true,
-          id : true , 
-          email : true,
-          phoneNumber : true,
-          dateOfBirth : true,
-          fullName : true,
-          identityCardNumber : true,
-          nationality : true,
-          gender : true,
-        
-        }
-      });
-
-      await prisma.reservation.update({
-        where: { id: data.reservationId },
-        data: { currentOccupancy: { increment: 1 } },
-      });
+      const [newMember, updatedReservation] = await Promise.all([
+        prisma.member.create({
+          data: {
+            ...data,
+            hotelId,
+            employeeId,
+          },
+          select: {
+            address: true,
+            id: true,
+            email: true,
+            phoneNumber: true,
+            dateOfBirth: true,
+            fullName: true,
+            identityCardNumber: true,
+            nationality: true,
+            gender: true,
+          }
+        }),
+        prisma.reservation.update({
+          where: { id: data.reservationId },
+          data: { currentOccupancy: { increment: 1 } },
+        })
+      ]);
 
       return { member: newMember };
     });

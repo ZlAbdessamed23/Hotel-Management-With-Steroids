@@ -4,7 +4,7 @@ import {
   ValidationError,
 } from "@/lib/error_handler/customerErrors";
 import { throwAppropriateError } from "@/lib/error_handler/throwError";
-import { Prisma, UserRole } from "@prisma/client";
+import { Prisma, RoomStatus, UserRole } from "@prisma/client";
 import {
   UpdateAttendueData,
   AttendueResult,
@@ -19,61 +19,65 @@ export async function getAttendueById(
   hotelId: string
 ): Promise<GetAttendueResult> {
   try {
-   const existingAttendue = await prisma.attendue.findUnique({
-     where: { id: attendueId, eventId: eventId },
-     select: {
-      address: true,
-      email: true,
-      phoneNumber: true,
-      id: true,
-      identityCardNumber: true,
-      type: true,
-      dateOfBirth: true,
-      gender: true,
-      fullName: true,
-      eventId: true,
-      reservationId: true,
-      reservationSource: true,
-      nationality: true,
-      reservation: {
-        select: {
-          id: true,
-          startDate: true,
-          endDate: true,
-          unitPrice: true,
-          totalDays: true,
-          totalPrice: true,
-          currentOccupancy: true,
-          discoveryChannel: true,
-          roomNumber: true,
-          roomType: true,
-          source: true,
-          state: true,
-          attendues: {
-            select: {
-              address: true,
-              email: true,
-              phoneNumber: true,
-              id: true,
-              identityCardNumber: true,
-              type: true,
-              dateOfBirth: true,
-              gender: true,
-              fullName: true,
-              eventId: true,
-              reservationId: true,
-              reservationSource: true,
-              nationality: true,
+    const existingAttendue = await prisma.attendue.findUnique({
+      where: { id: attendueId, eventId: eventId },
+      select: {
+        address: true,
+        email: true,
+        phoneNumber: true,
+        id: true,
+        identityCardNumber: true,
+        type: true,
+        dateOfBirth: true,
+        gender: true,
+        fullName: true,
+        eventId: true,
+        reservationId: true,
+        reservationSource: true,
+        nationality: true,
+        reservation: {
+          select: {
+            id: true,
+            startDate: true,
+            endDate: true,
+            unitPrice: true,
+            totalDays: true,
+            totalPrice: true,
+            currentOccupancy: true,
+            discoveryChannel: true,
+            roomNumber: true,
+            roomType: true,
+            source: true,
+            state: true,
+            // Get other attendees except the current one
+            attendues: {
+              where: {
+                NOT: {
+                  id: attendueId
+                }
+              },
+              select: {
+                address: true,
+                email: true,
+                phoneNumber: true,
+                id: true,
+                identityCardNumber: true,
+                type: true,
+                dateOfBirth: true,
+                gender: true,
+                fullName: true,
+                eventId: true,
+                reservationId: true,
+                reservationSource: true,
+                nationality: true,
+              }
             }
           }
-
         }
       }
+    });
 
-    }
-   });
-
-    if (!existingAttendue ) {
+    if (!existingAttendue) {
       throw new NotFoundError(
         `Attendue non trouvé`
       );
@@ -93,7 +97,24 @@ export async function deleteAttendue(
 ): Promise<AttendueResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      
+      // First, get the attendue with their reservation details
+      const attendue = await prisma.attendue.findUnique({
+        where: { id: attendueId },
+        include: {
+          reservation: {
+            include: {
+              attendues: true,
+              room: true
+            }
+          }
+        }
+      });
+
+      if (!attendue) {
+        throw new NotFoundError("Attendue non trouvé");
+      }
+
+      // Delete the attendue
       const deletedAttendue = await prisma.attendue.delete({
         where: { id: attendueId },
         select: {
@@ -110,10 +131,34 @@ export async function deleteAttendue(
           reservationId: true,
           reservationSource: true,
           nationality: true,
-         
-    
         }
       });
+
+      // If attendue had a reservation and it was the last attendue
+      if (attendue.reservation && attendue.reservation.attendues.length === 1) {
+        // Delete reservation and update room status in parallel
+        await Promise.all([
+          prisma.reservation.delete({
+            where: { id: attendue.reservation.id }
+          }),
+          prisma.room.update({
+            where: { id: attendue.reservation.room.id },
+            data: {
+              status: RoomStatus.disponible
+            }
+          })
+        ]);
+      } else if (attendue.reservation) {
+        // If there are other attendues, just decrement the occupancy
+        await prisma.reservation.update({
+          where: { id: attendue.reservation.id },
+          data: {
+            currentOccupancy: {
+              decrement: 1
+            }
+          }
+        });
+      }
 
       return { Attendue: deletedAttendue };
     });

@@ -19,24 +19,24 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
     checkReceptionManagerReceptionistRole(user.role);
 
     const data: AddEventSeanceData = await request.json();
     const missingFields = requiredEventSeanceFields.filter(
-          (field) => !data[field]
-        );
-    
-        if (missingFields.length > 0) {
-          const translatedFields = missingFields.map(field => 
-            TranslateObjKeysFromEngToFr(field)
-          );
-    
-          return NextResponse.json(
-            { message: `${translatedFields.join(", ")}: sont requis` },
-            { status: 400 }
-          );
-        }
+              (field) => !data[field]
+            );
+        
+            if (missingFields.length > 0) {
+              const translatedFields = missingFields.map(field => 
+                TranslateObjKeysFromEngToFr(field)
+              );
+        
+              return NextResponse.json(
+                { message: `${translatedFields.join(", ")}: sont requis` },
+                { status: 400 }
+              );
+            }
 
     const newEventSeance = await addEventSeance(data, user.hotelId);
 

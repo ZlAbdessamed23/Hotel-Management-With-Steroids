@@ -5,8 +5,8 @@ import {
   getAllEvents,
   checkReceptionManagerReceptionistAdminRole,
   checkReceptionManagerReceptionistRole,
-} from "./controller";
-import { AddEventData, requiredEventFields } from "./types";
+} from "@/app/api/main/event/event/controller";
+import { AddEventData, requiredEventFields } from "@/app/api/main/event/event/types";
 
 import { handleError } from "@/lib/error_handler/handleError";
 import { getUser } from "@/lib/token/getUserFromToken";
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
     checkReceptionManagerReceptionistRole(user.role);
 
     const data: AddEventData = await request.json();
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
 
     // Check if the user is either an admin or a receptionist
     checkReceptionManagerReceptionistAdminRole(user.role);

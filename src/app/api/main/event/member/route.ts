@@ -20,7 +20,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
     checkReceptionManagerReceptionistRole(user.role);
 
     const data: AddEventMemberData = await request.json();

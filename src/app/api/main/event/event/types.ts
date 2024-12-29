@@ -8,7 +8,7 @@ export type AddEventData = {
   bankCard?: string;
   startDate: Date;
   endDate: Date;
-  eventType: EventType;
+  eventType?: EventType;
 };
 
 export const requiredEventFields: (keyof AddEventData)[] = [
@@ -16,7 +16,7 @@ export const requiredEventFields: (keyof AddEventData)[] = [
   "leader",
   "startDate",
   "endDate",
-  "eventType",
+  
 ];
 
 export type EventResult = {

@@ -585,7 +585,7 @@ CREATE TABLE "Event" (
     "bankCard" TEXT,
     "startDate" TIMESTAMP(3) NOT NULL,
     "endDate" TIMESTAMP(3) NOT NULL,
-    "eventType" "EventType" NOT NULL,
+    "eventType" "EventType",
     "hotelId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,

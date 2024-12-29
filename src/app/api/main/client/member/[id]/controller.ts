@@ -1,5 +1,6 @@
 import {
   NotFoundError,
+  UnauthorizedError,
   ValidationError,
 } from "@/lib/error_handler/customerErrors";
 import { throwAppropriateError } from "@/lib/error_handler/throwError";
@@ -67,26 +68,27 @@ export async function deleteMemberById(
           data: { currentOccupancy: { decrement: 1 } },
         });
       }
-
+      
       const deletedMember = await prisma.member.delete({
         where: {
           id: memberId,
           hotelId: hotelId,
         },
-        select : {
-          address : true,
-          id : true , 
-          email : true,
-          phoneNumber : true,
-          dateOfBirth : true,
-          fullName : true,
-          identityCardNumber : true,
-          nationality : true,
-          gender : true,
-        
+        select: {
+          address: true,
+          id: true,
+          email: true,
+          phoneNumber: true,
+          dateOfBirth: true,
+          fullName: true,
+          identityCardNumber: true,
+          nationality: true,
+          gender: true,
         }
       });
+      
       return { member: deletedMember };
+      
     });
   } catch (error) {
     throw throwAppropriateError(error);
@@ -152,7 +154,7 @@ export function checkReceptionistAdminRole(roles: UserRole[]) {
     !roles.includes(UserRole.receptionist) &&
     !roles.includes(UserRole.admin)
   ) {
-    throw new ValidationError(
+    throw new UnauthorizedError(
       "Sauf le réceptiontist, le réceptionist manager et l'administrateur peut faire cette action"
     );
   }
@@ -160,6 +162,6 @@ export function checkReceptionistAdminRole(roles: UserRole[]) {
 
 export function checkReceptionistRole(roles: UserRole[]) {
   if (!roles.includes(UserRole.receptionist)) {
-    throw new ValidationError("Sauf le réceptiontist et le réceptionist manager peut faire cette action");
+    throw new UnauthorizedError("Sauf le réceptiontist et le réceptionist manager peut faire cette action");
   }
 }

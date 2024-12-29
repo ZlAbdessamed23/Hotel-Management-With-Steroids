@@ -34,10 +34,22 @@ export async function updateReservation(
         );
       }
 
+      let newStartDate = data.startDate || existingReservation.startDate;
+      let newEndDate = data.endDate || existingReservation.endDate;
+      let newTotalDays =  existingReservation.totalDays;
+
+      // Calculate new total days if dates changed
+      if (data.startDate || data.endDate) {
+        newTotalDays = Math.ceil(
+          (new Date(newEndDate).getTime() - new Date(newStartDate).getTime()) /
+            (1000 * 60 * 60 * 24)
+        );
+      }
+
       const reservationUpdateData: Prisma.ReservationUpdateInput = {
         startDate: data.startDate,
         endDate: data.endDate,
-        totalDays: data.totalDays,
+        totalDays: newTotalDays,
         state: data.status,
         source: data.source,
         discoveryChannel: data.discoveryChannel,

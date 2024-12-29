@@ -3,7 +3,7 @@ import {
   UnauthorizedError,
 } from "@/lib/error_handler/customerErrors";
 import { throwAppropriateError } from "@/lib/error_handler/throwError";
-import { Prisma, UserRole } from "@prisma/client";
+import { Prisma, RoomStatus, UserRole } from "@prisma/client";
 import prisma from "@/lib/prisma/prismaClient";
 import {
   EventResult,
@@ -51,26 +51,88 @@ export async function deleteEvent(
 ): Promise<EventResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-     
-      const deletedMenu = await prisma.event.delete({
+      // First get all attendues with their reservations and rooms
+      const eventWithAttendues = await prisma.event.findUnique({
         where: { id: eventId, hotelId: hotelId },
-        select : {
-          bankCard : true,
-          createdAt : true,
-          name : true,
-          description : true,
-          guests : true,
-          leader : true,
-          id : true,
-          startDate : true,
-          endDate : true , 
-          eventType : true,
-          
+        include: {
+          attendue: {
+            include: {
+              reservation: {
+                select: {
+                  id: true,
+                  room: {
+                    select: {
+                      id: true
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       });
-     await updateEventStatistics(hotelId, "remove", prisma);
 
-      return { Event: deletedMenu };
+      if (!eventWithAttendues) {
+        throw new NotFoundError("Événement non trouvé");
+      }
+
+      // Get unique reservations and rooms
+      const reservationsToDelete = new Set<string>();
+      const roomsToUpdate = new Set<string>();
+
+      // Collect reservation and room IDs
+      eventWithAttendues.attendue.forEach(attendue => {
+        if (attendue.reservation) {
+          reservationsToDelete.add(attendue.reservation.id);
+          if (attendue.reservation.room) {
+            roomsToUpdate.add(attendue.reservation.room.id);
+          }
+        }
+      });
+
+      // Delete reservations and update rooms in parallel
+      if (reservationsToDelete.size > 0) {
+        await Promise.all([
+          // Delete all identified reservations
+          prisma.reservation.deleteMany({
+            where: {
+              id: {
+                in: Array.from(reservationsToDelete)
+              }
+            }
+          }),
+          // Update all identified rooms
+          prisma.room.updateMany({
+            where: {
+              id: {
+                in: Array.from(roomsToUpdate)
+              }
+            },
+            data: {
+              status: RoomStatus.disponible
+            }
+          })
+        ]);
+      }
+
+      // Delete the event (this will cascade delete attendues)
+      const deletedEvent = await prisma.event.delete({
+        where: { id: eventId, hotelId: hotelId },
+        select: {
+          bankCard: true,
+          createdAt: true,
+          name: true,
+          description: true,
+          guests: true,
+          leader: true,
+          id: true,
+          startDate: true,
+          endDate: true,
+          eventType: true,
+        }
+      });
+
+      return { Event: deletedEvent };
     });
   } catch (error) {
     throw throwAppropriateError(error);

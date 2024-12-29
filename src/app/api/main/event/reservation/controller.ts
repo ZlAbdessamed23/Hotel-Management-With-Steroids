@@ -25,7 +25,7 @@ export async function createReservationWithAttendee(
 ): Promise<ReservationWithAttendeeResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      const [room, attendee, event] = await Promise.all([
+      const [room, attendee] = await Promise.all([
         prisma.room.findFirst({
           where: {
             hotelId: hotelId,
@@ -36,28 +36,27 @@ export async function createReservationWithAttendee(
         prisma.attendue.findFirst({
           where: { id: data.attendueId, eventId: data.eventId },
         }),
-        prisma.event.findFirst({
-          where: { id: data.eventId, hotelId: hotelId },
-        }),
+        
       ]);
 
       if (!room) {
-        throw new NotFoundError("Chambre non trouvée");
+        throw new NotFoundError("Chambre non trouvée"); 
       }
-      if (room.status === RoomStatus.reservee) {
-        throw new ConflictError("la chambre est déja réservée");
+      if (room.status !== RoomStatus.disponible) {
+        throw new ConflictError("la chambre est déja réservée ou hors service");
       }
 
       if (!attendee) {
         throw new NotFoundError("Membre non touvé");
       }
 
-      if (!event) {
-        throw new NotFoundError("Evenement non trouvé");
+      
+      const totalDays = Math.ceil((new Date(data.endDate).getTime() - new Date(data.startDate).getTime()) / (1000 * 60 * 60 * 24));
+      if (totalDays < 0) {
+        throw new ValidationError("La durée de réservation est invalide. La date de fin doit être supérieure à la date de début.");
       }
-
       const unitPrice = room.price.toNumber();
-      const totalPrice = data.totalDays * unitPrice;
+      const totalPrice = totalDays * unitPrice;
 
       const createdReservation = await prisma.reservation.create({
         data: {
@@ -65,11 +64,11 @@ export async function createReservationWithAttendee(
           roomType: data.roomType,
           startDate: data.startDate,
           endDate: data.endDate,
-          totalDays: data.totalDays,
+          totalDays: totalDays,
           totalPrice,
           unitPrice, // Added the required unitPrice field
-          state: data.state || ReservationState.en_attente,
-          source: data.source || ReservationSource.seul,
+          state: data.state ,
+          source: data.source ,
           currentOccupancy: data.currentOccupancy || 1,
           discoveryChannel: data.discoveryChannel,
           hotel: { connect: { id: hotelId } },

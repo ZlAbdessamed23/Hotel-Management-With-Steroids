@@ -10,7 +10,7 @@ export type ReservationUpdateData = {
   roomType?: RoomType;
   startDate?: Date;
   endDate?: Date;
-  totalDays?: number;
+  
   status?: ReservationState;
   source?: ReservationSource;
   discoveryChannel?: DiscoveryChannel;

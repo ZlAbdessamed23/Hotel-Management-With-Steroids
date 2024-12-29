@@ -9,6 +9,7 @@ import { handleError } from "@/lib/error_handler/handleError";
 import { UpdateRoomStateData } from "@/app/api/main/room/status/[id]/types";
 
 import { getUser } from "@/lib/token/getUserFromToken";
+import ClientsDataGrid from "@/app/main/components/other/ClientsDataGrid";
 export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -20,9 +21,10 @@ export async function PATCH(
     }
     
     checkReceptionistReceptionManagerRole(user.role);
-    console.log(await request.json())
+    
     const roomId = params.id;
     const updateStateData: UpdateRoomStateData = await request.json();
+    
     
 
     const updatedRoom = await updateRoomState(

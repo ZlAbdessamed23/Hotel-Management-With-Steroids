@@ -11,7 +11,7 @@ export type CreateReservationWithAttendeeData = {
   roomType: RoomType;
   startDate: Date;
   endDate: Date;
-  totalDays: number;
+  
   state?: ReservationState;
   source?: ReservationSource;
   currentOccupancy?: number;
@@ -25,7 +25,7 @@ export const requiredAttendueReservationFields: (keyof CreateReservationWithAtte
     "roomType",
     "startDate",
     "endDate",
-    "totalDays",
+    
 
     "attendueId",
 

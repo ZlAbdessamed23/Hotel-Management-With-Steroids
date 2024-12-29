@@ -16,12 +16,7 @@ export async function addEventSeance(
 ): Promise<EventSeanceResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      // Check if the hotel exists and include its events
-      const event = await prisma.event.findUnique({
-        where: { id: data.eventId, hotelId },
-      });
-
-      if (!event) throw new NotFoundError("évenement non trouvé");
+      
 
       // Create the attendee
       const createdEventSeance = await prisma.eventSeance.create({

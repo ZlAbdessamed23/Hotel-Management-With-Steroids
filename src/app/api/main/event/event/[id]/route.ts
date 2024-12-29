@@ -6,7 +6,7 @@ import {
   deleteEvent,
   getEventById,
   updateEvent,
-} from "./controller";
+} from "@/app/api/main/event/event/[id]/controller";
 import { handleError } from "@/lib/error_handler/handleError";
 
 export async function GET(
@@ -18,7 +18,7 @@ export async function GET(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
     checkReceptionManagerReceptionistAdminRole(user.role);
 
     const EventIdId = params.id;
@@ -39,7 +39,7 @@ export async function DELETE(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
     checkReceptionManagerReceptionistRole(user.role);
 
     const stockEventId = params.id;

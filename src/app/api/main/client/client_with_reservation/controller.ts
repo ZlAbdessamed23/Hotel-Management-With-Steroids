@@ -108,32 +108,36 @@ export async function addClientWithReservation(
         roomId: room.id
       };
  
-      const createdClient = await prisma.client.create({
-        data: {
-          ...clientData,
-          ...(data.state === ReservationState.en_attente 
-            ? {
-                pendingReservation: {
-                  create: reservationData
+      const [createdClient, updatedRoom] = await Promise.all([
+        prisma.client.create({
+          data: {
+            ...clientData,
+            ...(data.state === ReservationState.en_attente
+              ? {
+                  pendingReservation: {
+                    create: reservationData
+                  }
                 }
-              }
-            : {
-                reservations: {
-                  create: reservationData
+              : {
+                  reservations: {
+                    create: reservationData
+                  }
                 }
-              }
-          )
-        },
-        include: {
-          reservations: true,
-          pendingReservation: true
-        }
-      });
- 
-      await prisma.room.update({
-        where: { id: room.id },
-        data: { status: RoomStatus.reservee }
-      });
+            )
+          },
+          include: {
+            reservations: true,
+            pendingReservation: true
+          }
+        }),
+        
+        ...(data.state !== ReservationState.en_attente 
+          ? [prisma.room.update({
+              where: { id: room.id },
+              data: { status: RoomStatus.reservee }
+            })]
+          : [])
+      ]);
  
       if (data.state === ReservationState.valide) {
         await updateClientCheckInStatistics(

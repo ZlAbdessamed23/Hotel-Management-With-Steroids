@@ -195,8 +195,12 @@ enum EventType {
 }
 enum AttendueType{
   normale
-  organizatrice
+  organisateur
   serveur
+
+
+
+
 }
 
 //////////////////////// Admin section ///////////////////////////////
@@ -781,7 +785,7 @@ model Event{
   startDate                                   DateTime
   endDate                                     DateTime
   attendue                                    Attendue[]
-  eventType                                   EventType
+  eventType                                   EventType?
   eventSeance                                 EventSeance[]
   hotel                                       Hotel                     @relation(fields: [hotelId], references: [id])
   hotelId                                     String
