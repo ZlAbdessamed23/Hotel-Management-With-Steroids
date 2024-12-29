@@ -13,13 +13,13 @@ interface JsonObj {
 };
 
 interface PricingProps {
-    title: 'Basic' | "Standard" | "Premium";
+    title: 'Free' | "Standard" | "Premium";
     data: JsonObj;
 };
 
 const pricingData: Array<PricingProps> = [
     {
-        title: "Basic",
+        title: "Free",
         data: {
             "Gestion des Clients (20 clients)": true,
             "gestion des Chambres (14 chambres)": true,
@@ -88,7 +88,7 @@ export default function Pricing() {
             <div className={`h-[59rem] lg:h-[66rem] xl:h-[59rem] w-full md:w-[50%] lg:w-[29%] rounded-xl shadow-md p-4 relative ${title === "Standard" ? "bg-primary-500" : "bg-gray-200 dark:bg-gray-800 dark:bg-opacity-45"}`}>
                 <h3 className='text-center text-2xl font-semibold mb-2'>{title} Plan</h3>
                 {
-                    title === "Basic" ? <h2 className='text-center text-4xl font-semibold text-green-500 mb-6'>Gratuit</h2> 
+                    title === "Free" ? <h2 className='text-center text-4xl font-semibold text-green-500 mb-6'>Gratuit</h2> 
                     : 
                     <h2 className={`text-center text-4xl font-semibold flex items-end justify-center gap-4 mb-6 ${title === 'Standard' ? "text-black " : "text-green-500"}`}><span>{title === "Standard" ? 8400 : 12500}</span><span className='text-2xl'>DA/mo</span></h2>
     

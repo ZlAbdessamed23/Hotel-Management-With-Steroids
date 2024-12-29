@@ -69,16 +69,16 @@ export default function Gym({ params }: {
   }, []);
 
   async function handleDeleteGym() {
-    try{
+    try {
       const res = await deleteGym(gym?.id as string);
-      if(res){
+      if (res) {
         setTimeout(() => {
           router.push("/main/employee/reception/managegyms");
-        },1000);
+        }, 1000);
       }
       return res;
     }
-    catch(err : any){
+    catch (err: any) {
       throw new Error(err);
     };
   };
@@ -131,7 +131,7 @@ export default function Gym({ params }: {
 
   useEffect(() => {
     console.log(coaches);
-  },[coaches]);
+  }, [coaches]);
 
   return (
     <div className='flex flex-col gap-8'>

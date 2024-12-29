@@ -5,21 +5,27 @@ import {
   createAdmin,
   sendVerificationEmail,
 } from "@/app/api/auth/signup/controller";
+import { TranslateObjKeysFromEngToFr } from "@/app/utils/translation";
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     const data: AdminSignupData = await req.json();
 
-    const missingField = requiredFields.find((field) => !data[field]);
-    if (missingField) {
-      return NextResponse.json(
-        {
-          message: `${missingField} est requis`,
-        },
-        { status: 400 }
-      );
-    }
-   console.log(data);
+    const missingFields = requiredFields.filter(
+          (field) => !data[field]
+        );
+    
+        if (missingFields.length > 0) {
+          const translatedFields = missingFields.map(field => 
+            TranslateObjKeysFromEngToFr(field)
+          );
+    
+          return NextResponse.json(
+            { message: `${translatedFields.join(", ")}: sont requis` },
+            { status: 400 }
+          );
+        }
+   
     const { admin, token } = await createAdmin(data);
 
     await sendVerificationEmail(admin.email, token);

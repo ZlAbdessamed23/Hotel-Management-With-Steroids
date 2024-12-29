@@ -3,6 +3,7 @@ import { AddStockData, requiredStockFields } from "@/app/api/main/stock/stock/ty
 import { addStock, getAllStocks,checkReceptionManagerStockManagerAdminRole } from "@/app/api/main/stock/stock/controller";
 import { handleError } from "@/lib/error_handler/handleError";
 import { getUser } from "@/lib/token/getUserFromToken";
+import { TranslateObjKeysFromEngToFr } from "@/app/utils/translation";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
     try {
@@ -14,15 +15,19 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   
       const data: AddStockData = await request.json();
       const missingFields = requiredStockFields.filter(
-        (field) => !data[field]
-      );
-      if (missingFields.length > 0) {
-        return NextResponse.json(
-          { message: `${missingFields.join(", ")}: sont requis ` },
-          { status: 400 }
-        );
-      }
-  
+            (field) => !data[field]
+          );
+      
+          if (missingFields.length > 0) {
+            const translatedFields = missingFields.map(field => 
+              TranslateObjKeysFromEngToFr(field)
+            );
+      
+            return NextResponse.json(
+              { message: `${translatedFields.join(", ")}: sont requis` },
+              { status: 400 }
+            );
+          }
       const newStock = await addStock(
         data,
         user.hotelId,

@@ -52,8 +52,8 @@ import {
 } from "../types/constants";
 import { ForgetPasswordData } from "@/app/api/auth/password/forgetPassword/types";
 
-const mainBaseUrl = "http://104.154.75.47/api/main";
-const authBaseUrl = "http://104.154.75.47/api/auth";
+const mainBaseUrl = "http://localhost:3000//api/main";
+const authBaseUrl = "http://localhost:3000//api/auth";
 
 
 //AUTH
@@ -1274,14 +1274,14 @@ export async function deleteRoom(id: string) {
 export async function changeRoomStatus(isFixed: boolean, id: string) {
   try {
     return await axios
-      .patch(`${mainBaseUrl}/room/status/${id}`, isFixed)
+      .patch(`${mainBaseUrl}/room/status/${id}`, {isFixed})
       .then((res) => {
         return res.data.message;
       });
   } catch (err: any) {
     throw new Error(err.response.data.message);
-  }
-}
+  };
+};
 
 //Clients
 

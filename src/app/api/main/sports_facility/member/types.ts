@@ -8,7 +8,7 @@ export type AddSportsFacilityMemberData = {
   gender : UserGender;
 };
 
-export const requiredSportsFacilityFields: (keyof AddSportsFacilityMemberData)[] =
+export const requiredSportsFacilityMemberFields: (keyof AddSportsFacilityMemberData)[] =
   ["sportsFacilityId"];
 
 export type SportsFacilityMemberResult = {

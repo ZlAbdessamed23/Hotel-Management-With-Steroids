@@ -192,6 +192,7 @@ interface Task {
     deadline: Date | string;
     isDone: boolean;
     receivers: Array<string> | string;
+    sender? : string;
     assignedEmployees?: {
         employee: {
             firstName: string;
@@ -602,8 +603,35 @@ interface PendingClients {
     pendingReservation: Reservation[]
 };
 
-interface Pending extends Client, Reservation { reservationId: string };
+interface Pending {
+    id: string;  
+    clientEventId?: string;
+    clientReservations?: Array<{ id: string, startDate: string | Date, endDate: string | Date }>;
+    fullName: string;
+    dateOfBirth: Date | string;
+    phoneNumber: string;
+    email?: string;
+    identityCardNumber: string;
+    address: string;
+    nationality: string;
+    membersNumber: number;
+    kidsNumber: number;
+    gender: UserGender | string;
+    clientOrigin: ClientOrigin;
 
+    reservationId: string;
+    roomNumber: string;
+    roomType: RoomType;
+    startDate: Date | string;
+    endDate: Date | string;
+    totalDays: number;
+    totalPrice: number;
+    state: ReservationState;
+    source?: ReservationSource;
+    reservedClientId: string;  
+    discoverChannel?: DiscoveredWay;
+    reservationSource?: ReservationSource;
+}
 
 
 

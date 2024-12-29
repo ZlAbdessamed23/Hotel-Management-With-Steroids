@@ -9,6 +9,7 @@ import {
   AddRestaurantMenuItemData,
   requiredRestaurantMenuItemFields,
 } from "@/app/api/main/food/restaurant/item/types";
+import { TranslateObjKeysFromEngToFr } from "@/app/utils/translation";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
@@ -21,14 +22,19 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     const data: AddRestaurantMenuItemData = await request.json();
     const missingFields = requiredRestaurantMenuItemFields.filter(
-      (field) => !data[field]
-    );
-    if (missingFields.length > 0) {
-      return NextResponse.json(
-        { message: `${missingFields.join(", ")}: sont requis ` },
-        { status: 400 }
-      );
-    }
+          (field) => !data[field]
+        );
+    
+        if (missingFields.length > 0) {
+          const translatedFields = missingFields.map(field => 
+            TranslateObjKeysFromEngToFr(field)
+          );
+    
+          return NextResponse.json(
+            { message: `${translatedFields.join(", ")}: sont requis` },
+            { status: 400 }
+          );
+        }
     const createdMenuItem = await addRestaurantMenuItem(data);
 
     return NextResponse.json(

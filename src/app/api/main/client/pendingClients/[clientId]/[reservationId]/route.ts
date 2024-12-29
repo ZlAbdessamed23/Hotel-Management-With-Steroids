@@ -48,7 +48,7 @@ export async function DELETE(
       );
   
       return NextResponse.json(
-        { message: "Employee mis à jour avec succès" },
+        { message: "Reservation mis à jour avec succès" },
         { status: 200 }
       );
     } catch (error) {

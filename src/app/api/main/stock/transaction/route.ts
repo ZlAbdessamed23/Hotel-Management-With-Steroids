@@ -12,6 +12,7 @@ import {
 
 import { handleError } from "@/lib/error_handler/handleError";
 import { getUser } from "@/lib/token/getUserFromToken";
+import { TranslateObjKeysFromEngToFr } from "@/app/utils/translation";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
@@ -24,14 +25,19 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     const data: AddStockTransactionData = await request.json();
     const missingFields = requiredStockTransactionFields.filter(
-      (field) => !data[field]
-    );
-    if (missingFields.length > 0) {
-      return NextResponse.json(
-        { message: `Missing required fields: ${missingFields.join(", ")}` },
-        { status: 400 }
-      );
-    }
+          (field) => !data[field]
+        );
+    
+        if (missingFields.length > 0) {
+          const translatedFields = missingFields.map(field => 
+            TranslateObjKeysFromEngToFr(field)
+          );
+    
+          return NextResponse.json(
+            { message: `${translatedFields.join(", ")}: sont requis` },
+            { status: 400 }
+          );
+        }
 
     const newStockTransaction = await addStockTransaction(data, user.hotelId,user.id,user.role);
 

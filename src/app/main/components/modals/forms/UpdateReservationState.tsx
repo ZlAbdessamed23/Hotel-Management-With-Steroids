@@ -11,6 +11,8 @@ import {
     Button,
 } from '@nextui-org/react';
 import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { useRefreshMenuContext } from '../../RefreshTriggerContext';
 
 export default function UpdateReservationState({
     props,
@@ -20,19 +22,44 @@ export default function UpdateReservationState({
     data: Pending[];
 }) {
     const [selectedKeys, setSelectedKeys] = useState<string | null>(null);
+    const { setFetchTrigger } = useRefreshMenuContext();
+
+    async function changeStatus() {
+        const result = handleChangeState();
+        await toast.promise(result, {
+            loading: 'Loading...',
+            success: (data) => `${data}`,
+            error: (err) => `${err.toString()}`,
+        }
+        );
+    };
+
+    async function deleteRes() {
+        const result = handleDeleteReservation();
+        await toast.promise(result, {
+            loading: 'Loading...',
+            success: (data) => `${data}`,
+            error: (err) => `${err.toString()}`,
+        }
+        );
+    };
 
     async function handleChangeState() {
         if (selectedKeys) {
             const [clientId, reservationId] = selectedKeys.split(',');
-            await updateReservationState(clientId, reservationId);
+            const res = await updateReservationState(clientId, reservationId);
+            setFetchTrigger((curr) => curr + 1);
+            return res.message;
         };
     };
 
     async function handleDeleteReservation() {
         if (selectedKeys) {
             const [clientId, reservationId] = selectedKeys.split(',');
-            await deletePendingReservation(clientId, reservationId);
-        };   
+            const res = await deletePendingReservation(clientId, reservationId);
+            setFetchTrigger((curr) => curr + 1);
+            return res.message;
+        };
     };
 
     return (
@@ -62,7 +89,7 @@ export default function UpdateReservationState({
                             </form>
                         </ModalBody>
                         <ModalFooter>
-                            <Button color="warning" variant="light" onPress={() => handleDeleteReservation()}>
+                            <Button color="warning" variant="light" onPress={deleteRes}>
                                 Supprimer la Reservation
                             </Button>
                             <Button color="danger" variant="light" onPress={onClose}>
@@ -71,7 +98,7 @@ export default function UpdateReservationState({
                             <Button
                                 color="primary"
                                 variant="shadow"
-                                onClick={() => handleChangeState()}
+                                onClick={changeStatus}
                             >
                                 Mise à jour au réservé
                             </Button>

@@ -96,6 +96,7 @@ export async function addReservation(
           client.dateOfBirth,
           null, 
           client.clientOrigin,
+          0,
           totalPrice,
           prisma,
           true

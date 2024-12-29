@@ -9,12 +9,12 @@ import { Pending, PendingClients } from '@/app/types/types';
 import { Button, useDisclosure } from '@nextui-org/react';
 import { FaPlus } from 'react-icons/fa6';
 import UpdateReservationState from '@/app/main/components/modals/forms/UpdateReservationState';
-import { ClientOrigin, ReservationState, RoomType, UserGender } from '@/app/types/constants';
+import { RefreshMenuProvider } from '@/app/main/components/RefreshTriggerContext';
 
 export default function WaitingList() {
     const UpdateModal = useDisclosure();
     const [waitingClients, setWaitingClients] = useState<PendingClients[]>([]);
-
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
     const columns = [
         { name: "Nom Complet", uid: "fullName" },
         { name: "Date de Naissance", uid: "dateOfBirth" },
@@ -43,21 +43,43 @@ export default function WaitingList() {
     function transformPendingClientsToPending(clients: PendingClients[]): Pending[] {
         return clients.flatMap((client) =>
             client.pendingReservation.map((reservation) => ({
-                ...client,
-                ...reservation,
+                id: client.id || "",
+                clientEventId: client.eventId,
+                clientReservations: client.reservations,
+                fullName: client.fullName,
+                dateOfBirth: client.dateOfBirth,
+                phoneNumber: client.phoneNumber,
+                email: client.email,
+                identityCardNumber: client.identityCardNumber,
+                address: client.address,
+                nationality: client.nationality,
+                membersNumber: client.membersNumber,
+                kidsNumber: client.kidsNumber,
+                gender: client.gender,
+                clientOrigin: client.clientOrigin,
                 reservationId: reservation.id || "",
+                roomNumber: reservation.roomNumber,
+                roomType: reservation.roomType,
+                startDate: reservation.startDate,
+                endDate: reservation.endDate,
+                totalDays: reservation.totalDays,
+                totalPrice: reservation.totalPrice,
+                state: reservation.state,
+                source: reservation.source,
+                reservedClientId: reservation.clientId,
+                discoverChannel: reservation.discoverChannel,
+                reservationSource: reservation.reservationSource
             }))
         );
     }
-
     async function getClients() {
         const data = await getWaitingList();
         setWaitingClients(data.pendingClients);
-    }
+    };
 
     useEffect(() => {
         getClients();
-    }, []);
+    }, [refreshTrigger]);
 
     const data = transformPendingClientsToPending(waitingClients);
 
@@ -91,7 +113,9 @@ export default function WaitingList() {
                 >
                     Mise à jour d&apos;une r&eacute;servation
                 </Button>
-                <UpdateReservationState props={UpdateModal} data={data} />
+                <RefreshMenuProvider setFetchTrigger={setRefreshTrigger}>
+                    <UpdateReservationState props={UpdateModal} data={data} />
+                </RefreshMenuProvider>
                 <section className='lg:w-[71rem] lg:overflow-hidden w-full overflow-x-scroll'>
                     <GenericDisplayTable columns={columns} data={data} />
                 </section>

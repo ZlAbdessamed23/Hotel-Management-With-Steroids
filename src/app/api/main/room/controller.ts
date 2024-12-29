@@ -62,6 +62,7 @@ export async function addRoom(
         
           reservation: {
             select: {
+              id:true,
               startDate: true,
               endDate: true,
               client: {
@@ -103,6 +104,7 @@ export async function getAllRooms(hotelId: string): Promise<RoomsResult> {
       
         reservation: {
           select: {
+            id:true,
             startDate: true,
             endDate: true,
             client: {

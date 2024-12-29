@@ -8,6 +8,7 @@ import {
 import { AddMemberData, requiredMemberFields } from "@/app/api/main/client/member/types";
 import { handleError } from "@/lib/error_handler/handleError";
 import { getUser } from "@/lib/token/getUserFromToken";
+import { TranslateObjKeysFromEngToFr } from "@/app/utils/translation";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
@@ -19,13 +20,20 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     checkReceptionistReceptionManagerRole(user.role);
 
     const data: AddMemberData = await request.json();
-    const missingField = requiredMemberFields.find((field) => !data[field]);
-    if (missingField) {
-      return NextResponse.json(
-        { message: `${missingField} est requis` },
-        { status: 400 }
-      );
-    }
+    const missingFields = requiredMemberFields.filter(
+          (field) => !data[field]
+        );
+    
+        if (missingFields.length > 0) {
+          const translatedFields = missingFields.map(field => 
+            TranslateObjKeysFromEngToFr(field)
+          );
+    
+          return NextResponse.json(
+            { message: `${translatedFields.join(", ")}: sont requis` },
+            { status: 400 }
+          );
+        }
 
     const newMember = await addMember(data, user.hotelId, user.id);
 

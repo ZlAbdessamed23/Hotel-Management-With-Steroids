@@ -150,11 +150,11 @@ export default function Event({ params }: {
         <AddEventModal isOpen={UpdateEventModalProps.isOpen} mode={OperationMode.update} onOpen={UpdateEventModalProps.onOpen} onOpenChange={UpdateEventModalProps.onOpenChange} initialData={event}  />
       </section>
       <section className='grid grid-rows-2 xl:grid-rows-none xl:grid-cols-[35%,60%] gap-4 w-full'>
-        <div className='flex flex-col gap-8'>
+        <div className='flex flex-col items-start gap-8'>
           <CardStyle9 title={event?.name || "Evenement"} fields={fields} />
           <CustomCalendar startDate={startDate} endDate={endDate} />
         </div>
-        <div className='w-[25rem] overflow-auto md:w-full'>
+        <div className='w-[25rem] overflow-auto md:w-full lg:pl-8'>
           <EventContextProvider clientsRefreshTrigger={ClientsRefreshTrigger} setClientsRefreshTrigger={setClientsRefreshTrigger} stagesRefreshTrigger={stagesRefreshTrigger} setStagesRefreshTrigger={setStagesRefreshTrigger} eventId={params.id}>
             <Tabs aria-label="Options" className='w-[99%]' classNames={{
               base: "w-full",

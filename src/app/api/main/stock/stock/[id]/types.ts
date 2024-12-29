@@ -3,7 +3,7 @@ import { Prisma } from "@prisma/client";
 export type UpdateStockData = {
   name?: string;
   description?: string;
-  content?: string;
+  location?: string;
   stockEmployee?: {
     employeeId: string;
   }[];
