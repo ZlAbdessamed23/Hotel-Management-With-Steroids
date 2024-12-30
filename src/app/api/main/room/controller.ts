@@ -90,21 +90,19 @@ export async function getAllRooms(hotelId: string): Promise<RoomsResult> {
   try {
     const rooms = await prisma.room.findMany({
       where: { hotelId: hotelId },
-      select : {
-        id : true,
-        capacity : true,
-        description : true,
-        floorNumber : true,
-        number : true,
-        outOfServiceDescription : true,
-        price : true,
-        status : true,
-        type : true,
-        
-      
+      select: {
+        id: true,
+        capacity: true,
+        description: true,
+        floorNumber: true,
+        number: true,
+        outOfServiceDescription: true,
+        price: true,
+        status: true,
+        type: true,
         reservation: {
           select: {
-            id:true,
+            id: true,
             startDate: true,
             endDate: true,
             client: {
@@ -113,12 +111,38 @@ export async function getAllRooms(hotelId: string): Promise<RoomsResult> {
                 fullName: true,
               },
             },
+            attendues: {
+              select: {
+                id: true,
+                fullName: true,
+              },
+            },
           },
         },
-      } 
+      }
     });
 
-    return { rooms };
+    // Transform the data to combine client and attendue information
+    const transformedRooms = rooms.map(room => {
+      if (room.reservation) {
+        // If there's no client but there are attendues, use the first attendue as client
+        if (!room.reservation.client && room.reservation.attendues?.length > 0) {
+          return {
+            ...room,
+            reservation: {
+              ...room.reservation,
+              client: {
+                id: room.reservation.attendues[0].id,
+                fullName: room.reservation.attendues[0].fullName
+              }
+            }
+          };
+        }
+      }
+      return room;
+    });
+
+    return { rooms: transformedRooms };
   } catch (error) {
     throwAppropriateError(error);
   }

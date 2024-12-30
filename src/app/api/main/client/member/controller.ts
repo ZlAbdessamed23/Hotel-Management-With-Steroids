@@ -6,6 +6,7 @@ import {
   
   LimitExceededError,
   NotFoundError,
+  UnauthorizedError,
 } from "@/lib/error_handler/customerErrors";
 import { throwAppropriateError } from "@/lib/error_handler/throwError";
 
@@ -16,19 +17,30 @@ export async function addMember(
 ): Promise<MemberResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
+      // Get reservation with room and attendues
       const reservation = await prisma.reservation.findUnique({
         where: { id: data.reservationId },
-        include: { room: true },
+        include: { 
+          room: true,
+          attendues: true 
+        },
       });
 
       if (!reservation || !reservation.room) {
         throw new NotFoundError("Réservation ou chambre non touvée");
       }
 
+      // Check if reservation has any attendues
+      if (reservation.attendues && reservation.attendues.length > 0) {
+        throw new UnauthorizedError("Impossible d'ajouter un membre à une réservation contenant des attendues des evenemnt");
+      }
+
+      // Check capacity
       if (reservation.currentOccupancy >= reservation.room.capacity) {
         throw new LimitExceededError("la chambre est déja complète");
       }
 
+      // Create member and update reservation occupancy
       const [newMember, updatedReservation] = await Promise.all([
         prisma.member.create({
           data: {

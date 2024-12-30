@@ -1,6 +1,6 @@
-import { NotFoundError, UnauthorizedError } from "@/lib/error_handler/customerErrors";
+import { ConflictError, NotFoundError, UnauthorizedError } from "@/lib/error_handler/customerErrors";
 import { throwAppropriateError } from "@/lib/error_handler/throwError";
-import {  ClientOrigin, ReservationState, UserGender, UserRole } from "@prisma/client";
+import {  ClientOrigin, ReservationState, RoomStatus, UserGender, UserRole } from "@prisma/client";
 import { PendingReservationResult, UpdatePendingClient } from "@/app/api/main/client/pendingClients/[clientId]/[reservationId]/types";
 import prisma from "@/lib/prisma/prismaClient";
 import { updateClientCheckInStatistics } from "@/app/api/main/statistics/statistics";
@@ -9,12 +9,10 @@ export async function updateClientAndReservation(
   clientId: string,
   reservationId: string,
   hotelId: string,
-  
- 
 ): Promise<UpdatePendingClient> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      
+      // Find existing client and pending reservation
       const existingClient = await prisma.client.findUnique({
         where: { id: clientId },
         include: {
@@ -32,8 +30,17 @@ export async function updateClientAndReservation(
 
       const pendingReservation = existingClient.pendingReservation[0];
 
-      
-      const [newReservation, deletedPendingReservation] = await Promise.all([
+      // Check if room is available
+      const room = await prisma.room.findUnique({
+        where: { id: pendingReservation.roomId }
+      });
+
+      if (!room || room.status !== RoomStatus.disponible) {
+        throw new ConflictError("La chambre est deja reservee ou hors de service ");
+      }
+
+      // Create new reservation, update room status, and delete pending reservation
+      const [newReservation, updatedRoom, deletedPendingReservation] = await Promise.all([
         prisma.reservation.create({
           data: {
             roomNumber: pendingReservation.roomNumber,
@@ -51,21 +58,26 @@ export async function updateClientAndReservation(
             roomId: pendingReservation.roomId,
             clientId: existingClient.id,
           },
-          select : {
-            id : true,
-            startDate : true,
-            endDate : true,
-            unitPrice : true,
-             totalDays : true,
-             totalPrice : true,
-             currentOccupancy : true,
-             discoveryChannel : true,
-             roomNumber : true,
-             roomType : true,
-             source : true,
-             state : true , 
-             
-        }
+          select: {
+            id: true,
+            startDate: true,
+            endDate: true,
+            unitPrice: true,
+            totalDays: true,
+            totalPrice: true,
+            currentOccupancy: true,
+            discoveryChannel: true,
+            roomNumber: true,
+            roomType: true,
+            source: true,
+            state: true,
+          }
+        }),
+        prisma.room.update({
+          where: { id: pendingReservation.roomId },
+          data: {
+            status: RoomStatus.reservee // Update room status to reserved
+          }
         }),
         prisma.pendingReservation.delete({
           where: { id: pendingReservation.id },
@@ -73,17 +85,17 @@ export async function updateClientAndReservation(
       ]);
 
       await updateClientCheckInStatistics(
-              hotelId,
-              null,
-              existingClient.gender as UserGender,
-              existingClient.dateOfBirth as Date,
-              null,
-              existingClient.clientOrigin as ClientOrigin,
-              0,
-              newReservation.totalPrice ,
-              prisma,
-              true
-            );
+        hotelId,
+        null,
+        existingClient.gender as UserGender,
+        existingClient.dateOfBirth as Date,
+        null,
+        existingClient.clientOrigin as ClientOrigin,
+        0,
+        newReservation.totalPrice,
+        prisma,
+        true
+      );
 
       return { updatePendingReservation: newReservation };
     });
@@ -97,29 +109,59 @@ export async function deletePendingReservation(
   reservationId: string
 ): Promise<PendingReservationResult> {
   try {
-    const deletedReservation = await prisma.pendingReservation.delete({
-      where: { id: reservationId },
-      select : {
-        id : true,
-        startDate : true,
-        endDate : true,
-        unitPrice : true,
-         totalDays : true,
-         totalPrice : true,
-         currentOccupancy : true,
-         discoveryChannel : true,
-         roomNumber : true,
-         roomType : true,
-         source : true,
-         state : true , 
-         
-    }
-    });
+    return await prisma.$transaction(async (prisma) => {
+      // First, get the pending reservation with its associated client
+      const pendingReservation = await prisma.pendingReservation.findUnique({
+        where: { id: reservationId },
+        include: {
+          client: {
+            include: {
+              reservations:true,       // Get regular reservations
+              pendingReservation: true  // Get other pending reservations
+            }
+          }
+        }
+      });
 
-    if (!deletedReservation) {
-      throw new NotFoundError("Pending reservation not found");
-    }
-    return {pendingReservation : deletedReservation}
+      if (!pendingReservation) {
+        throw new NotFoundError("Pending reservation not found");
+      }
+
+      // Delete the pending reservation
+      const deletedReservation = await prisma.pendingReservation.delete({
+        where: { id: reservationId },
+        select: {
+          id: true,
+          startDate: true,
+          endDate: true,
+          unitPrice: true,
+          totalDays: true,
+          totalPrice: true,
+          currentOccupancy: true,
+          discoveryChannel: true,
+          roomNumber: true,
+          roomType: true,
+          source: true,
+          state: true,
+        }
+      });
+
+      // If client exists, check if they have other reservations
+      if (pendingReservation.client) {
+        const hasOtherReservations = 
+          pendingReservation.client.reservations.length > 0 || 
+          pendingReservation.client.pendingReservation.length > 1; // > 1 because it includes the one we just deleted
+
+        // If no other reservations, delete the client
+        if (!hasOtherReservations) {
+          await prisma.client.delete({
+            where: { id: pendingReservation.client.id }
+          });
+        }
+      }
+
+      return { pendingReservation: deletedReservation };
+    });
   } catch (error) {
     throw throwAppropriateError(error);
   }

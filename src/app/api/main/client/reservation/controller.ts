@@ -17,10 +17,10 @@ export async function addReservation(
   data: AddReservationData,
   hotelId: string,
   employeeId: string
- ): Promise<ReservationResult> {
+): Promise<ReservationResult> {
   try {
     return await prisma.$transaction(async (prisma) => {
-      const [room, client] = await Promise.all([
+      const [room, client, pendingReservations] = await Promise.all([
         prisma.room.findFirst({
           where: {
             hotelId,
@@ -28,7 +28,6 @@ export async function addReservation(
             type: data.roomType,
             status: RoomStatus.disponible
           },
-          
         }),
         prisma.client.findUnique({
           where: { id: data.clientId },
@@ -38,14 +37,39 @@ export async function addReservation(
             dateOfBirth: true,
             clientOrigin: true
           }
+        }),
+        prisma.pendingReservation.findMany({
+          where: {
+            hotelId,
+            roomNumber: data.roomNumber,
+            roomType: data.roomType,
+            state: ReservationState.en_attente
+          }
         })
       ]);
- 
+
       if (!room) throw new NotFoundError("Chambre non trouvée ou déjà réservée ou elle est en panne ou hors service");
       if (!client) throw new NotFoundError("Client non trouvé");
- 
+
+      const hasConflict = pendingReservations.some(reservation => {
+        const newStart = new Date(data.startDate);
+        const newEnd = new Date(data.endDate);
+        const existingStart = new Date(reservation.startDate);
+        const existingEnd = new Date(reservation.endDate);
+
+        return (
+          (newStart >= existingStart && newStart <= existingEnd) ||
+          (newEnd >= existingStart && newEnd <= existingEnd) ||
+          (newStart <= existingStart && newEnd >= existingEnd)
+        );
+      });
+
+      if (hasConflict) {
+        throw new ConflictError("Il existe déjà une réservation en attente pour cette période");
+      }
+
       const totalPrice = data.totalDays * room.price.toNumber();
- 
+
       const reservationData = {
         ...data,
         totalPrice,
@@ -55,46 +79,46 @@ export async function addReservation(
         roomId: room.id,
         clientId: client.id
       };
- 
-      const newReservation = await (data.state === ReservationState.en_attente ?
-        prisma.pendingReservation.create({
-          data: reservationData
-        }) :
-        prisma.reservation.create({
-          data: reservationData,
-          select: {
-            id: true,
-            startDate: true, 
-            endDate: true,
-            unitPrice: true,
-            totalDays: true,
-            totalPrice: true,
-            currentOccupancy: true,
-            discoveryChannel: true,
-            roomNumber: true,
-            roomType: true,
-            source: true,
-            state: true
-          }
-        })
-      );
- 
-      await prisma.room.update({
-        where: { id: room.id },
-        data: { 
-          status: data.state === ReservationState.valide ? 
-            RoomStatus.reservee : 
-            RoomStatus.en_attente 
-        }
-      });
- 
+
+      const [newReservation] = await Promise.all([
+        data.state === ReservationState.en_attente
+          ? prisma.pendingReservation.create({
+              data: reservationData
+            })
+          : prisma.reservation.create({
+              data: reservationData,
+              select: {
+                id: true,
+                startDate: true,
+                endDate: true,
+                unitPrice: true,
+                totalDays: true,
+                totalPrice: true,
+                currentOccupancy: true,
+                discoveryChannel: true,
+                roomNumber: true,
+                roomType: true,
+                source: true,
+                state: true
+              }
+            }),
+        ...(data.state === ReservationState.valide
+          ? [prisma.room.update({
+              where: { id: room.id },
+              data: {
+                status: RoomStatus.reservee
+              }
+            })]
+          : [])
+      ]);
+
       if (data.state === ReservationState.valide) {
         await updateClientCheckInStatistics(
           hotelId,
           null,
           client.gender,
           client.dateOfBirth,
-          null, 
+          null,
           client.clientOrigin,
           0,
           totalPrice,
@@ -102,13 +126,13 @@ export async function addReservation(
           true
         );
       }
- 
+
       return { reservation: newReservation };
     });
   } catch (error) {
     throw throwAppropriateError(error);
   }
- }
+}
 
 
 export async function getAllReservations(

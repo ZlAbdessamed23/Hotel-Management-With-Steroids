@@ -13,7 +13,7 @@ export async function DELETE(
       if (!user) {
         return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
       }
-      console.log(user);
+   
       checkReceptionistAdminRole(user.role);
   
       const {clientId,reservationId} = params;
@@ -37,7 +37,7 @@ export async function DELETE(
       if (!user) {
         return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
       }
-      console.log(user);
+      
       checkReceptionistAdminRole(user.role);
   
       const {clientId,reservationId} = params;
