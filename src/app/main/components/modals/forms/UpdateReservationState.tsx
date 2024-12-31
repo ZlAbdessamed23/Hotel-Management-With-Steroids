@@ -49,7 +49,7 @@ export default function UpdateReservationState({
             const [clientId, reservationId] = selectedKeys.split(',');
             const res = await updateReservationState(clientId, reservationId);
             setFetchTrigger((curr) => curr + 1);
-            return res.message;
+            return res;
         };
     };
 
@@ -58,7 +58,7 @@ export default function UpdateReservationState({
             const [clientId, reservationId] = selectedKeys.split(',');
             const res = await deletePendingReservation(clientId, reservationId);
             setFetchTrigger((curr) => curr + 1);
-            return res.message;
+            return res;
         };
     };
 

@@ -1,17 +1,15 @@
-import { EventGuestsType, ReservationSource, UserGender } from '@/app/types/constants';
+import { EventGuestsType, OperationMode, ReservationSource, UserGender } from '@/app/types/constants';
 import { EventOrganiser, ModalModeProps } from '@/app/types/types';
-import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, useDisclosure } from '@nextui-org/react';
-import React from 'react';
+import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem } from '@nextui-org/react';
+import React, { useEffect } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useEventContext } from '../../EventContextProvider';
-import { addEventOrganiser } from '@/app/utils/funcs';
+import { addEventOrganiser, updateEventOrganiser } from '@/app/utils/funcs';
 import toast from 'react-hot-toast';
 
-
 const AddOrganizerModal: React.FC<ModalModeProps<EventOrganiser>> = (props) => {
-  
   const Genders = Object.values(UserGender);
-  const {eventId , setClientsRefreshTrigger} = useEventContext();
+  const { eventId, setClientsRefreshTrigger } = useEventContext();
   const { register, handleSubmit, reset } = useForm<EventOrganiser>({
     defaultValues: props.initialData || {
       fullName: "",
@@ -25,23 +23,38 @@ const AddOrganizerModal: React.FC<ModalModeProps<EventOrganiser>> = (props) => {
       eventId: eventId,
       reservationSource: ReservationSource.event,
       type: EventGuestsType.organiser,
-    }
+    },
   });
-  async function handleAddOrganizer(data : EventOrganiser ) {
-    const response = await addEventOrganiser(data);
-    setClientsRefreshTrigger((prev) => prev + 1);
-    return response;
+
+  async function handleOrganizerSubmission(data: EventOrganiser) {
+    if (props.mode === OperationMode.add) {
+      const response = await addEventOrganiser(data);
+      setClientsRefreshTrigger((prev) => prev + 1);
+      return response;
+    } else {
+      const response = await updateEventOrganiser(data, eventId, props.initialData?.id as string);
+      setClientsRefreshTrigger((prev) => prev + 1);
+      return response;
+    }
+  }
+
+  const onSubmit: SubmitHandler<EventOrganiser> = async (data) => {
+    const result = handleOrganizerSubmission(data);
+    await toast.promise(result, {
+      loading: 'Loading...',
+      success: (data) => `${data}`,
+      error: (err) => `${err.toString()}`,
+    });
   };
 
-  const onSubmit : SubmitHandler<EventOrganiser> = async(data) => {
-    const result = handleAddOrganizer(data);
-      await toast.promise(result, {
-        loading: 'Loading...',
-        success: (data) => `${data}`,
-        error: (err) => `${err.toString()}`,
-      }
+  useEffect(() => {
+    if (props.mode === OperationMode.update) {
+      reset(
+        { ...props.initialData, dateOfBirth: props.initialData?.dateOfBirth ? new Date(props.initialData.dateOfBirth).toISOString().split('T')[0] : "" },
+        { keepDefaultValues: false }
       );
-  };
+    }
+  }, [props.initialData, props.mode]);
 
   return (
     <div>
@@ -49,9 +62,11 @@ const AddOrganizerModal: React.FC<ModalModeProps<EventOrganiser>> = (props) => {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">Ajouter un Organisateur</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">
+                {props.mode === OperationMode.add ? "Ajouter" : "Editer"} un Organisateur
+              </ModalHeader>
               <ModalBody>
-                <form className='flex flex-col gap-1 items-start' >
+                <form className='flex flex-col gap-1 items-start' onSubmit={handleSubmit(onSubmit)}>
                   <Input variant='bordered' color='secondary' type='text' label="Nom Complet" {...register('fullName')} />
                   <Input variant='bordered' color='secondary' type='text' label="Adresse" {...register('address')} />
                   <Input variant='bordered' color='secondary' type='date' label="Date de Naissance" {...register('dateOfBirth')} />
@@ -66,14 +81,6 @@ const AddOrganizerModal: React.FC<ModalModeProps<EventOrganiser>> = (props) => {
                   <Input variant='bordered' color='secondary' type='text' label="Numéro de Téléphone" {...register('phoneNumber')} />
                   <Input variant='bordered' color='secondary' type='text' label="Email" {...register('email')} />
                   <Input variant='bordered' color='secondary' type='text' label="Nationalité" {...register('nationality')} />
-                  {/* <Input variant='bordered' color='secondary' type='text' label="Rôle" {...register('role')} /> */}
-                  {/* <Select color='secondary' label="Etat" className="w-full" {...register('state')}>
-                    {States.map((state) => (
-                      <SelectItem key={state} value={state}>
-                        {state}
-                      </SelectItem>
-                    ))}
-                  </Select> */}
                 </form>
               </ModalBody>
               <ModalFooter>
@@ -90,7 +97,6 @@ const AddOrganizerModal: React.FC<ModalModeProps<EventOrganiser>> = (props) => {
       </Modal>
     </div>
   );
-}
-
+};
 
 export default AddOrganizerModal;

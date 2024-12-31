@@ -52,12 +52,12 @@ import {
 } from "../types/constants";
 import { ForgetPasswordData } from "@/app/api/auth/password/forgetPassword/types";
 
-const mainBaseUrl = "http://104.154.75.47///api/main";
-const authBaseUrl = "http://104.154.75.47///api/auth";
+const mainBaseUrl = "http://localhost:3000/api/main";
+const authBaseUrl = "http://localhost:3000/api/auth";
 
 
 //AUTH
-export async function signUp(user: RegistrationInfos , planName : string) {
+export async function signUp(user: RegistrationInfos, planName: string) {
   const fullInfos = {
     ...user,
     planName,
@@ -121,18 +121,20 @@ export async function logOut() {
 // Employee
 
 export async function addEmployee(user: RegisteredEmployee) {
-  const workingDays = (user.workingDays as DaysOfWeek).split(
+  const workingDays = (user.workingDays && user.workingDays !== "") ? (user.workingDays as DaysOfWeek).split(
     ","
-  ) as Array<DaysOfWeek>;
-  const departement = (user.departement as Departements)
+  ) as Array<DaysOfWeek> : [];
+  console.log(user.departement);
+  const departement = (user.departement && user.departement !== "" && user.departement.length > 0) ? (user.departement as Departements)
     .split(" ")
     .join("_")
-    .split(",") as Array<Departements>;
-  const state = (user.state as EmployeeState).split(" ").join("_");
-  const role = (user.role as UserRole)
+    .split(",") as Array<Departements> : [];
+  const state = user.state ? (user.state as EmployeeState).split(" ").join("_") : EmployeeState.working;
+  const role = (user.role && user.role !== "" && user.role.length > 0) ? (user.role as UserRole)
     .split(" ")
     .join("_")
-    .split(",") as Array<UserRole>;
+    .split(",") as Array<UserRole> : [];
+
   const obj = {
     firstName: user.firstName,
     lastName: user.lastName,
@@ -1074,7 +1076,7 @@ export async function getStockTransactions(
 
 export async function getStockById(
   stockId: string
-): Promise<{Stock : Stock}> {
+): Promise<{ Stock: Stock }> {
   const infos = await fetch(
     `${mainBaseUrl}/stock/stock/${stockId}`,
     { cache: "no-cache" }
@@ -1238,7 +1240,7 @@ export async function updateRoom(id: string, room: Room) {
   }
 };
 
-export async function chanegRoomStatus(isFixed : boolean , roomId : string) {
+export async function chanegRoomStatus(isFixed: boolean, roomId: string) {
   try {
     return await axios
       .patch(`${mainBaseUrl}/room/status/${roomId}`, isFixed)
@@ -1274,7 +1276,7 @@ export async function deleteRoom(id: string) {
 export async function changeRoomStatus(isFixed: boolean, id: string) {
   try {
     return await axios
-      .patch(`${mainBaseUrl}/room/status/${id}`, {isFixed})
+      .patch(`${mainBaseUrl}/room/status/${id}`, { isFixed })
       .then((res) => {
         return res.data.message;
       });
@@ -1336,7 +1338,7 @@ export async function getClients(): Promise<{
     cache: "no-cache",
   });
   return infos.json();
-}
+};
 
 export async function deleteClient(id: string) {
   try {
@@ -1493,7 +1495,7 @@ export async function getGymCoaches(
 }
 
 export async function getAllGymCoaches(id: string): Promise<{
-  coaches: Array<{ employee: Coach , sportFacilityId : string }>;
+  coaches: Array<{ employee: Coach, sportFacilityId: string }>;
   SportFacilityCoachesCount: number;
 }> {
   const infos = await fetch(`${mainBaseUrl}/sports_facility/coach/${id}`, {
@@ -1777,14 +1779,30 @@ export async function addEventGuest(guest: EventInvited) {
   } catch (err: any) {
     throw new Error(err.response.data.message);
   }
+};
+
+export async function deleteEventGuest(
+  eventId: string,
+  id: string
+) {
+  /////////NEED TO CHECK
+  try {
+    return await axios
+      .delete(`${mainBaseUrl}/event/attendue/${eventId}/${id}`)
+      .then((res) => {
+        return res.data.message;
+      });
+  } catch (err: any) {
+    throw new Error(err.response.data.message);
+  }
 }
+
 
 export async function updateEventGuest(
   guest: EventInvited,
   eventId: string,
   id: string
 ) {
-  /////////NEED TO CHECK
   try {
     return await axios
       .patch(`${mainBaseUrl}/event/attendue/${eventId}/${id}`, {
@@ -1812,7 +1830,26 @@ export async function addEventOrganiser(organiser: EventOrganiser) {
   } catch (err: any) {
     throw new Error(err.response.data.message);
   }
-}
+};
+
+export async function updateEventOrganiser(
+  organiser: EventInvited,
+  eventId: string,
+  id: string
+) {
+  try {
+    return await axios
+      .patch(`${mainBaseUrl}/event/attendue/${eventId}/${id}`, {
+        ...organiser,
+        dateOfBirth: new Date(organiser.dateOfBirth),
+      })
+      .then((res) => {
+        return res.data.message;
+      });
+  } catch (err: any) {
+    throw new Error(err.response.data.message);
+  }
+};
 
 export async function getEventGuests(
   id: string

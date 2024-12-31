@@ -3,6 +3,7 @@ import React from 'react'
 import ClientImage from "/public/ClientImage.svg";
 import ReservationImage from "/public/ReservationImage.svg";
 import Image from 'next/image';
+import { TranslateObjKeysFromEngToFr } from '@/app/utils/translation';
 
 type DisplayCardProps = Client | Reservation | EventInvited | EventOrganiser;
 
@@ -19,8 +20,8 @@ export default function ClientCard<T extends DisplayCardProps>({props , type , i
         <section className='p-4 pt-16 flex flex-col gap-3'>
             {
                 Object.entries(props).map(([key , value]) => (
-                    <section key={key} className='flex flex-row items-center gap-4'>
-                        <span className='text-secondary  font-semibold'>{key}:</span>
+                    !(key.includes("id") || key.includes("Id")) && <section key={key} className='flex flex-row items-center gap-4'>
+                        <span className='text-secondary  font-semibold'>{TranslateObjKeysFromEngToFr(key)}:</span>
                         <span className='text-black w-60 truncate'>{String(value)}</span>
                     </section>
                 ))

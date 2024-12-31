@@ -1,14 +1,13 @@
-import { OperationMode } from '@/app/types/constants';
 import { ModalProps, SportHallClient } from '@/app/types/types';
 import { addEventMember } from '@/app/utils/funcs';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input } from '@nextui-org/react';
-import { useRouter } from 'next/navigation';
 import React from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import { useRefreshMenuContext } from '../../RefreshTriggerContext';
 
 const AddEventMemberModal: React.FC<{ props: ModalProps, eventId: string, reservationId: string }> = ({ props, eventId, reservationId }) => {
-  const router = useRouter();
+  const setRefreshTrigger = useRefreshMenuContext().setFetchTrigger;
   const { register, handleSubmit, reset } = useForm<SportHallClient>({
     defaultValues: {
       name: "",
@@ -20,7 +19,7 @@ const AddEventMemberModal: React.FC<{ props: ModalProps, eventId: string, reserv
 
   async function handleAddEventMember(data: SportHallClient) {
     const response = await addEventMember(data, eventId, reservationId);
-    router.refresh();
+    setRefreshTrigger((prev) => prev + 1);
     return response;
   };
 

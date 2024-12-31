@@ -86,7 +86,7 @@ export default function DisplayModalStyle3<T1 extends { id?: string }>({
               </ModalHeader>
               <ModalBody className='flex flex-col gap-4'>
                 {Object.entries(data1).map(([key, value]) => (
-                  key !== "id" && (
+                  !(key.includes("id") || key.includes("Id")) && (
                     <section key={key} className='flex flex-row gap-3 items-center'>
                       <span className='text-secondary'>{TranslateObjKeysFromEngToFr(key)} :</span>
                       <span className='w-64 h-6 overflow-hidden text-ellipsis'>{String(value)}</span>

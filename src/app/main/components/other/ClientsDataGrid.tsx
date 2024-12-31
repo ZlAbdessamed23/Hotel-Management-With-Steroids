@@ -25,12 +25,13 @@ import { FaEllipsisVertical, FaPlus } from "react-icons/fa6";
 import { MdOutlineKeyboardArrowDown, MdPrint } from "react-icons/md";
 import { Client, DataType, EventOrganiser, ModalModeProps } from "@/app/types/types";
 import { useRouter } from "next/navigation";
-import { deleteClient } from "@/app/utils/funcs";
+import { deleteClient, deleteEventGuest } from "@/app/utils/funcs";
 import { useRefreshMenuContext } from "../RefreshTriggerContext";
 import toast from "react-hot-toast";
 import { SiMicrosoftexcel } from "react-icons/si";
 import { useReactToPrint } from "react-to-print";
 import ExcelImportExport from "./ExcelImportExport";
+import { useEventContext } from "../EventContextProvider";
 
 const columns = [
   { name: "FULL NAME", uid: "fullName" },
@@ -71,6 +72,7 @@ export default function ClientsDataGrid<T extends DataType>({ data, type, Add_Ed
   { data: T[], type: 'client' | 'eventInvited' | 'eventWorker', Add_Edit_Modal: React.FC<ModalModeProps<T>> }) {
   const router = useRouter();
   const setRefreshTrigger = useRefreshMenuContext().setFetchTrigger;
+  const setFetchTrigger = useEventContext().setClientsRefreshTrigger;
   const AddEditModal = useDisclosure();
   const [displayedItem, setDisplayedItem] = useState<T>();
   const [mode, setMode] = React.useState<OperationMode>(OperationMode.add);
@@ -95,6 +97,12 @@ export default function ClientsDataGrid<T extends DataType>({ data, type, Add_Ed
     return response;
   };
 
+  async function handleDeleteEventGuest(item: T) {
+    const response = await deleteEventGuest(item.eventId as string , item.id as string);
+    setFetchTrigger((prev) => prev + 1);
+    return response;
+  };
+
   async function handleDelete(item: T) {
     if (type === "client") {
       const result = handleDeleteClient(item);
@@ -104,8 +112,16 @@ export default function ClientsDataGrid<T extends DataType>({ data, type, Add_Ed
         error: (err) => `${err.toString()}`,
       }
       );
+    }
+    else {
+      const result = handleDeleteEventGuest(item);
+      await toast.promise(result, {
+        loading: 'Loading...',
+        success: (data) => `${data}`,
+        error: (err) => `${err.toString()}`,
+      }
+      );
     };
-
   };
 
   function handleRedirectToDisplayPage(item: T) {
@@ -429,4 +445,4 @@ export default function ClientsDataGrid<T extends DataType>({ data, type, Add_Ed
       <Add_Edit_Modal isOpen={AddEditModal.isOpen} onOpen={AddEditModal.onOpen} onOpenChange={AddEditModal.onOpenChange} mode={mode} initialData={displayedItem} />
     </React.Fragment>
   );
-}
+};

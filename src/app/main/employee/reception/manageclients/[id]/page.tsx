@@ -91,7 +91,7 @@ export default function ClientDisplay({ params, searchParams }: ParamsProps) {
         <div className='flex flex-col gap-8 w-full overflow-hidden'>
             <div className='flex gap-6 items-center justify-end'>
                 {
-                    (searchParams.resId && clientData && reservationData) && (<><Button variant='solid' className='bg-danger text-white' onClick={() => checkOut()}>Libérer</Button><BillModal reservation={reservationData} infos={clientData} resId={searchParams.resId} props={FactureModal}  /></>    )
+                    (searchParams.resId && clientData && reservationData) && (<><Button variant='solid' className='bg-danger text-white' onClick={() => checkOut()}>Libérer</Button><BillModal reservation={reservationData} infos={clientData} resId={searchParams.resId} props={FactureModal} /></>)
                 }
                 {
                     reservationData && <Button variant='solid' className='bg-success text-white' endContent={<FaPlus className='size-5' />} onClick={MemberModal.onOpen}>Ajouter un membre</Button>
@@ -117,7 +117,6 @@ export default function ClientDisplay({ params, searchParams }: ParamsProps) {
                     <AddGenericReservationModal client={clientData} type={searchParams.type} props={reservationModalProps} />
                 </div>
             </RefreshMenuProvider>
-
         </div>
     )
 }
