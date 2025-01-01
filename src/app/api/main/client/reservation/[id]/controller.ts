@@ -102,7 +102,39 @@ export async function deleteReservation(
     throw throwAppropriateError(error);
   }
 }
-export function checkReceptionistRole(roles: UserRole[]) {
+export async function getReservationById(
+  reservationId: string,
+  hotelId: string
+): Promise<ReservationResult> {
+  try {
+    const reservation = await prisma.reservation.findUnique({
+      where: { id: reservationId },
+      select : {
+        id : true,
+    startDate : true,
+    endDate : true,
+    unitPrice : true,
+     totalDays : true,
+     totalPrice : true,
+     currentOccupancy : true,
+     discoveryChannel : true,
+     roomNumber : true,
+     roomType : true,
+     source : true,
+     state : true , 
+         
+    }
+    });
+
+    if (!reservation) {
+      throw new NotFoundError("Réservation non trouvée");
+    }
+    return { reservation };
+  } catch (error) {
+    throw throwAppropriateError(error);
+  }
+}
+export function checkReceptionistReceptionManagerRole(roles: UserRole[]) {
   if (!roles.includes(UserRole.receptionist)) {
     throw new ValidationError(
       "Sauf le réceptiontist et le réceptionist manager peut faire cette action"
