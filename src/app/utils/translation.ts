@@ -3,6 +3,7 @@ export const TranslateObjKeysFromEngToFr = (key: string): string => {
       firstName: "nom",
       name: "nom",
       lastName: "prénom",
+      fullName : "Nom Complet",
       address: "adresse",
       gender: "sexe",
       state: "status",

@@ -66,16 +66,12 @@ const AddReservationModal: React.FC<ReservationModalProps> = ({ props, client })
   };
 
   async function getRoomReservation() {
-    console.log(client);
     if (client.reservations) {
-      console.log("yeah");
+      console.log(client.reservations[0]);
       const data = await getRoom(client?.reservations[0].id as string);
       setGottenRoom(data.room);
     };
   };
-
-  useEffect(() => {
-  }, [client]);
 
   useEffect(() => {
     if (props.mode === OperationMode.add) {

@@ -108,16 +108,16 @@ export default function Event({ params }: {
   };
 
   async function handleDeleteEvent() {
-    try{
+    try {
       const res = await deleteEvent(event?.id as string);
-      if(res){
+      if (res) {
         setTimeout(() => {
           router.push("/main/employee/reception/manageevents");
-        },1000);
+        }, 1000);
       }
       return res;
     }
-    catch(err : any){
+    catch (err: any) {
       throw new Error(err);
     };
   };
@@ -147,7 +147,7 @@ export default function Event({ params }: {
           <Button color='danger' onClick={handleDelete}>Supprimer l&apos;evennement</Button>
           <Button color='success' onClick={UpdateEventModalProps.onOpen}>Mise à jour l&apos;evennement</Button>
         </div>
-        <AddEventModal isOpen={UpdateEventModalProps.isOpen} mode={OperationMode.update} onOpen={UpdateEventModalProps.onOpen} onOpenChange={UpdateEventModalProps.onOpenChange} initialData={event}  />
+        <AddEventModal isOpen={UpdateEventModalProps.isOpen} mode={OperationMode.update} onOpen={UpdateEventModalProps.onOpen} onOpenChange={UpdateEventModalProps.onOpenChange} initialData={event} />
       </section>
       <section className='grid grid-rows-2 xl:grid-rows-none xl:grid-cols-[35%,60%] gap-4 w-full'>
         <div className='flex flex-col items-start gap-8'>

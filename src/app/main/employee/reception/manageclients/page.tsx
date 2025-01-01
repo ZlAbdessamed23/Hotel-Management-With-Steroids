@@ -1,9 +1,9 @@
 "use client"
 
 import React, { useEffect, useState } from 'react'
-import { Client,SecondCardItemType } from '@/app/types/types';
+import { Client, SecondCardItemType } from '@/app/types/types';
 import { FaPerson } from 'react-icons/fa6';
-import { ClientState } from '@/app/types/constants';
+import { ClientState, ReservationState } from '@/app/types/constants';
 import { getClients } from '@/app/utils/funcs';
 import CardStyle2 from '@/app/main/components/cards/CardStyle2';
 import TasksLineChart from '@/app/main/components/charts/TasksLineChart';
@@ -21,7 +21,7 @@ export default function ManageClients() {
       if (client.reservations.length > 0) {
         return client.reservations.map((reservation) => ({
           ...client,
-          reservations: [{ id: reservation.id , startDate : reservation.startDate , endDate : reservation.endDate }],
+          reservations: [{ id: reservation.id, startDate: reservation.startDate, endDate: reservation.endDate }],
           fullName: client.fullName,
           dateOfBirth: client.dateOfBirth,
           phoneNumber: client.phoneNumber,
@@ -32,7 +32,6 @@ export default function ManageClients() {
           kidsNumber: client.kidsNumber,
           gender: client.gender,
           email: client.email || '',
-          state: ClientState.pending,
         }));
       } else {
         return [{
@@ -48,10 +47,10 @@ export default function ManageClients() {
           kidsNumber: client.kidsNumber,
           gender: client.gender,
           email: client.email || '',
-          state: ClientState.pending,
         }];
       }
     }).flat() || [];
+    console.log(passedData);
     setData(passedData);
   };
 

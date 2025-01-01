@@ -18,11 +18,11 @@ const AddEmployeeModal: React.FC<ModalModeProps<RegisteredEmployee>> = (props) =
   const Sections = Object.values(Departements);
   const router = useRouter();
 
-  const [selectedRoles, setSelectedRoles] = useState<Selection>( props.initialData?.role ? new Set([...(props.initialData.role as UserRole[])]) : new Set([]));
+  const [selectedRoles, setSelectedRoles] = useState<Selection>(props.initialData?.role ? new Set([...(props.initialData.role as UserRole[])]) : new Set([]));
   const [selectedDepartements, setSelectedDepartements] = useState<Selection>(props.initialData?.departement ? new Set([...(props.initialData.departement as Departements[])]) : new Set([]));
   const [selectedWorkingDays, setSelectedWorkingDays] = useState<Selection>(props.initialData?.workingDays ? new Set([...(props.initialData.workingDays as DaysOfWeek[])]) : new Set([]));
 
-  const { register, handleSubmit, reset , setValue } = useForm<RegisteredEmployee>({
+  const { register, handleSubmit, reset, setValue } = useForm<RegisteredEmployee>({
     defaultValues: props.initialData || {
       firstName: "",
       lastName: "",
@@ -46,7 +46,7 @@ const AddEmployeeModal: React.FC<ModalModeProps<RegisteredEmployee>> = (props) =
       return response;
     }
     else {
-      const data : RegisteredEmployee = {...employee , role : (Array.from(selectedRoles) as UserRole[]).join(",") , departement : (Array.from(selectedDepartements) as Departements[]).join(",") , workingDays : (Array.from(selectedWorkingDays) as DaysOfWeek[]).join(",")};
+      const data: RegisteredEmployee = { ...employee, role: (Array.from(selectedRoles) as UserRole[]).join(","), departement: (Array.from(selectedDepartements) as Departements[]).join(","), workingDays: (Array.from(selectedWorkingDays) as DaysOfWeek[]).join(",") };
       const response = await updateEmployee(props.initialData?.id as string, data);
       router.refresh();
       return response;
@@ -65,10 +65,10 @@ const AddEmployeeModal: React.FC<ModalModeProps<RegisteredEmployee>> = (props) =
 
   useEffect(() => {
 
-    if(props.mode === OperationMode.update && props.initialData){
-      reset({...props.initialData , dateOfBirth : props.initialData?.dateOfBirth ? new Date(props.initialData.dateOfBirth).toISOString().split('T')[0] : ""} , {keepDefaultValues : false});
+    if (props.mode === OperationMode.update && props.initialData) {
+      reset({ ...props.initialData, dateOfBirth: props.initialData?.dateOfBirth ? new Date(props.initialData.dateOfBirth).toISOString().split('T')[0] : "" }, { keepDefaultValues: false });
     }
-    else{
+    else {
       reset({
         firstName: "",
         lastName: "",
@@ -89,8 +89,8 @@ const AddEmployeeModal: React.FC<ModalModeProps<RegisteredEmployee>> = (props) =
       setSelectedRoles(props.initialData?.role ? new Set([...((props.initialData.role as UserRole[]).join(",").replace(/_/g, " ").split(","))]) : new Set([]));
       setSelectedDepartements(props.initialData?.departement ? new Set([...(props.initialData.departement as Departements[])]) : new Set([]));
       setSelectedWorkingDays(props.initialData?.workingDays ? new Set([...(props.initialData.workingDays as DaysOfWeek[])]) : new Set([]));
-    },0);
-  },[props.initialData , props.mode])
+    }, 0);
+  }, [props.initialData, props.mode])
 
   return (
     <Modal isOpen={props.isOpen} onOpenChange={props.onOpenChange} className='font-segoe z-50' scrollBehavior="inside">

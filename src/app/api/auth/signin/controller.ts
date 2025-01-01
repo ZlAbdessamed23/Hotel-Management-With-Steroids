@@ -149,6 +149,7 @@ async function sendVerificationEmail(
         <div
             style="border: 2px solid rgb(212, 212, 212); border-radius: 15px; box-shadow: 2px 2px 8px rgba(170, 170, 170, 0.5);">
             <div style="text-align: center; padding-top: 16px">
+                <a href="http://104.154.75.47/"><img src="https://i.postimg.cc/FFSgdbv6/hotyverse.png" alt="hotyverse-logo-image" style="size: 3rem;"></a>
                 <h2 style="font-size: medium; font-weight: 500; letter-spacing: 5px;">Hoty Verse</h2>
                 <h1 style="font-size: x-large; font-weight: 700; letter-spacing: 1.2px;">Activer Votre Compte</h1>
             </div>
@@ -173,6 +174,7 @@ async function sendVerificationEmail(
                 problèmes ou questions? contactez-nous à <span style="color: #001E3C;">hotyversedz@gmail.com</span>
             </p>
             <div>
+                <a href="http://104.154.75.47/"><img src="https://i.postimg.cc/FFSgdbv6/hotyverse.png" alt="hotyverse-logo-image" style="size: 3rem;"></a>
                 <p style="font-size: small; font-weight: 300; color: #001E3C;">2024 cloudy verse</p>
                 <p style="font-size: small; font-weight: 300; color: #001E3C;">Tous les droits sont réservés</p>
             </div>
