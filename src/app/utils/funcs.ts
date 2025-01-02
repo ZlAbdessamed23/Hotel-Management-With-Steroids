@@ -842,11 +842,11 @@ export async function getAdminHotelInfos(
 export async function getAllStocks(): Promise<{
   Stocks: Array<Stock>;
 }> {
-  const infos = await fetch(`${mainBaseUrl}/stock/stock`, {
+  const infos = await fetch(`${mainBaseUrl}/stock/stock/stockAccess`, {
     cache: "no-cache",
   });
   return infos.json();
-}
+};
 
 export async function addStock(stock: Stock): Promise<string> {
   const stockEmployee = stock.stockEmployee
@@ -1095,8 +1095,6 @@ export async function editBudget(budgets: StockBudget[]) {
       };
     })
   };
-
-  console.log(fullInfos);
   try {
     return await axios
       .post(`${mainBaseUrl}/stock/centralStock/budget`, fullInfos)
@@ -1977,8 +1975,8 @@ export async function getStatistics(
   return stat.json();
 }
 
-export async function getReservation(id: string) {
-  const stat = await fetch(`${mainBaseUrl}/client/reservation/`, {
+export async function getReservation(id: string) : Promise<{reservation : Reservation}> {
+  const stat = await fetch(`${mainBaseUrl}/client/reservation/${id}`, {
     cache: "no-cache",
   });
   return stat.json();
@@ -2047,7 +2045,7 @@ export async function updateClientWithReservation(
   };
   try {
     return await axios
-      .post(
+      .patch(
         `${mainBaseUrl}/client/client_with_reservation/${clientId}/${resId}`,
         fullInfos
       )

@@ -2,7 +2,7 @@
 
 import { DiscoveredWay, OperationMode, ReservationSource, ReservationState, RoomState, RoomType } from '@/app/types/constants';
 import { Client, ModalModeProps, Reservation } from '@/app/types/types';
-import { addClientWithReservation, getRoom, updateClientWithReservation } from '@/app/utils/funcs';
+import { addClientWithReservation, getReservation, getRoom, updateClientWithReservation } from '@/app/utils/funcs';
 import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem } from '@nextui-org/react';
 import React, { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -21,7 +21,7 @@ const AddReservationModal: React.FC<ReservationModalProps> = ({ props, client })
   const DiscoveredWays = Object.values(DiscoveredWay);
   const ReservationStates = Object.values(ReservationState);
   const [gottenRoom, setGottenRoom] = useState<Reservation>();
-  const { register, handleSubmit, reset } = useForm<Reservation>({
+  const { register, handleSubmit, reset, setValue } = useForm<Reservation>({
     defaultValues: {
       roomNumber: "",
       roomType: RoomType.single,
@@ -48,7 +48,7 @@ const AddReservationModal: React.FC<ReservationModalProps> = ({ props, client })
       const response = await updateClientWithReservation({
         client: client,
         reservation: data
-      }, props.initialData?.clientId as string, props.initialData?.id as string);
+      }, client.id as string, gottenRoom?.id as string);
       setRefreshTrigger((prev) => prev + 1);
       return response;
     }
@@ -67,9 +67,8 @@ const AddReservationModal: React.FC<ReservationModalProps> = ({ props, client })
 
   async function getRoomReservation() {
     if (client.reservations) {
-      console.log(client.reservations[0]);
-      const data = await getRoom(client?.reservations[0].id as string);
-      setGottenRoom(data.room);
+      const data = await getReservation(client?.reservations[0].id as string);
+      setGottenRoom(data.reservation);
     };
   };
 
@@ -93,18 +92,22 @@ const AddReservationModal: React.FC<ReservationModalProps> = ({ props, client })
         const data: Reservation = {
           roomNumber: gottenRoom?.roomNumber as string,
           roomType: gottenRoom?.roomType as RoomType,
-          startDate: gottenRoom?.startDate as Date,
-          endDate: gottenRoom?.endDate as Date,
+          startDate: gottenRoom?.startDate ? new Date(gottenRoom?.startDate as string).toISOString().split('T')[0] : new Date(),
+          endDate: gottenRoom?.endDate ? new Date(gottenRoom?.endDate as string).toISOString().split('T')[0] : new Date(),
           state: gottenRoom?.state as ReservationState,
           totalPrice: gottenRoom?.totalPrice as number,
           reservationSource: gottenRoom?.reservationSource as ReservationSource,
           source: gottenRoom?.source,
-          discoverChannel: gottenRoom?.discoverChannel,
+          discoverChannel: gottenRoom?.discoverChannel as DiscoveredWay,
           clientId: client.id as string,
           totalDays: gottenRoom?.totalDays as number,
           id: client?.reservations[0].id as string,
         };
         reset(data);
+        setTimeout(() => {
+          console.log(gottenRoom?.discoverChannel);
+          setValue("discoverChannel", gottenRoom?.discoverChannel as DiscoveredWay);
+        }, 0);
       }
     };
   }, [client]);
