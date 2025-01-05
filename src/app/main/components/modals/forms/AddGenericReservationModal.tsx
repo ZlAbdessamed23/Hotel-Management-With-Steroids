@@ -51,12 +51,12 @@ const AddGenericReservationModal: React.FC<ReservationModalProps> = ({ props, cl
     }
     else {
       if (type === 'client') {
-        const response = await updateReservation(client?.id as string, data , props.initialData?.id as string);
+        const response = await updateReservation(client?.id as string, data, props.initialData?.id as string);
         router.push("/main/employee/reception/manageclients");
         return response;
       }
       else {
-        const response = await updateEventGuestReservation(client?.id as string, client?.eventId as string , props.initialData?.id as string , data);
+        const response = await updateEventGuestReservation(client?.id as string, client?.eventId as string, props.initialData?.id as string, data);
         router.push(`/main/employee/reception/manageevents/${client?.eventId}`);
         return response;
       };

@@ -1,7 +1,6 @@
 "use client"
 
 import React, { useEffect, useState } from 'react'
-import CardStyle5 from '../../components/cards/CardStyle5'
 import { EventStage, FifthCardItemType, LostObj, RegisteredEmployee } from '@/app/types/types';
 import EmployeeImage from "/public/EmployeeImage.svg";
 import EmployeeImage2 from "/public/EmployeeImage2.svg";
@@ -21,12 +20,17 @@ import AddLostObjModal from '../../components/modals/forms/AddLostObjModal';
 import '@schedule-x/theme-default/dist/index.css'
 import { getHouseKeepingEmployees, getHouseKeepingPlanifications, getLostObjs } from '@/app/utils/funcs';
 import DeleteConfirmationModal from '../../components/modals/forms/DeleteConfirmationModal';
+import { FaPlus } from 'react-icons/fa6';
+import AddCleaningDateModal from '../../components/modals/forms/AddCleaningDateModal';
+import { RefreshMenuProvider } from '../../components/RefreshTriggerContext';
 
 
 export default function HouseKeeping() {
+    const AddModalProps = useDisclosure();
     const DeleteModalProps = useDisclosure();
     const [selectedEvent, setSelectedEvent] = useState<EventStage>();
     const [employees, setEmployees] = useState<RegisteredEmployee[]>([]);
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
     const [events, setEvents] = useState<{
         title: string;
         id: string;
@@ -74,6 +78,7 @@ export default function HouseKeeping() {
         { name: "Nom", uid: "name" },
         { name: "Description", uid: "description" },
         { name: "Localisation", uid: "location" },
+        { name: "Actions", uid: "actions" },
     ];
 
     function convertToScheduleXFormat(isoString: string): string {
@@ -90,7 +95,7 @@ export default function HouseKeeping() {
             start: string;
             end: string;
             description: string;
-        }[] = data.HouseKeepingPlanification?.map((event) => {
+        }[] = data.HouseKeepingPlanifications?.map((event) => {
             return {
                 id: event.id || String(Math.random()),
                 description: event.description,
@@ -143,10 +148,13 @@ export default function HouseKeeping() {
     });
 
     useEffect(() => {
-        getPlans();
-        getObjs();
         getEmployees();
     }, []);
+
+    useEffect(() => {
+        getPlans();
+        getObjs();
+    }, [refreshTrigger]);
 
     useEffect(() => {
         if (events && events.length > 0) {
@@ -171,7 +179,7 @@ export default function HouseKeeping() {
                     </section>
                 </div>
             </section> */}
-            <section className='relative w-full h-64 p-6 grid grid-cols-[75%,25%] bg-gradient-to-r from-blue-900 to-blue-600 rounded-xl mb-10'>
+            <section className='relative w-full h-64 p-6 grid grid-cols-[75%,25%] bg-gradient-to-r from-blue-900 to-blue-600 rounded-xl mb-10 text-white'>
                 <div>
                     <h1 className='text-2xl lg:text-4xl xl:text-5xl font-medium mb-4'>Gestion du Service de Ménage</h1>
                     <p className='text-sm sm:text-base md:text-xl font-medium w-2/3 md:pl-8 mb-2 md:w-fit'>Administrez et suivez les tâches de ménage pour garantir un environnement propre et organisé dans votre établissement.</p>
@@ -179,28 +187,36 @@ export default function HouseKeeping() {
             </section>
             <section>
                 <div>
-                    <Tabs aria-label="Options" className='w-full' classNames={{
-                        base: "w-full",
-                        tabList: "w-full flex flex-row items-center justify-between",
-                        tab: "w-[10rem]",
-                    }}>
-                        <Tab key="Employees" title="Employées">
-                            <div>
-                                <GenericDisplayTable columns={employeeColumns} data={employees} />
-                            </div>
-                        </Tab>
-                        <Tab key="Plan" title="Planification">
-                            <div>
-                                <ScheduleXCalendar calendarApp={calendarApp} />
-                                <DeleteConfirmationModal dataType='calendar' itemId={selectedEvent?.id as string} props={DeleteModalProps} />
-                            </div>
-                        </Tab>
-                        <Tab key="LostObjects" title="Objets Perdus">
-                            <div>
-                                <GenericDataGrid columns={lostObjColumns} items={objs} comingDataType='lostObj' Add_Edit_Modal={AddLostObjModal} />
-                            </div>
-                        </Tab>
-                    </Tabs>
+                    <RefreshMenuProvider setFetchTrigger={setRefreshTrigger}>
+                        <Tabs aria-label="Options" className='w-full' classNames={{
+                            base: "w-full",
+                            tabList: "w-full flex flex-row items-center justify-between",
+                            tab: "w-[10rem]",
+                        }}>
+                            <Tab key="Employees" title="Employées">
+                                <div>
+                                    <GenericDisplayTable columns={employeeColumns} data={employees} />
+                                </div>
+                            </Tab>
+                            <Tab key="Plan" title="Planification">
+                                <div>
+                                    <section className='flex justify-end mt-4 mb-8 '>
+                                        <Button className='bg-secondary ml-3 text-white w-52' endContent={<FaPlus className='size-5' />} onClick={AddModalProps.onOpen}>
+                                            Ajouter une date
+                                        </Button>
+                                        <AddCleaningDateModal props={AddModalProps} />
+                                    </section>
+                                    <ScheduleXCalendar calendarApp={calendarApp} />
+                                    <DeleteConfirmationModal dataType='calendar' itemId={selectedEvent?.id as string} props={DeleteModalProps} />
+                                </div>
+                            </Tab>
+                            <Tab key="LostObjects" title="Objets Perdus">
+                                <div>
+                                    <GenericDataGrid columns={lostObjColumns} items={objs} comingDataType='lostObj' Add_Edit_Modal={AddLostObjModal} />
+                                </div>
+                            </Tab>
+                        </Tabs>
+                    </RefreshMenuProvider>
                 </div>
             </section>
         </div>

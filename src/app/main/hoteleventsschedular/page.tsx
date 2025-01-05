@@ -2,7 +2,6 @@
 
 import '@schedule-x/theme-default/dist/index.css'
 import React, { useEffect, useState } from 'react';
-import { useTheme } from 'next-themes';
 import {
   viewDay,
   viewMonthAgenda,
@@ -17,12 +16,12 @@ import { parseDate } from "@internationalized/date";
 import { FaPlus } from 'react-icons/fa6';
 import AddEventPlanStageModal from '../components/modals/forms/AddEventPlanStageModal';
 import { getCalendarEventStages } from '@/app/utils/funcs';
-import { parseZonedDateTime } from "@internationalized/date";
 import CustomEventTimeline from '../components/custom/CustomEventTimeline';
 import DeleteConfirmationModal from '../components/modals/forms/DeleteConfirmationModal';
 import { EventStage } from '@/app/types/types';
-import { RefreshMenuContext } from '../components/RefreshTriggerContext';
 import { EventContextProvider } from '../components/EventContextProvider';
+import { parseZonedDateTime } from "@internationalized/date";
+
 
 function CalendarApp() {
 
@@ -37,7 +36,6 @@ function CalendarApp() {
     description: string;
   }[]>([]);
   const [mounted, setMounted] = useState<boolean>(false);
-  const { theme, setTheme } = useTheme();
 
 
   const today = new Date();

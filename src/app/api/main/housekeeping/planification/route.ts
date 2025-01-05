@@ -44,22 +44,19 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     );
   } catch (error) {
     return handleError(error);
-  }
-}
+  };
+};
 
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { eventId: string } }
 ): Promise<NextResponse> {
   try {
     const user = getUser(request);
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
     checkReceptionManagerReceptionistGouvernementAdminRole(user.role);
-    const { eventId } = params;
 
     const HouseKeepingPlanifications = await getAllHouseKeepingPlanifications(user.hotelId);
 

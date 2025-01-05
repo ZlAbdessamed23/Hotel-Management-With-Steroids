@@ -2,12 +2,13 @@
 
 import { OperationMode } from '@/app/types/constants';
 import { LostObj, ModalModeProps } from '@/app/types/types';
-import { addLostObj, updateLostObj} from '@/app/utils/funcs';
+import { addLostObj, updateLostObj } from '@/app/utils/funcs';
 import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Textarea } from '@nextui-org/react';
 import React, { useEffect } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useRefreshMenuContext } from '../../RefreshTriggerContext';
+
 
 const AddLostObjModal: React.FC<ModalModeProps<LostObj>> = (props) => {
   const setRefreshTrigger = useRefreshMenuContext().setFetchTrigger;
@@ -60,13 +61,12 @@ const AddLostObjModal: React.FC<ModalModeProps<LostObj>> = (props) => {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">{props.mode === OperationMode.add  ? "Ajouter" : "Editer"} Objet Perdu</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">{props.mode === OperationMode.add ? "Ajouter" : "Editer"} Objet Perdu</ModalHeader>
               <ModalBody>
                 <form className='flex flex-col gap-1 items-start' >
                   <Input variant='bordered' color='secondary' type='text' label="Nom d'objet" {...register('name')} />
                   <Input variant='bordered' color='secondary' type='text' label="Emplacement" {...register('location')} />
                   <Textarea color='secondary' label="Description" placeholder="Entrer votre description" className="w-full" {...register('description')} />
-                  
                 </form>
               </ModalBody>
               <ModalFooter>
@@ -84,6 +84,5 @@ const AddLostObjModal: React.FC<ModalModeProps<LostObj>> = (props) => {
     </div>
   );
 }
-
 
 export default AddLostObjModal;

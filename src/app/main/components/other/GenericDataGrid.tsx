@@ -28,19 +28,21 @@ import {
 } from "@nextui-org/react";
 import { FaEllipsisVertical, FaPlus } from "react-icons/fa6";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
-import { ModalModeProps, StockCategory, StockItem } from "@/app/types/types";
+import { ModalModeProps, StockItem } from "@/app/types/types";
 import { OperationMode } from "@/app/types/constants";
 import DisplayModalStyle2 from "../modals/display/DisplayModalStyle2";
-import { deleteEmployee, deleteGymClient, deleteStockItem } from "@/app/utils/funcs";
+import { deleteEmployee, deleteGymClient, deleteLostObj, deleteStockItem } from "@/app/utils/funcs";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { TranslateObjKeysFromEngToFr } from "@/app/utils/translation";
 import { useGymMenuContext } from "../GymContextProvider";
 import { MdPrint } from "react-icons/md";
-import { SiMicrosoftexcel } from "react-icons/si";
 import { useReactToPrint } from "react-to-print";
 import ExcelImportExport from "./ExcelImportExport";
 import { useStockMenuContext } from "../StockContextProvider";
+import { useRefreshMenuContext } from "../RefreshTriggerContext";
+
+
 export type DataGridItem = {
   [key: string]: any;
 };
@@ -81,8 +83,13 @@ export default function GenericDataGrid<T extends DataGridItem>({
   const DisplayModal = useDisclosure();
   const AddEditModal = useDisclosure();
 
-  const gymId = useGymMenuContext().gymId;
-  const stockId = useStockMenuContext().stockId;
+  const gymContext = useGymMenuContext();
+  const gymId = gymContext.gymId;
+  const gymRefresh = gymContext.setRefreshTrigger;
+  const stockContext = useStockMenuContext();
+  const stockId = stockContext.stockId;
+  const stockRefresh = stockContext.setRefreshTrigger;
+  const { setFetchTrigger } = useRefreshMenuContext();
 
   function handleViewModalOpen(item: T): void {
     setDisplayedItem(item);
@@ -107,14 +114,20 @@ export default function GenericDataGrid<T extends DataGridItem>({
   };
 
   async function handleDeleteStockItem(item: T) {
-    const response = await deleteStockItem(stockId , item.id);
-    router.refresh();
+    const response = await deleteStockItem(stockId, item.id);
+    stockRefresh((curr) => curr + 1);
     return response;
   };
 
   async function handleDeleteGymClient(item: T) {
     const response = await deleteGymClient(item.id, gymId);
-    router.refresh();
+    gymRefresh((curr) => curr + 1);
+    return response;
+  };
+
+  async function handleDeleteLostObj(item: T) {
+    const response = await deleteLostObj(item.id);
+    setFetchTrigger((curr) => curr + 1);
     return response;
   };
 
@@ -129,6 +142,14 @@ export default function GenericDataGrid<T extends DataGridItem>({
       );
     } else if (comingDataType === "stockItem") {
       const result = handleDeleteStockItem(item);
+      await toast.promise(result, {
+        loading: 'Loading...',
+        success: (data) => `${data}`,
+        error: (err) => `${err.toString()}`,
+      }
+      );
+    } else if (comingDataType === "lostObj") {
+      const result = handleDeleteLostObj(item);
       await toast.promise(result, {
         loading: 'Loading...',
         success: (data) => `${data}`,
