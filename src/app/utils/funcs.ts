@@ -40,6 +40,7 @@ import {
   LostObj,
   PendingClients,
   StockBudget,
+  CleaningType,
 } from "../types/types";
 import {
   DaysOfWeek,
@@ -52,8 +53,8 @@ import {
 } from "../types/constants";
 import { ForgetPasswordData } from "@/app/api/auth/password/forgetPassword/types";
 
-const mainBaseUrl = "http://104.154.75.47/api/main";
-const authBaseUrl = "http://104.154.75.47/api/auth";
+const mainBaseUrl = "http://localhost:3000/api/main";
+const authBaseUrl = "http://localhost:3000/api/auth";
 
 
 //AUTH
@@ -1764,6 +1765,26 @@ export async function deleteHouseKeepingPlanification(id: string) {
   };
 };
 
+export async function addCleaningDate(cleaningInfos : CleaningType ) {
+
+  const fullInfos = {
+    title : cleaningInfos.title,
+    description : cleaningInfos.description,
+    start : cleaningInfos.date,
+    end : cleaningInfos.date,
+  };
+
+  try {
+    return await axios
+      .post(`${mainBaseUrl}/housekeeping/planification`, fullInfos)
+      .then((res) => {
+        return res.data.message;
+      });
+  } catch (err: any) {
+    throw new Error(err.response.data.message);
+  };
+};
+
 export async function addEventGuest(guest: EventInvited) {
   try {
     return await axios
@@ -2160,7 +2181,20 @@ export async function updateLostObj(obj: LostObj, id: string) {
   }
 };
 
-export async function getHouseKeepingPlanifications(): Promise<{ HouseKeepingPlanification: EventStage[] }> {
+export async function deleteLostObj(id: string) {
+  try {
+    return await axios
+      .delete(
+        `${mainBaseUrl}/housekeeping/lostObject/${id}`)
+      .then((res) => {
+        return res.data.message;
+      });
+  } catch (err: any) {
+    throw new Error(err.response.data.message);
+  }
+};
+
+export async function getHouseKeepingPlanifications(): Promise<{ HouseKeepingPlanifications: EventStage[] }> {
   const infos = await fetch(`${mainBaseUrl}/housekeeping/planification`, {
     cache: "no-cache",
   });
@@ -2169,7 +2203,7 @@ export async function getHouseKeepingPlanifications(): Promise<{ HouseKeepingPla
 
 
 export async function getLostObjs(): Promise<{ LostObjects: LostObj[] }> {
-  const infos = await fetch(`${mainBaseUrl}/lostObject`, {
+  const infos = await fetch(`${mainBaseUrl}/housekeeping/lostObject`, {
     cache: "no-cache",
   });
   return infos.json();

@@ -168,6 +168,13 @@ interface Event {
     createdAt?: Date | string;
 };
 
+interface CleaningType {
+    id? :string;
+    title: string;
+    description : string;
+    date : string;
+};
+
 interface EventStage {
     id?: string;
     title: string;
