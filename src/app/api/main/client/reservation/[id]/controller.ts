@@ -1,92 +1,132 @@
 import { ReservationResult } from "./types";
 import {
   NotFoundError,
+  SubscriptionError,
   ValidationError,
 } from "@/lib/error_handler/customerErrors";
 import { throwAppropriateError } from "@/lib/error_handler/throwError";
 import { RoomStatus, UserRole } from "@prisma/client";
 import prisma from "@/lib/prisma/prismaClient";
-import { addClientsHistorique } from "../../../historique/createHistorique";
-import { AddClientsHistoriqueData } from "../../../historique/types";
+import { addClientsHistorique } from "@/app/api/main/historique/createHistorique";
+import { AddClientsHistoriqueData } from "@/app/api/main/historique/types";
 
 export async function deleteReservation(
   reservationId: string | undefined,
   hotelId: string
 ): Promise<ReservationResult> {
   try {
-    if (!reservationId) {
-      throw new NotFoundError("ID de réservation requis");
-    }
+    
 
     return await prisma.$transaction(async (prisma) => {
-      // Get reservation and count of client's reservations in one query
-      const reservationWithCount = await prisma.reservation.findFirst({
-        where: {
-          id: reservationId,
-          hotelId,
-        },
-        include: {
-          client: {
-            include: {
-              reservations: {
-                select: {
-                  id: true,
-                },
-                where: {
-                  id: {
-                    not: reservationId,
+      // Run all initial queries in parallel
+      const [reservationWithCount, hotel, houseKeepingPlanificationCount] = await Promise.all([
+        prisma.reservation.findFirst({
+          where: {
+            id: reservationId,
+            hotelId,
+          },
+          include: {
+            client: {
+              include: {
+                reservations: {
+                  select: {
+                    id: true,
+                  },
+                  where: {
+                    id: {
+                      not: reservationId,
+                    },
                   },
                 },
+                pendingReservation: {
+                  select: { id: true }
+                }
               },
-              pendingReservation:{
-                select:{id : true}
-              }
             },
           },
-        },
-      });
+        }),
+        prisma.hotel.findUnique({
+          where: { id: hotelId },
+          include: {
+            subscription: {
+              include: {
+                plan: true,
+              },
+            },
+          },
+        }),
+        prisma.houseKeepingPlanification.count({
+          where: { hotelId },
+        })
+      ]);
 
       if (!reservationWithCount || !reservationWithCount.client) {
         throw new NotFoundError("Réservation ou client non trouvé");
       }
 
-      // Delete reservation and update room status in parallel
-      const [deletedReservation,updatedRoom] = await Promise.all([
+      if (!hotel?.subscription?.plan) {
+        throw new SubscriptionError("Hotel n'a pas d'abonnement actif");
+      }
+
+      const maxHouseKeepingPlanifications = hotel.subscription.plan.maxHouseKeepingPlanifications;
+      
+      // Delete reservation, update room status, create client history and housekeeping planification in parallel
+      const [deletedReservation, updatedRoom, clientHistorique, houseKeepingPlanification] = await Promise.all([
         prisma.reservation.delete({
           where: { id: reservationId },
-          select : {
-            id : true,
-            startDate : true,
-            endDate : true,
-            unitPrice : true,
-             totalDays : true,
-             totalPrice : true,
-             currentOccupancy : true,
-             discoveryChannel : true,
-             roomNumber : true,
-             roomType : true,
-             source : true,
-             state : true , 
-             
-        }
+          select: {
+            id: true,
+            startDate: true,
+            endDate: true,
+            unitPrice: true,
+            totalDays: true,
+            totalPrice: true,
+            currentOccupancy: true,
+            discoveryChannel: true,
+            roomNumber: true,
+            roomType: true,
+            source: true,
+            state: true,
+          }
         }),
         prisma.room.update({
           where: { id: reservationWithCount.roomId },
-          data: { status:(reservationWithCount.client.pendingReservation.length>0)? RoomStatus.en_attente:RoomStatus.disponible },
+          data: { 
+            status: (reservationWithCount.client.pendingReservation.length > 0) 
+              ? RoomStatus.en_attente 
+              : RoomStatus.disponible 
+          },
         }),
+        // Add client historique
+        addClientsHistorique({
+          fullName: reservationWithCount.client.fullName,
+          phoneNumber: reservationWithCount.client.phoneNumber,
+          identityCardNumber: reservationWithCount.client.identityCardNumber,
+          nationality: reservationWithCount.client.nationality,
+          gender: reservationWithCount.client.gender,
+          starDate: reservationWithCount.startDate,
+          endDate: reservationWithCount.endDate,
+        }, hotelId),
+        // Add housekeeping planification if within plan limits
+        houseKeepingPlanificationCount < maxHouseKeepingPlanifications
+          ? prisma.houseKeepingPlanification.create({
+              data: {
+                hotelId,
+                title: `Nettoyage chambre ${reservationWithCount.roomNumber}`,
+                description: `Nettoyage après départ client ${reservationWithCount.client.fullName}`,
+                start: reservationWithCount.endDate,
+                end: new Date(reservationWithCount.endDate.getTime() + 2 * 60 * 60 * 1000), // 2 hours after end date
+              },
+              select: {
+                id: true,
+                description: true,
+                end: true,
+                title: true,
+                start: true,
+              }
+            })
+          : null
       ]);
-      ///////////////////// historique ////////////////////////
-      const client = reservationWithCount.client;
-      const data: AddClientsHistoriqueData = {
-        fullName: client.fullName,
-        phoneNumber: client.phoneNumber,
-        identityCardNumber: client.identityCardNumber,
-        nationality: client.nationality,
-        gender: client.gender,
-        starDate: reservationWithCount.startDate,
-        endDate: reservationWithCount.endDate,
-      };
-      await addClientsHistorique(data, hotelId);
 
       // Check if client has other reservations before deleting
       const otherReservations = reservationWithCount.client.reservations;
@@ -96,7 +136,10 @@ export async function deleteReservation(
         });
       }
 
-      return { reservation: deletedReservation };
+      return { 
+        reservation: deletedReservation,
+        houseKeepingPlanification: houseKeepingPlanification || undefined
+      };
     });
   } catch (error) {
     throw throwAppropriateError(error);

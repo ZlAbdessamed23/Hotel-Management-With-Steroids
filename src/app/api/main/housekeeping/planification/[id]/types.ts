@@ -4,8 +4,8 @@ export type UpdateHouseKeepingPlanificationData = {
   title?: string;
   description?: string;
 
-  start?: string;
-  end?: string;
+  start?: Date;
+  end?: Date;
 };
 
 export type HouseKeepingPlanificationResult = {

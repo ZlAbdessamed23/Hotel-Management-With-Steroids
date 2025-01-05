@@ -13,6 +13,7 @@ import {
 
 import { handleError } from "@/lib/error_handler/handleError";
 import { getUser } from "@/lib/token/getUserFromToken";
+import { TranslateObjKeysFromEngToFr } from "@/app/utils/translation";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
@@ -20,19 +21,24 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
     checkReceptionManagerReceptionistGouvernementRole(user.role);
 
     const data: AddHouseKeepingPlanificationData = await request.json();
-    const missingFields = requiredHouseKeepingPlanificationFields.filter(
-      (field) => !data[field]
-    );
-    if (missingFields.length > 0) {
-      return NextResponse.json(
-        { message: `${missingFields.join(", ")} sont requis` },
-        { status: 400 }
-      );
-    }
+     const missingFields = requiredHouseKeepingPlanificationFields.filter(
+              (field) => !data[field]
+            );
+        
+            if (missingFields.length > 0) {
+              const translatedFields = missingFields.map(field => 
+                TranslateObjKeysFromEngToFr(field)
+              );
+        
+              return NextResponse.json(
+                { message: `${translatedFields.join(", ")}: sont requis` },
+                { status: 400 }
+              );
+            }
 
     const newHouseKeepingPlanification = await addHouseKeepingPlanification(data, user.hotelId);
 
@@ -59,6 +65,7 @@ export async function GET(
     checkReceptionManagerReceptionistGouvernementAdminRole(user.role);
 
     const HouseKeepingPlanifications = await getAllHouseKeepingPlanifications(user.hotelId);
+    console.log(HouseKeepingPlanifications)
 
     return NextResponse.json(HouseKeepingPlanifications, { status: 201 });
   } catch (error) {

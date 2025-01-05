@@ -51,8 +51,10 @@ import {
   ): Promise<HouseKeepingPlanificationResult> {
     try {
       return await prisma.$transaction(async (prisma) => {
-        const existinghouseKeepingPlanification = await prisma.houseKeepingPlanification.findUnique({
-          where: { id: houseKeepingPlanificationId, hotelId},
+        
+  
+        const deletedhouseKeepingPlanification = await prisma.houseKeepingPlanification.delete({
+          where: { id: houseKeepingPlanificationId },
           select : {
             id : true,
             description : true,
@@ -61,17 +63,6 @@ import {
             start : true,
             
           }
-          
-        });
-  
-        if (!existinghouseKeepingPlanification ) {
-          throw new NotFoundError(
-            `séance non trouvée`
-          );
-        }
-  
-        const deletedhouseKeepingPlanification = await prisma.houseKeepingPlanification.delete({
-          where: { id: houseKeepingPlanificationId },
         });
   
         return { HouseKeepingPlanification: deletedhouseKeepingPlanification };
@@ -143,7 +134,7 @@ import {
        !roles.includes(UserRole.gouvernante)
     ) {
       throw new UnauthorizedError(
-        "Sauf  gouvernement manager peut faire cette action"
+        "Sauf  gouvernement receptionist reception manager peut faire cette action"
       );
     }
   }

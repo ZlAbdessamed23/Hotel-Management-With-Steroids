@@ -904,8 +904,8 @@ model HouseKeepingPlanification {
   id                              String                         @id @default(cuid())
   title                           String
   description                     String?
-  start                           String
-  end                             String
+  start                           DateTime
+  end                             DateTime
   hotelId                         String
   hotel                           Hotel                                      @relation("HouseKeepingPlanification",fields: [hotelId], references: [id])
   

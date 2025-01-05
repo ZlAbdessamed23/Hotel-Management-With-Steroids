@@ -71,10 +71,17 @@ export async function getAllLostObjects(hotelId: string): Promise<LostObjects> {
   }
 }
 
-export function checkAdminReceptionGvernementRole(roles: UserRole[]) {
-  if (!roles.includes(UserRole.admin)&&!roles.includes(UserRole.gouvernante)&&!roles.includes(UserRole.reception_Manager)) {
+export function checkAdminReceptionManagerReceptionistGvernementRole(roles: UserRole[]) {
+  if (!roles.includes(UserRole.admin)&&!roles.includes(UserRole.gouvernante)&&!roles.includes(UserRole.reception_Manager)&&!roles.includes(UserRole.receptionist)) {
     throw new UnauthorizedError(
-      "Sauf l'Administrateur peut faire cette action"
+      "Sauf l'Administrateur gouvernanat resepsionist reception manager peut faire cette action"
+    );
+  }
+}
+export function checkReceptionManagerReceptionistGvernementRole(roles: UserRole[]) {
+  if (!roles.includes(UserRole.gouvernante)&&!roles.includes(UserRole.reception_Manager)&&!roles.includes(UserRole.receptionist)) {
+    throw new UnauthorizedError(
+      "Sauf gouvernanat resepsionist reception manager peut faire cette action"
     );
   }
 }

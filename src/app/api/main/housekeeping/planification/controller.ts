@@ -43,7 +43,7 @@ export async function addHouseKeepingPlanification(
           const maxHouseKeepingPlanifications = hotel.subscription.plan.maxHouseKeepingPlanifications;
           if (HouseKeepingPlanificationCount >= maxHouseKeepingPlanifications) {
             throw new LimitExceededError(
-              "Le nombre Maximum des employées pour ce plan est déja atteint"
+              "Le nombre Maximum des planification pour ce plan est déja atteint"
             );
           }
       
