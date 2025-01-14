@@ -14,13 +14,19 @@ export default function Footer() {
           <span className='w-56 text-primary-500 font-inter'>
             <h2 className='text-3xl text-center font-semibold mb-4'>CloudyVerse</h2>
             <div className='flex justify-between items-center text-primary-500 mb-2'>
-              <a href="www.linkedin.com"><TiSocialLinkedin className='size-11 p-3 border border-primary-500 rounded-full' /></a>
-              <a href="https://www.facebook.com/"><FaFacebookF className='size-11 p-3 border border-primary-500 rounded-full' /></a>
-              <a href="www.facebook.com"><FaXTwitter className='size-11 p-3 border border-primary-500 rounded-full' /></a>
+              <a target='blank' href="https://www.linkedin.com/in/cloudy-verse-024062347"><TiSocialLinkedin className='size-11 p-3 border border-primary-500 rounded-full' /></a>
+              <a target='blank' href="https://www.facebook.com/"><FaFacebookF className='size-11 p-3 border border-primary-500 rounded-full' /></a>
+              <a target='blank' href="https://x.com/cloudyversedz"><FaXTwitter className='size-11 p-3 border border-primary-500 rounded-full' /></a>
             </div>
             <div className='flex items-center justify-center gap-12'>
-              <a href="www.linkedin.com"><BiLogoGmail className='size-11 p-3 border border-primary-500 rounded-full' /></a>
-              <a href="https://www.facebook.com/"><IoMdCall className='size-11 p-3 border border-primary-500 rounded-full' /></a>
+              <a target='blank' href="mailto:hotyverse@gmail.com"><BiLogoGmail className='size-11 p-3 border border-primary-500 rounded-full' /></a>
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href="tel:+213559555951"
+              >
+                <IoMdCall className="size-11 p-3 border border-primary-500 rounded-full" />
+              </a>
             </div>
           </span>
           <span>
@@ -41,7 +47,7 @@ export default function Footer() {
         </section>
       </div>
       <div className='w-11/12 mx-auto'>
-        <p className='text-end ml-8'>© 2024 CloudyVerse.Tous les droits sont preserves</p>
+        <p className='text-end ml-8'>© 2025 CloudyVerse.Tous les droits sont preserves</p>
       </div>
     </div>
   )
