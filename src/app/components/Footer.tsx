@@ -32,9 +32,9 @@ export default function Footer() {
           <span>
             <h2 className='text-2xl font-semibold mb-4 text-primary-500'>Quick Links</h2>
             <div className='flex flex-col items-start gap-4'>
-              <Link className='text-xl font-medium' href="">contact-us</Link>
-              <Link className='text-xl font-medium' href="">about-us</Link>
-              <Link className='text-xl font-medium' href="">cloudyverse.com</Link>
+              <Link className='text-xl font-medium' href="https://cloudy-verse.vercel.app/">contact-us</Link>
+              <Link className='text-xl font-medium' href="https://cloudy-verse.vercel.app/">about-us</Link>
+              <Link className='text-xl font-medium' href="https://cloudy-verse.vercel.app/">cloudyverse.com</Link>
             </div>
           </span>
           <span className='w-full flex flex-col justify-center items-center md:w-auto md:block'>
