@@ -65,7 +65,7 @@ export default function Header() {
             <div className='flex items-center'>
                 <ul className='flex items-center w-48'>
                     <li><Button className='bg-transparent'><Link href="/login">Connecter</Link></Button></li>
-                    <li><Button className='bg-primary-400'><Link href="/register">Inscrire</Link></Button></li>
+                    <li><Button className='bg-primary-400'><ScrollLink to='pricing-div-container' spy={true} smooth={true} duration={1000} >Inscrire</ScrollLink></Button></li>
                 </ul>
                 <Button className='bg-transparent' isIconOnly={true} onClick={() => setTheme(theme === "light" ? "dark" : "light")}>{theme === "light" ? <FaMoon className='size-6' /> : <FaSun className='size-6' />}</Button>
             </div>

@@ -7,7 +7,6 @@ import EmployeeImage2 from "/public/EmployeeImage2.svg";
 import { Tabs, Tab, Button, useDisclosure } from '@nextui-org/react';
 import GenericDisplayTable from '../../components/other/GenericDisplayTable';
 import { ScheduleXCalendar, useNextCalendarApp } from '@schedule-x/react';
-import { parseZonedDateTime } from "@internationalized/date";
 import { createEventModalPlugin } from '@schedule-x/event-modal';
 import {
     viewDay,
@@ -81,11 +80,15 @@ export default function HouseKeeping() {
         { name: "Actions", uid: "actions" },
     ];
 
-    function convertToScheduleXFormat(isoString: string): string {
-        const zonedDateTime = parseZonedDateTime(isoString);
-        const { year, month, day, hour, minute } = zonedDateTime;
-        return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')} ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
-    };
+    function convertToScheduleXFormat(date: Date): string {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hour = String(date.getHours()).padStart(2, '0');
+        const minute = String(date.getMinutes()).padStart(2, '0');
+        
+        return `${year}-${month}-${day} ${hour}:${minute}`;
+    }
 
     async function getPlans() {
         const data = await getHouseKeepingPlanifications();
@@ -99,8 +102,8 @@ export default function HouseKeeping() {
             return {
                 id: event.id || String(Math.random()),
                 description: event.description,
-                start: convertToScheduleXFormat(new Date(event.start).toString()),
-                end: convertToScheduleXFormat(new Date(event.end).toString()),
+                start: convertToScheduleXFormat(new Date(event.start)),
+                end: convertToScheduleXFormat(new Date(event.end)),
                 title: event.title,
             }
         });
