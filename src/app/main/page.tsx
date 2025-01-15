@@ -117,11 +117,11 @@ export default function Home() {
               <ul className='ml-6 flex flex-col gap-8'>
                 <li>
                   <h2 className='text-xl font-semibold mb-4'>2.1 Connexion Admin</h2>
-                  <p className='text-lg font-normal text-slate-500 text-opacity-90 w-10/12 ml-4'>L'Administrateur a un accès complet à la plateforme. Il peut gérer les utilisateurs, configurer les paramètres de l'hôtel, et consulter les rapports</p>
+                  <p className='text-lg font-normal text-slate-500 text-opacity-90 w-10/12 ml-4'>L&apos;Administrateur a un accès complet à la plateforme. Il peut gérer les utilisateurs, configurer les paramètres de l&apos;hôtel, et consulter les rapports</p>
                 </li>
                 <li>
                   <h2 className='text-xl font-semibold mb-4'>2.2 Gestion des Employés</h2>
-                  <p className='text-lg font-normal text-slate-500 text-opacity-90 w-10/12 ml-4'>Seul l'Administrateur peut ajouter des employés à la plateforme. Après que l'Administrateur ait ajouté un employé, celui-ci recevra un email contenant un lien pour activer son compte. L'employé devra activer son compte avant de pouvoir se connecter.</p>
+                  <p className='text-lg font-normal text-slate-500 text-opacity-90 w-10/12 ml-4'>Seul l &apos; Administrateur peut ajouter des employés à la plateforme. Après que l&apos;Administrateur ait ajouté un employé, celui-ci recevra un email contenant un lien pour activer son compte. L&apos;employé devra activer son compte avant de pouvoir se connecter.</p>
                 </li>
               </ul>
             </div>
@@ -162,7 +162,7 @@ export default function Home() {
                 </li>
                 <li>
                   <h2 className='text-xl font-semibold mb-4'>Personnel de Ménage :</h2>
-                  <p className='text-lg font-normal text-slate-500 text-opacity-90 w-10/12 ml-4'>Accès à la page Ménage, permettant de gérer l'état des chambres et les tâches de nettoyage.</p>
+                  <p className='text-lg font-normal text-slate-500 text-opacity-90 w-10/12 ml-4'>Accès à la page Ménage, permettant de gérer l&apos;état des chambres et les tâches de nettoyage.</p>
                 </li>
                 <li>
                   <h2 className='text-xl font-semibold mb-4'>Réceptionniste Manager :</h2>
