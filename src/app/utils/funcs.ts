@@ -53,8 +53,8 @@ import {
 } from "../types/constants";
 import { ForgetPasswordData } from "@/app/api/auth/password/forgetPassword/types";
 
-const mainBaseUrl = "http://localhost:3000/api/main";
-const authBaseUrl = "http://localhost:3000/api/auth";
+const mainBaseUrl = "http://104.154.75.47/api/main";
+const authBaseUrl = "http://104.154.75.47/api/auth";
 
 
 //AUTH
@@ -1770,8 +1770,8 @@ export async function addCleaningDate(cleaningInfos : CleaningType ) {
   const fullInfos = {
     title : cleaningInfos.title,
     description : cleaningInfos.description,
-    start : cleaningInfos.date,
-    end : cleaningInfos.date,
+    start :new Date( cleaningInfos.date),
+    end : new Date(cleaningInfos.date),
   };
 
   try {

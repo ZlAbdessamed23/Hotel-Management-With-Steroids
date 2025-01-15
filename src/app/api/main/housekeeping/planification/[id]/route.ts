@@ -20,7 +20,7 @@ export async function GET(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
     checkReceptionManagerReceptionistGouvernementAdminRole(user.role);
 
     const {  id } = params;
@@ -46,7 +46,7 @@ export async function DELETE(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
     checkReceptionManagerReceptionistGouvernementRole(user.role);
 
     const { id } = params;
@@ -77,7 +77,7 @@ export async function PATCH(
     if (!user) {
       return NextResponse.json({ error: "Non Authorisé" }, { status: 401 });
     }
-    console.log(user);
+    
     checkReceptionManagerReceptionistGouvernementRole(user.role);
 
     const { id } = params;

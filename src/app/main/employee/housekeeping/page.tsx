@@ -99,8 +99,8 @@ export default function HouseKeeping() {
             return {
                 id: event.id || String(Math.random()),
                 description: event.description,
-                start: convertToScheduleXFormat(event.start.toString()),
-                end: convertToScheduleXFormat(event.end.toString()),
+                start: convertToScheduleXFormat(new Date(event.start).toString()),
+                end: convertToScheduleXFormat(new Date(event.end).toString()),
                 title: event.title,
             }
         });

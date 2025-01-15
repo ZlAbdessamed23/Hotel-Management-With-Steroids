@@ -97,7 +97,8 @@ export async function getAllHouseKeepingPlanifications(
 
 export function checkReceptionManagerReceptionistGouvernementRole(roles: UserRole[]) {
   if (
-     !roles.includes(UserRole.gouvernante)
+     !roles.includes(UserRole.gouvernante)&&!roles.includes(UserRole.reception_Manager) &&
+     !roles.includes(UserRole.receptionist)
   ) {
     throw new UnauthorizedError(
       "Sauf gouvernement manager peut faire cette action"

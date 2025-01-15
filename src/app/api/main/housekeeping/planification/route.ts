@@ -65,7 +65,7 @@ export async function GET(
     checkReceptionManagerReceptionistGouvernementAdminRole(user.role);
 
     const HouseKeepingPlanifications = await getAllHouseKeepingPlanifications(user.hotelId);
-    console.log(HouseKeepingPlanifications)
+    
 
     return NextResponse.json(HouseKeepingPlanifications, { status: 201 });
   } catch (error) {

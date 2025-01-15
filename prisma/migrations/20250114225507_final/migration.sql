@@ -50,7 +50,7 @@ CREATE TYPE "SportsFacilityType" AS ENUM ('football', 'basketball', 'handball', 
 CREATE TYPE "EventType" AS ENUM ('anniversaire', 'fetes', 'evenement', 'reunion', 'evenement_social');
 
 -- CreateEnum
-CREATE TYPE "AttendueType" AS ENUM ('normale', 'organizatrice', 'serveur');
+CREATE TYPE "AttendueType" AS ENUM ('normale', 'organisateur', 'serveur');
 
 -- CreateTable
 CREATE TABLE "Plan" (
@@ -708,8 +708,8 @@ CREATE TABLE "HouseKeepingPlanification" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT,
-    "start" TEXT NOT NULL,
-    "end" TEXT NOT NULL,
+    "start" TIMESTAMP(3) NOT NULL,
+    "end" TIMESTAMP(3) NOT NULL,
     "hotelId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,

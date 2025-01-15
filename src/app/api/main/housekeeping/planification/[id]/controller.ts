@@ -131,7 +131,8 @@ import {
   // Role check functions (you may need to adjust these based on your specific requirements)
   export function checkReceptionManagerReceptionistGouvernementRole(roles: UserRole[]) {
     if (
-       !roles.includes(UserRole.gouvernante)
+       !roles.includes(UserRole.gouvernante)&&!roles.includes(UserRole.reception_Manager) &&
+       !roles.includes(UserRole.receptionist)
     ) {
       throw new UnauthorizedError(
         "Sauf  gouvernement receptionist reception manager peut faire cette action"
