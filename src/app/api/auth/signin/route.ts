@@ -40,7 +40,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         httpOnly: true,
         maxAge: 60 * 60 * 24 * 7,
         path: "/",
-        secure: process.env.NODE_ENV === "production",
+        secure: false,
         sameSite: "strict",
       });
 
@@ -50,3 +50,5 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return handleError(error);
   }
 }
+
+
