@@ -88,7 +88,7 @@ export async function addEmployee(
             expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
           },
         }),
-        sendVerificationEmail(newEmployee.email, token),
+        sendVerificationEmail(newEmployee.email, token,newEmployee.firstName),
         updateEmployeeStatistics(hotelId, "add", prisma)
       ]);
 
@@ -106,7 +106,8 @@ export async function addEmployee(
 
 async function sendVerificationEmail(
   email: string,
-  token: string 
+  token: string ,
+  firstName: string
 ): Promise<void> {
   const verificationLink = `${process.env.BASE_URL}/${token}`;
   await sendMail(
@@ -137,7 +138,7 @@ async function sendVerificationEmail(
             </div>
             <div style="height: 1px; width: 100%; background-color: #E8E6F6;"></div>
             <div style="padding-top: 10px;padding-right: 10px;padding-left: 40px;padding-bottom: 16px;">
-                <p style="font-size: medium;font-weight: 500;">Hey Jack,</p>
+                <p style="font-size: medium;font-weight: 500;">Hey ${firstName},</p>
                 <p style="font-size: medium; font-weight: 400;">Activer votre compte par cet email. Cliquez simplement sur
                     le bouton ci-dessous et tout sera prêt. Si
                     vous

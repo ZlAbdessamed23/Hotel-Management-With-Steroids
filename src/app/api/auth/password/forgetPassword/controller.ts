@@ -22,7 +22,7 @@ export async function forgetPassword(data: ForgetPasswordData): Promise<void> {
       resetCode,
       resetCodeExpiresAt
     );
-    await sendResetCodeEmail(user.email, resetCode);
+    await sendResetCodeEmail(user.email, resetCode,user.firstName);
   } catch (error) {
     throwAppropriateError(error);
   }
@@ -84,7 +84,7 @@ async function checkUserActivation(
     try {
       const token = generateVerificationToken(user.id);
       await createVerificationToken(token, user.id, collection);
-      await sendVerificationEmail(user.email, token);
+      await sendVerificationEmail(user.email, token,user.firstName);
       throw new AccountNotActivatedError(
         "Svp , veuillez vérifier votre boite mail pour activer le compte"
       );
@@ -116,7 +116,8 @@ async function createVerificationToken(
 
 async function sendVerificationEmail(
   email: string,
-  token: string
+  token: string,
+  firstName: string
 ): Promise<void> {
   const verificationLink = `${process.env.BASE_URL}/${token}`;
   try {
@@ -148,7 +149,7 @@ async function sendVerificationEmail(
               </div>
               <div style="height: 1px; width: 100%; background-color: #E8E6F6;"></div>
               <div style="padding-top: 10px;padding-right: 10px;padding-left: 40px;padding-bottom: 16px;">
-                  <p style="font-size: medium;font-weight: 500;">Hey Jack,</p>
+                  <p style="font-size: medium;font-weight: 500;">Hey ${firstName},</p>
                   <p style="font-size: medium; font-weight: 400;">Activer votre compte par cet email. Cliquez simplement sur
                       le bouton ci-dessous et tout sera prêt. Si
                       vous
@@ -188,7 +189,8 @@ function generateResetCode(): string {
 
 async function sendResetCodeEmail(
   email: string,
-  resetCode: string
+  resetCode: string,
+  firstName: string
 ): Promise<void> {
   try {
     await sendMail(
@@ -219,7 +221,7 @@ async function sendResetCodeEmail(
               </div>
               <div style="height: 1px; width: 100%; background-color: #E8E6F6;"></div>
               <div style="padding-top: 10px;padding-right: 10px;padding-left: 40px;padding-bottom: 16px;">
-                  <p style="font-size: medium;font-weight: 500;">Hey Jack,</p>
+                  <p style="font-size: medium;font-weight: 500;">Hey ${firstName},</p>
                   <p style="font-size: medium; font-weight: 400;">Copiez le code ci-dessous pour réinitialiser votre mot de passe. Si vous n'avez pas fait cette demande, ignorez cet e-mail</p>
               </div>
               <div style="padding-bottom: 46px; text-align: center;">

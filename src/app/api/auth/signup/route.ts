@@ -28,7 +28,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
    
     const { admin, token } = await createAdmin(data);
 
-    await sendVerificationEmail(admin.email, token);
+    await sendVerificationEmail(admin.email, token,admin.firstName);
 
     return NextResponse.json(
       {

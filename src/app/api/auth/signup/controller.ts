@@ -155,7 +155,8 @@ async function createVerificationToken(
 /////////////////// send mail /////////////////
 export async function sendVerificationEmail(
   email: string,
-  token: string
+  token: string,
+  firstName: string
 ): Promise<void> {
   const verificationLink = `${process.env.BASE_URL}/${token}`;
   try {
@@ -187,7 +188,7 @@ export async function sendVerificationEmail(
               </div>
               <div style="height: 1px; width: 100%; background-color: #E8E6F6;"></div>
               <div style="padding-top: 10px;padding-right: 10px;padding-left: 40px;padding-bottom: 16px;">
-                  <p style="font-size: medium;font-weight: 500;">Hey Jack,</p>
+                  <p style="font-size: medium;font-weight: 500;">Hey ${firstName},</p>
                   <p style="font-size: medium; font-weight: 400;">Activer votre compte par cet email. Cliquez simplement sur
                       le bouton ci-dessous et tout sera prêt. Si
                       vous
@@ -203,7 +204,7 @@ export async function sendVerificationEmail(
           </div>
           <div style="text-align: center;">
               <p style="width: 50%;margin: auto;font-size: medium;font-weight: 300;">
-                  problèmes ou questions? contactez-nous à <span style="color: #001E3C;">hotyversedz@gmail.com</span>
+                  problèmes ou questions? contactez-nous à <span style="color: #001E3C;">hotyverse@gmail.com</span>
               </p>
               <div>
                   <a href="http://104.154.75.47/"><img src="https://i.postimg.cc/FFSgdbv6/hotyverse.png" alt="hotyverse-logo-image" style="size: 3rem;"></a>
